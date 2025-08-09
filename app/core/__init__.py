@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.gzip import GZipMiddleware
 
-from app import get_settings
+from app.core.config import get_settings
 
 DEFAULT_APP_NAME = "Esturide (p) API"
 
@@ -26,11 +26,7 @@ def get_root_app() -> FastAPI:
     )
 
     origins = [
-        "localhost",
-        "localhost:8000",
-        "localhost:80",
-        "127.0.0.1:8000",
-        "0.0.0.0:8000",
+        "*",
     ]
 
     app.add_middleware(

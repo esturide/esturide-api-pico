@@ -18,15 +18,15 @@ class StatusTravel(str, enum.Enum):
     cancel = 'cancel'
 
 
-class RoleUser(str, enum.Enum):
-    not_verified = 'not-verified'
-    driver = 'driver'
-    passenger = 'passenger'
-    staff = 'staff'
-    admin = 'admin'
-
-
 class CurrentRuleUser(str, enum.Enum):
     no_session = 'no-session'
     driver = 'driver'
     passenger = 'passenger'
+
+
+class RoleUser(enum.Enum):
+    not_verified = 'not-verified'
+    passenger = 'passenger'
+    driver = 'driver'
+    staff = 'staff'
+    admin = 'admin'

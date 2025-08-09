@@ -5,8 +5,7 @@ import jwt
 from fastapi import HTTPException
 from fastapi.security import OAuth2PasswordBearer
 
-from app.config import get_settings
-from app.types import Token
+from app.shared.types import Token
 
 
 def create_oauth2_token(url="/auth/"):
@@ -21,26 +20,23 @@ def create_oauth2_token(url="/auth/"):
 get_oauth2_token = create_oauth2_token()
 
 
-def encode(data: dict, expires_minutes: int) -> Token:
-    settings = get_settings()
-    data_to_encode = data.copy()
-    expire = datetime.now() + timedelta(minutes=expires_minutes)
+def encode(data: dict, expires_minutes: int, secret_key: str, algorithm: str) -> Token:
+    payload = {
+        **data,
+        "exp": datetime.utcnow() + timedelta(minutes=expires_minutes),
+        "iat": datetime.utcnow()
+    }
 
-    data_to_encode.update({
-        "exp": expire
-    })
-
-    return jwt.encode(data_to_encode, settings.secret_key, algorithm=settings.algorithm)
+    return jwt.encode(payload, secret_key, algorithm=algorithm)
 
 
-def decode(token: Token) -> dict:
-    settings = get_settings()
-    return jwt.decode(token, settings.secret_key, algorithms=[settings.algorithm])
+def decode(token: Token, secret_key: str, algorithm: str) -> dict:
+    return jwt.decode(token, secret_key, algorithms=[algorithm])
 
 
-def check_if_expired(token: Token) -> bool:
+def check_if_expired(token: Token, secret_key: str, algorithm: str) -> bool:
     try:
-        decode(token)
+        decode(token, secret_key, algorithm)
     except jwt.ExpiredSignatureError:
         return False
     finally:

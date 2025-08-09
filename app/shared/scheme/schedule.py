@@ -3,8 +3,8 @@ from typing import List
 
 from pydantic import BaseModel, Field
 
-from app.scheme.location import DataAddressLocation
-from app.types import UUID
+from app.shared.scheme.location import DataAddressLocation
+from app.shared.types import UUID
 
 
 class TrackingRecord(BaseModel):
