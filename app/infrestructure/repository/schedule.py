@@ -7,6 +7,36 @@ from app.shared.utils import async_task
 
 class ScheduleRepository:
     @staticmethod
+    async def filtering(terminate=False, cancel=False, starting=None, terminated=None,
+                        price_range: tuple[float, float | None] = (1, None), order_date: bool = False, limit: int = 10) -> \
+    list[ScheduleTravel]:
+        def filter_schedule():
+            min_price, max_price = price_range
+
+            if max_price is not None and min_price >= max_price:
+                raise InvalidRequestException('Price range must be greater than or equal to 1.')
+
+            schedules = (ScheduleTravel.collection
+                         .filter(terminate=terminate, cancel=cancel)
+                         .filter('price', '>=', min_price))
+
+            if starting is not None:
+                schedules = schedules.filter('starting', '>=', starting)
+
+            if terminated is not None:
+                schedules = schedules.filter('terminated', '>=', terminated)
+
+            if max_price is not None:
+                schedules = schedules.filter('price', '<=', max_price)
+
+            if order_date:
+                schedules = schedules.order('-created')
+
+            return list(schedules.fetch(limit))
+
+        return await async_task(filter_schedule)
+
+    @staticmethod
     async def get_current(user: User, role: RoleUser = RoleUser.driver) -> ScheduleTravel:
         def filter_schedule_task_driver(u):
             return list(ScheduleTravel.collection

@@ -64,7 +64,7 @@ async def refresh_token(token: OAuth2Scheme, auth: AuthDependency):
 
 
 @auth_route.get('/role', response_model=StatusResponse[RoleUser])
-async def refresh_role(token: OAuth2Scheme, auth: AuthDependency):
+async def get_role(token: OAuth2Scheme, auth: AuthDependency):
     role = await auth.get_session_role(token)
 
     return {

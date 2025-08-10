@@ -39,3 +39,10 @@ async def global_exception_handler(request, exc):
         status_code=500,
         content={"detail": "An unexpected error occurred. Please try again later."}
     )
+
+
+async def validation_exception_handler(request, exc):
+    return JSONResponse(
+        status_code=422,
+        content={"message": "Validation error", "details": exc.errors()},
+    )

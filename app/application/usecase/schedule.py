@@ -5,7 +5,8 @@ from app.domain.service.auth import get_auth_service
 from app.domain.service.schedule import get_schedule_service
 from app.domain.service.user import get_user_service
 from app.shared.models.schedule import ScheduleTravel
-from app.shared.scheme.location import DataGeoLocation
+from app.shared.scheme.filter import FilteringOptionsRequest
+from app.shared.scheme.location import GeoLocationModel
 from app.shared.scheme.schedule import ScheduleTravelRequest, ScheduleTravelResponse, DriverUser, PassengerUser, \
     ScheduleTravelUpdateRequest
 from app.shared.types.enum import RoleUser, Status
@@ -27,7 +28,7 @@ class ScheduleTravelUseCase:
             firstName=driver.first_name,
             maternalSurname=driver.maternal_surname,
             paternalSurname=driver.paternal_surname,
-            position=DataGeoLocation(
+            position=GeoLocationModel(
                 latitude=0,
                 longitude=0,
             )
@@ -39,19 +40,19 @@ class ScheduleTravelUseCase:
                 firstName=passenger.first_name,
                 maternalSurname=passenger.maternal_surname,
                 paternalSurname=passenger.paternal_surname,
-                position=DataGeoLocation(
+                position=GeoLocationModel(
                     latitude=0,
                     longitude=0,
                 )
             ) for passenger in all_passengers
         ] if all_passengers is not None else []
 
-        origin = DataGeoLocation(
+        origin = GeoLocationModel(
             longitude=schedule.origin.longitude,
             latitude=schedule.origin.latitude,
         )
 
-        destination = DataGeoLocation(
+        destination = GeoLocationModel(
             longitude=schedule.destination.longitude,
             latitude=schedule.destination.latitude,
         )
@@ -109,6 +110,13 @@ class ScheduleTravelUseCase:
                 yield self.create_schedule_response(schedule)
 
         return [schedule async for schedule in iter_all_schedules()]
+
+    async def search(self, code: int, role: RoleUser, options: FilteringOptionsRequest, limit: int):
+        async def iter_all_schedules_and_filtering():
+            for schedule in await self.schedule_service.filtering(options, limit):
+                yield self.create_schedule_response(schedule)
+
+        return [schedule async for schedule in iter_all_schedules_and_filtering()]
 
     async def update(self, code: int, role: RoleUser, req: ScheduleTravelUpdateRequest):
         user = await self.user_service.get(code)

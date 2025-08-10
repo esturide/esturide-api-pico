@@ -1,9 +1,13 @@
+import datetime
+import typing
+
 from fastapi import APIRouter
 
 from app.core.exception import UnauthorizedAccessException
 from app.shared.dependencies import ScheduleDependency, AuthUserCodeCredentials, UserIsAuthenticated, \
     AuthUserCodeAndRoleCredentials
 from app.shared.scheme import StatusMessage, StatusResponse
+from app.shared.scheme.filter import FilteringOptionsRequest
 from app.shared.scheme.schedule import ScheduleTravelRequest, ScheduleTravelResponse, ScheduleTravelUpdateRequest
 from app.shared.types.enum import Status
 
@@ -26,6 +30,54 @@ async def get_all_schedule(limit: int, schedule_case: ScheduleDependency, is_aut
     return {
         "status": Status.success,
         "data": all_schedule,
+    }
+
+
+@schedule_router.post("/filtering", response_model=StatusResponse[list[ScheduleTravelResponse]])
+async def search_schedule(options: FilteringOptionsRequest, limit: int, schedule_case: ScheduleDependency,
+                          user_auth: AuthUserCodeAndRoleCredentials):
+    code, role = user_auth
+
+    results = await schedule_case.search(code, role, options, limit)
+
+    return {
+        "status": Status.success,
+        "data": results,
+    }
+
+
+@schedule_router.get("/search", response_model=StatusResponse[list[ScheduleTravelResponse]])
+async def search_schedule_options(
+        schedule_case: ScheduleDependency,
+        user_auth: AuthUserCodeAndRoleCredentials,
+        terminate: bool = False,
+        cancel: bool = False,
+        starting: datetime.datetime | None = None,
+        terminated: datetime.datetime | None = None,
+        min_price: float = 1,
+        max_price: float | None = None,
+        limit: int = 10,
+):
+    code, role = user_auth
+    options = FilteringOptionsRequest(
+        terminate=terminate,
+        cancel=cancel,
+        starting=starting,
+        terminated=terminated,
+        min_price=min_price,
+        max_price=max_price
+    )
+
+    results = await schedule_case.search(
+        code,
+        role,
+        options,
+        limit
+    )
+
+    return {
+        "status": Status.success,
+        "data": results,
     }
 
 
