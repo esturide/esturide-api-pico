@@ -1,9 +1,9 @@
 import functools
 
-from app import ResponseException
+from app.core.exception import ResponseException
 from app.domain.service.user import get_user_service
 from app.shared.scheme import StatusMessage, StatusSuccess, StatusFailure
-from app.shared.scheme.user import UserRequest
+from app.shared.scheme.user import UserRequest, ProfileUpdateRequest
 
 
 class UserUseCase:
@@ -15,11 +15,17 @@ class UserUseCase:
 
         return StatusSuccess() if status else StatusFailure()
 
+    async def update(self, code: int, req: ProfileUpdateRequest, auth_user: int) -> StatusMessage:
+        if not code == auth_user:
+            raise ResponseException("Invalid code.")
+
+        return StatusFailure()
+
     async def delete(self, code: int, auth_user: int) -> StatusMessage:
         if not code == auth_user:
             raise ResponseException("Invalid code.")
 
-        return StatusSuccess()
+        return StatusFailure()
 
 
 @functools.lru_cache
