@@ -1,5 +1,4 @@
 import datetime
-import typing
 
 from fastapi import APIRouter
 

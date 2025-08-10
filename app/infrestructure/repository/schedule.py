@@ -8,8 +8,9 @@ from app.shared.utils import async_task
 class ScheduleRepository:
     @staticmethod
     async def filtering(terminate=False, cancel=False, starting=None, terminated=None,
-                        price_range: tuple[float, float | None] = (1, None), order_date: bool = False, limit: int = 10) -> \
-    list[ScheduleTravel]:
+                        price_range: tuple[float, float | None] = (1, None), order_date: bool = False,
+                        limit: int = 10) -> \
+            list[ScheduleTravel]:
         def filter_schedule():
             min_price, max_price = price_range
 

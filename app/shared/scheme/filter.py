@@ -1,7 +1,7 @@
 import datetime
 import typing
 
-from pydantic import BaseModel, Field, validator, field_validator, model_validator
+from pydantic import BaseModel, Field, model_validator
 
 from app.shared.scheme.location import GeoLocationModel
 
@@ -30,6 +30,5 @@ class FilteringOptionsRequest(BaseModel):
         if self.starting is not None and self.terminated is not None:
             if self.starting > self.terminated:
                 raise ValueError('Valid dates, you cannot see a trip that starts after you have finished.')
-
 
         return self

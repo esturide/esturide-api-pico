@@ -4,7 +4,6 @@ from app.shared.dependencies import UserDependency, AuthUserCodeCredentials
 from app.shared.scheme import StatusMessage
 from app.shared.scheme.user import UserRequest, ProfileUpdateRequest, UserResponse
 
-
 user_router = APIRouter(
     prefix="/user",
     tags=["User router"]
