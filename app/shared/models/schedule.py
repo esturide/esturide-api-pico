@@ -1,6 +1,8 @@
-from fireo.fields import TextField, IDField, DateTime, NumberField, ReferenceField, GeoPoint, ListField, BooleanField
+from fireo.fields import TextField, IDField, DateTime, NumberField, ReferenceField, GeoPoint, ListField, BooleanField, \
+    NestedModel
 from fireo.models import Model
 
+from app.shared.models.tracking import Tracking
 from app.shared.models.user import User
 
 
@@ -26,7 +28,7 @@ class ScheduleTravel(Model):
     price = NumberField(required=True)
     seats = ListField(TextField(), required=True)
 
-    tracking = ListField(GeoPoint(), required=False)
+    tracking = ListField(NestedModel(Tracking), required=False)
 
     @property
     def is_started(self):
