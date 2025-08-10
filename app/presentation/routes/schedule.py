@@ -33,7 +33,7 @@ async def get_all_schedule(limit: int, schedule_case: ScheduleDependency, is_aut
 
 
 @schedule_router.post("/filtering", response_model=StatusResponse[list[ScheduleTravelResponse]])
-async def search_schedule(options: FilteringOptionsRequest, limit: int, schedule_case: ScheduleDependency,
+async def filtering_schedule(options: FilteringOptionsRequest, limit: int, schedule_case: ScheduleDependency,
                           user_auth: AuthUserCodeAndRoleCredentials):
     code, role = user_auth
 
@@ -46,7 +46,7 @@ async def search_schedule(options: FilteringOptionsRequest, limit: int, schedule
 
 
 @schedule_router.get("/search", response_model=StatusResponse[list[ScheduleTravelResponse]])
-async def search_schedule_options(
+async def search_schedule(
         schedule_case: ScheduleDependency,
         user_auth: AuthUserCodeAndRoleCredentials,
         terminate: bool = False,
