@@ -19,9 +19,9 @@ class StatusMessage(BaseModel):
 
 class StatusSuccess(StatusMessage):
     status: Status = Status.success
-    message: str = "Success"
+    message: str = "Success."
 
 
 class StatusFailure(StatusMessage):
     status: Status = Status.failure
-    message: str = "Failure"
+    message: str = "Failure."

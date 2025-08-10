@@ -26,10 +26,35 @@ class User(Model):
     phone_number = TextField()
     address = TextField()
 
-    role = TextField(default=RoleUser.not_verified.value)
+    role = TextField(default=RoleUser.not_verified.value, choices=[role.value for role in RoleUser])
 
     def same_password(self, password) -> bool:
         return check_same_password(
             password,
             self.hashed_password
         )
+
+    @property
+    def is_verified(self):
+        return RoleUser(self.role) != RoleUser.not_verified
+
+    @property
+    def is_valid_driver(self) -> bool:
+        if RoleUser(self.role) in [RoleUser.driver, RoleUser.staff, RoleUser.admin]:
+            return True
+
+        return False
+
+    @property
+    def is_valid_passenger(self):
+        role = RoleUser(self.role)
+
+        return role != RoleUser.not_verified or role == RoleUser.passenger
+
+    @property
+    def is_valid_admin(self):
+        return RoleUser(self.role) == RoleUser.admin
+
+    @property
+    def is_valid_staff(self):
+        return RoleUser(self.role) == RoleUser.staff

@@ -4,7 +4,7 @@ from passlib.context import CryptContext
 from app.shared.dependencies import OAuth2Form, AuthDependency, OAuth2Scheme
 from app.shared.scheme import StatusMessage, StatusResponse
 from app.shared.scheme.auth import AccessCredentialForm, AccessLogin, AccessCredential
-from app.shared.types.enum import Status
+from app.shared.types.enum import Status, RoleUser
 
 auth_route = APIRouter(
     prefix="/auth",
@@ -54,6 +54,28 @@ async def check_token(token: OAuth2Scheme, auth: AuthDependency):
 @auth_route.post("/refresh", response_model=StatusResponse[AccessCredential])
 async def refresh_token(token: OAuth2Scheme, auth: AuthDependency):
     token = await auth.refresh(token)
+
+    return {
+        "status": Status.success,
+        "data": AccessCredential(
+            token=token,
+        )
+    }
+
+
+@auth_route.get('/role', response_model=StatusResponse[RoleUser])
+async def refresh_role(token: OAuth2Scheme, auth: AuthDependency):
+    role = await auth.get_session_role(token)
+
+    return {
+        "status": Status.success,
+        "data": role
+    }
+
+
+@auth_route.post("/role", response_model=StatusResponse[AccessCredential])
+async def refresh_role(token: OAuth2Scheme, role: RoleUser, auth: AuthDependency):
+    token = await auth.set_session_role(token, role)
 
     return {
         "status": Status.success,

@@ -44,9 +44,9 @@ def check_if_expired(token: Token, secret_key: str, algorithm: str) -> bool:
 
 
 @contextlib.contextmanager
-def secure_decode(token: Token):
+def secure_decode(token: Token, secret_key: str, algorithm: str):
     try:
-        yield decode(token)
+        yield decode(token, secret_key, algorithm)
     except jwt.ExpiredSignatureError:
         raise HTTPException(
             status_code=401,

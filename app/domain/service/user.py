@@ -8,6 +8,9 @@ from app.shared.scheme.user import UserRequest
 
 
 class UserService:
+    async def get(self, code: int):
+        return await UserRepository.get_user_by_code(code)
+
     async def create(self, req: UserRequest):
         salt, hashed_password = salty_password(req.password.get_secret_value())
         birth_date = datetime.combine(req.birth_date, datetime.min.time())

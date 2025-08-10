@@ -2,57 +2,62 @@ from typing import Annotated
 
 from fastapi import Depends, HTTPException
 
-from app.core.oauth2 import oauth2_scheme, secure_decode
-from app.infrestructure.repository.user import UserRepository
+from app.core import get_settings
+from app.core.oauth2 import oauth2_scheme, secure_decode, decode
 from app.shared.models.user import User
 from app.shared.types import Token
+from app.shared.types.enum import RoleUser
 
 
-async def user_credentials(token: Annotated[Token, Depends(oauth2_scheme)]) -> User | None:
+async def user_credentials(token: Annotated[Token, Depends(oauth2_scheme)]) -> int | None:
+    settings = get_settings()
+
     if token is None:
         return None
 
-    with secure_decode(token) as decoded:
+    with secure_decode(token, settings.secret_key, settings.algorithm) as decoded:
         if code := decoded.get("code"):
-            return await UserRepository.get_user_by_code(code)
+            return code
         else:
             raise None
 
 
-async def user_is_authenticated(token: Annotated[Token, Depends(oauth2_scheme)]) -> int | None:
-    user = await user_credentials(token)
+async def get_user_code_from_credentials(token: Annotated[Token, Depends(oauth2_scheme)]) -> int:
+    settings = get_settings()
 
-    if user is not None:
-        return user.code
+    if token is None:
+        raise HTTPException(status_code=401, detail="Not authenticated.")
 
-    raise HTTPException(status_code=401, detail="Not authenticated.")
-
-
-async def get_user_is_authenticated(token: Annotated[Token, Depends(oauth2_scheme)]) -> User:
-    user = await user_credentials(token)
-
-    if user is not None:
-        return user
-
-    raise HTTPException(status_code=401, detail="Not authenticated.")
+    with secure_decode(token, settings.secret_key, settings.algorithm) as decoded:
+        if code := decoded.get("code"):
+            return code
+        else:
+            raise HTTPException(status_code=401, detail="Not authenticated.")
 
 
-async def validate_admin_role(token: Annotated[Token, Depends(oauth2_scheme)]) -> bool | None:
-    user = await user_credentials(token)
+async def get_user_code_and_role_code_from_credentials(token: Annotated[Token, Depends(oauth2_scheme)]) -> tuple[
+    int, RoleUser]:
+    settings = get_settings()
 
-    if user is not None:
-        return user.is_admin
+    if token is None:
+        raise HTTPException(status_code=401, detail="Not authenticated.")
 
-    raise HTTPException(status_code=401, detail="Not authenticated.")
+    data_decode = decode(token, settings.secret_key, settings.algorithm)
+
+    return data_decode['code'], RoleUser(data_decode['role'])
 
 
-async def validate_permission_role(token: Annotated[Token, Depends(oauth2_scheme)]) -> bool | None:
-    result, user = await user_credentials(token)
+async def is_user_authenticated(token: Annotated[Token, Depends(oauth2_scheme)]) -> bool:
+    settings = get_settings()
 
-    if user is not None:
-        return user.is_admin or user.is_staff
+    if token is None:
+        return False
 
-    raise HTTPException(status_code=401, detail="Not authenticated.")
+    with secure_decode(token, settings.secret_key, settings.algorithm) as decoded:
+        if decoded.get("code") is not None:
+            return True
+
+    return False
 
 
 async def get_user_credentials_header(headers) -> User | None:

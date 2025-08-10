@@ -1,30 +1,29 @@
 import enum
 
 
-class Status(str, enum.Enum):
+class Status(enum.StrEnum):
     success = 'success'
     failure = 'failure'
 
 
-class Gender(str, enum.Enum):
+class Gender(enum.StrEnum):
     male = 'male'
     female = 'female'
     other = 'other'
 
 
-class StatusTravel(str, enum.Enum):
+class StatusTravel(enum.StrEnum):
     start = 'start'
     terminate = 'terminate'
     cancel = 'cancel'
 
 
-class CurrentRuleUser(str, enum.Enum):
-    no_session = 'no-session'
-    driver = 'driver'
+class TypeRole(enum.StrEnum):
     passenger = 'passenger'
+    driver = 'driver'
 
 
-class RoleUser(enum.Enum):
+class RoleUser(enum.StrEnum):
     not_verified = 'not-verified'
     passenger = 'passenger'
     driver = 'driver'
