@@ -1,7 +1,7 @@
 from fastapi.responses import JSONResponse
 
-from app.scheme import StatusMessage
-from app.types.enum import Status
+from app.shared.scheme import StatusMessage
+from app.shared.types.enum import Status
 
 
 async def custom_http_exception_handler(request, exc):
@@ -38,4 +38,11 @@ async def global_exception_handler(request, exc):
     return JSONResponse(
         status_code=500,
         content={"detail": "An unexpected error occurred. Please try again later."}
+    )
+
+
+async def validation_exception_handler(request, exc):
+    return JSONResponse(
+        status_code=422,
+        content={"message": "Validation error", "details": exc.errors()},
     )

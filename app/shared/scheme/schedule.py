@@ -1,67 +1,69 @@
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 
 from pydantic import BaseModel, Field
 
-from app.scheme.location import DataAddressLocation
-from app.types import UUID
+from app.shared.scheme.location import GeoLocationModel
+from app.shared.types import UUID
 
 
-class TrackingRecord(BaseModel):
-    latitude: float = 0
-    longitude: float = 0
-
-
-class DriverUser(BaseModel):
+class CurrentUser(BaseModel):
     code: int
-
-    first_name: str = Field(..., title="firstName", alias="firstName")
+    first_name: str = Field(..., title="First name", alias="firstName")
     maternal_surname: str = Field(..., title="Maternal surname", alias='maternalSurname')
     paternal_surname: str = Field(..., title="Paternal surname", alias='paternalSurname')
-    position: TrackingRecord = Field(TrackingRecord(), title="Current position", alias='position')
+    position: GeoLocationModel = Field(GeoLocationModel(), title="Current position", alias='position')
 
 
-class PassengerUser(BaseModel):
-    code: int
+class DriverUser(CurrentUser):
+    pass
 
-    first_name: str = Field(..., title="firstName", alias="firstName")
-    maternal_surname: str = Field(..., title="Maternal surname", alias='maternalSurname')
-    paternal_surname: str = Field(..., title="Paternal surname", alias='paternalSurname')
-    position: TrackingRecord = Field(TrackingRecord(), title="Current position", alias='position')
+
+class PassengerUser(CurrentUser):
+    pass
 
 
 class ScheduleTravelRequest(BaseModel):
-    start: DataAddressLocation = Field(..., title="Location where the schedule begins", alias='start')
-    end: DataAddressLocation = Field(..., title="Location where the schedule ends", alias='end')
     price: int = Field(5, title="Max passengers", alias='maxPassengers')
     max_passengers: int = Field(4, title="Max passengers", alias='maxPassengers')
     seats: List[str] = Field(['A', 'B', 'C'], title="All seats", alias='seats')
 
+    origin: GeoLocationModel = Field(..., title="Location where the schedule begins", alias='start')
+    destination: GeoLocationModel = Field(..., title="Location where the schedule ends", alias='end')
 
-class TravelScheduleResponse(BaseModel):
+
+class ScheduleTravelResponse(BaseModel):
     uuid: UUID
 
     driver: DriverUser
 
     price: int
-    active: bool = False
+
     terminate: bool = False
     cancel: bool = False
 
-    starting: datetime = Field(..., title="Time starting", alias='starting')
-    finished: datetime = Field(..., title="Time finished", alias='finished')
+    starting: Optional[datetime] = Field(..., title="Time starting", alias='starting')
+    terminated: Optional[datetime] = Field(..., title="Time finished", alias='terminated')
 
     max_passengers: int = Field(4, alias='maxPassengers')
     seats: List[str] = Field(['A', 'B', 'C'], title="All seats", alias='seats')
     passengers: List[PassengerUser] = Field([], title="Passengers", alias='passengers')
 
-    origin: DataAddressLocation
-    destination: DataAddressLocation
+    origin: GeoLocationModel
+    destination: GeoLocationModel
 
 
-class Tracking(BaseModel):
+class ScheduleTravelUpdateRequest(BaseModel):
+    terminate: Optional[bool]
+    cancel: Optional[bool]
+
+    starting: Optional[datetime] = Field(..., title="Time starting", alias='starting')
+    terminated: Optional[datetime] = Field(..., title="Time finished", alias='terminated')
+
+
+class UserTrackingData(BaseModel):
     uuid: UUID
-    record: TrackingRecord
+    record: GeoLocationModel
 
 
 class RideStatusRequest(BaseModel):
@@ -74,7 +76,7 @@ class RideStatusResponse(PassengerUser):
 
 
 class RideRequest(BaseModel):
-    origin: TrackingRecord
+    origin: GeoLocationModel
     uuid: UUID = Field(..., alias='UUID')
 
 

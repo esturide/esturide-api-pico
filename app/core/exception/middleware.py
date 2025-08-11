@@ -2,8 +2,8 @@ from fastapi.exceptions import RequestValidationError
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import JSONResponse
 
-from app.scheme import StatusMessage
-from app.types.enum import Status
+from app.shared.scheme import StatusMessage
+from app.shared.types.enum import Status
 
 
 class ModelResponseMiddleware(BaseHTTPMiddleware):

@@ -1,8 +1,9 @@
 import datetime
 
 from pydantic import BaseModel, Field, field_validator, SecretStr, EmailStr
+from pydantic_extra_types.phone_numbers import PhoneNumber
 
-from app.types.enum import RoleUser
+from app.shared.types.enum import RoleUser
 
 
 class UserRequest(BaseModel):
@@ -13,12 +14,12 @@ class UserRequest(BaseModel):
     paternal_surname: str = Field(..., title="paternalSurname", alias="paternalSurname")
     curp: str = Field(..., title="CURP", alias='curp')
     birth_date: datetime.date = Field(..., title="Birth date", alias="birthDate", description="The user's birth date")
-
+    phone_number: PhoneNumber = Field(..., title="Phone number", alias="phoneNumber")
     email: EmailStr = Field(..., title="Email", alias='email')
     password: SecretStr
 
     @field_validator('birth_date')
-    def check_age(self, birth_date):
+    def check_age(cls, birth_date):
         today = datetime.date.today()
         age = today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
 
