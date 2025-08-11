@@ -5,7 +5,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from geopy import Nominatim
 
 from app.application.usecase.auth import AuthSessionUseCase, get_auth_session_case
-from app.application.usecase.ride import ger_ride_use_case
+from app.application.usecase.ride import get_ride_use_case, RideUseCase
 from app.application.usecase.schedule import ScheduleTravelUseCase, get_schedule_use_case
 from app.application.usecase.user import UserUseCase, get_user_use_case
 from app.core.oauth2 import oauth2_scheme
@@ -26,6 +26,6 @@ NominatimDepend = Annotated[Nominatim, Depends(get_locator_agent)]
 
 UserDependency = Annotated[UserUseCase, Depends(get_user_use_case)]
 ScheduleDependency = Annotated[ScheduleTravelUseCase, Depends(get_schedule_use_case)]
-RideDependency = Annotated[ScheduleTravelUseCase, Depends(ger_ride_use_case)]
+RideDependency = Annotated[RideUseCase, Depends(get_ride_use_case)]
 
 AuthDependency = Annotated[AuthSessionUseCase, Depends(get_auth_session_case)]

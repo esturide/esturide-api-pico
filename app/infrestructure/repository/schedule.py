@@ -1,6 +1,7 @@
 from app.core.exception import InvalidRequestException
 from app.shared.models.schedule import ScheduleTravel
 from app.shared.models.user import User
+from app.shared.types import UUID
 from app.shared.types.enum import RoleUser
 from app.shared.utils import async_task
 
@@ -36,6 +37,13 @@ class ScheduleRepository:
             return list(schedules.fetch(limit))
 
         return await async_task(filter_schedule)
+
+    @staticmethod
+    async def get_from_uuid(uuid: UUID) -> ScheduleTravel:
+        def get_schedule():
+            return ScheduleTravel.collection.get(id=uuid)
+
+        return await async_task(get_schedule)
 
     @staticmethod
     async def get_current(user: User, role: RoleUser = RoleUser.driver) -> ScheduleTravel:

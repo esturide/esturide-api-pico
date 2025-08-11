@@ -33,6 +33,8 @@ class ScheduleTravelRequest(BaseModel):
 
 
 class ScheduleTravelResponse(BaseModel):
+    uuid: UUID
+
     driver: DriverUser
 
     price: int

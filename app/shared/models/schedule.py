@@ -2,8 +2,9 @@ from fireo.fields import TextField, IDField, DateTime, NumberField, ReferenceFie
     NestedModel
 from fireo.models import Model
 
-from app.shared.models.tracking import Tracking
 from app.shared.models.user import User
+from app.shared.models.ride import RideTravel
+from app.shared.models.tracking import Tracking
 
 
 class ScheduleTravel(Model):
@@ -20,7 +21,7 @@ class ScheduleTravel(Model):
     cancel = BooleanField(default=False)
 
     driver = ReferenceField(User, required=True)
-    passengers = ListField(ReferenceField(User), required=False)
+    passengers = ListField(ReferenceField(RideTravel), required=False)
     max_passengers = NumberField(default=3)
 
     origin = GeoPoint(required=True)

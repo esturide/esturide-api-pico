@@ -7,6 +7,7 @@ from app.shared.models.schedule import ScheduleTravel
 from app.shared.models.user import User
 from app.shared.scheme.filter import FilteringOptionsRequest
 from app.shared.scheme.schedule import ScheduleTravelRequest
+from app.shared.types import UUID
 from app.shared.types.enum import RoleUser
 
 
@@ -30,9 +31,10 @@ class ScheduleTravelService:
             seats=req.seats,
         )
 
-        await ScheduleRepository.save(schedule)
+        return await ScheduleRepository.save(schedule)
 
-        return True
+    async def get(self, uuid: UUID) -> ScheduleTravel:
+        return await ScheduleRepository.get_from_uuid(uuid)
 
     async def get_current(self, user: User, role: RoleUser = RoleUser.driver) -> ScheduleTravel:
         return await ScheduleRepository.get_current(user, role)
