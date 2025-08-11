@@ -20,6 +20,7 @@ class RideTravel(Model):
     starting = DateTime(required=False)
     over = BooleanField(default=False)
     cancel = BooleanField(default=False)
+    accept = BooleanField(default=False)
 
     tracking = ListField(NestedModel(Tracking), required=False)
 

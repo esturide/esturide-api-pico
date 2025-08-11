@@ -1,4 +1,5 @@
 from app.core.exception import InvalidRequestException
+from app.shared.models.ride import RideTravel
 from app.shared.models.schedule import ScheduleTravel
 from app.shared.models.user import User
 from app.shared.types import UUID
@@ -8,10 +9,15 @@ from app.shared.utils import async_task
 
 class ScheduleRepository:
     @staticmethod
-    async def filtering(terminate=False, cancel=False, starting=None, terminated=None,
-                        price_range: tuple[float, float | None] = (1, None), order_date: bool = False,
-                        limit: int = 10) -> \
-            list[ScheduleTravel]:
+    async def filtering(
+            terminate=False,
+            cancel=False,
+            starting=None,
+            terminated=None,
+            price_range: tuple[float, float | None] = (1, None),
+            order_date: bool = False,
+            limit: int = 10
+    ) -> list[ScheduleTravel]:
         def filter_schedule():
             min_price, max_price = price_range
 
@@ -46,25 +52,24 @@ class ScheduleRepository:
         return await async_task(get_schedule)
 
     @staticmethod
-    async def get_current(user: User, role: RoleUser = RoleUser.driver) -> ScheduleTravel:
-        def filter_schedule_task_driver(u):
+    async def get_current(user: User | None = None, ride: RideTravel | None = None, *args) -> ScheduleTravel:
+        def filter_schedule_task_driver():
             return list(ScheduleTravel.collection
-                        .filter(driver=u)
+                        .filter(driver=user)
                         .order('-created')
                         .fetch())
 
-        def filter_schedule_task_passenger(u):
+        def filter_schedule_task_passenger():
             return list(ScheduleTravel.collection
-                        .filter('passengers', 'array_contains', u)
-                        .order('-created')
+                        .filter('passengers', 'array_contains', ride)
                         .fetch())
 
         all_schedule = []
 
-        if role == RoleUser.driver:
-            all_schedule = await async_task(filter_schedule_task_driver, user)
-        elif role == RoleUser.passenger:
-            all_schedule = await async_task(filter_schedule_task_passenger, user)
+        if user is not None:
+            all_schedule = await async_task(filter_schedule_task_driver)
+        elif ride is not None:
+            all_schedule = await async_task(filter_schedule_task_passenger)
         else:
             raise InvalidRequestException("You cannot make the request with the current user role.")
 

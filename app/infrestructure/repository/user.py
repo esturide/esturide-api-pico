@@ -10,7 +10,7 @@ class UserRepository:
         raise NotImplementedError()
 
     @staticmethod
-    async def get_user_by_code(code: int) -> User:
+    async def get_user_by_code(code: int) -> User | None:
         def get_user(c) -> User:
             return User.collection.filter("code", "==", c).get()
 

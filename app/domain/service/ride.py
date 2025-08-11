@@ -22,7 +22,15 @@ class RideService:
 
         return ride
 
-    async def get_all_rides(self, passenger: User) -> list[RideTravel]:
+    async def get_current_ride_from_user(self, passenger: User) -> RideTravel | None:
+        all_rides = await self.get_all_rides_from_user(passenger)
+
+        if len(all_rides) != 0 and all([rides.is_finished for rides in all_rides]):
+            return None
+
+        return all_rides[0]
+
+    async def get_all_rides_from_user(self, passenger: User) -> list[RideTravel]:
         return await RideRepository.filter(passenger=passenger)
 
     async def get(self, uuid: UUID) -> RideTravel:

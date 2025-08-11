@@ -47,7 +47,6 @@ class ScheduleTravelResponse(BaseModel):
 
     max_passengers: int = Field(4, alias='maxPassengers')
     seats: List[str] = Field(['A', 'B', 'C'], title="All seats", alias='seats')
-    passengers: List[PassengerUser] = Field([], title="Passengers", alias='passengers')
 
     origin: GeoLocationModel
     destination: GeoLocationModel
@@ -59,49 +58,3 @@ class ScheduleTravelUpdateRequest(BaseModel):
 
     starting: Optional[datetime] = Field(..., title="Time starting", alias='starting')
     terminated: Optional[datetime] = Field(..., title="Time finished", alias='terminated')
-
-
-class UserTrackingData(BaseModel):
-    uuid: UUID
-    record: GeoLocationModel
-
-
-class RideStatusRequest(BaseModel):
-    code: int
-    validate: bool = True
-
-
-class RideStatusResponse(PassengerUser):
-    validate: bool = True
-
-
-class RideRequest(BaseModel):
-    origin: GeoLocationModel
-    uuid: UUID = Field(..., alias='UUID')
-
-
-class AuthTravelRequest(BaseModel):
-    user_id: str
-    trip_id: str
-
-
-class RateRequest(BaseModel):
-    user_id: str
-    schedule_id: str
-    overall: int = Field(..., ge=1, le=5)
-    punctuality: int = Field(..., ge=1, le=5)
-    driving_behavior: int = Field(..., ge=1, le=5)
-
-
-class AutomobileRequest(BaseModel):
-    code: int
-    brand: str
-    year: int
-    model: str
-
-
-class AutomobileResponse(BaseModel):
-    code: int
-    brand: str
-    year: int
-    model: str

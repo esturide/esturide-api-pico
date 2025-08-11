@@ -42,7 +42,7 @@ class ScheduleTravelUseCase:
 
     async def get_current(self, code: int) -> ScheduleTravelResponse:
         user = await self.user_service.get(code)
-        schedule = await self.schedule_service.get_current(user, RoleUser.driver)
+        schedule = await self.schedule_service.get_current(user=user)
 
         return create_schedule_response(schedule)
 
@@ -66,7 +66,7 @@ class ScheduleTravelUseCase:
         if not user.is_valid_driver:
             raise InvalidRequestException("You cannot make the following changes.")
 
-        schedule = await self.schedule_service.get_current(user, role)
+        schedule = await self.schedule_service.get_current(user=user)
 
         schedule.terminate = req.terminate if req.terminate else schedule.terminate
         schedule.cancel = req.cancel if req.cancel else schedule.cancel
