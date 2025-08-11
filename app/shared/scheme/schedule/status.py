@@ -2,10 +2,10 @@ from typing import List
 
 from pydantic import Field
 
-from app.shared.scheme.rides import RideTravelResponse
+from app.shared.scheme.rides.status import RideTravelStatusResponse, RidePassengerResponse
 from app.shared.scheme.schedule import ScheduleTravelResponse
 
 
 class ScheduleTravelStatusResponse(ScheduleTravelResponse):
-    rides: List[RideTravelResponse] = Field([], title="Passengers", alias='passengers')
+    rides: List[RidePassengerResponse] = Field([], title="All current rides", alias='rides')
 

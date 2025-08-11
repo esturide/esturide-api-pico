@@ -2,7 +2,7 @@ from fastapi import APIRouter
 
 from app.shared.dependencies import AuthUserCodeAndRoleCredentials, RideDependency
 from app.shared.scheme import StatusSuccess, StatusResponse
-from app.shared.scheme.rides import RideTravelResponse
+from app.shared.scheme.rides.status import RideTravelStatusResponse
 from app.shared.types import UUID
 from app.shared.types.enum import Status
 
@@ -16,7 +16,7 @@ async def request_ride(schedule: UUID, seat: str, user_auth: AuthUserCodeAndRole
     return await ride.create(code, role, schedule, seat)
 
 
-@rides_router.get('/', response_model=StatusResponse[RideTravelResponse])
+@rides_router.get('/', response_model=StatusResponse[RideTravelStatusResponse])
 async def get_current_ride(user_auth: AuthUserCodeAndRoleCredentials, ride: RideDependency):
     code, role = user_auth
     data = await ride.current(code, role)

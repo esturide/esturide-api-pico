@@ -7,7 +7,7 @@ from app.domain.service.schedule import get_schedule_service
 from app.domain.service.user import get_user_service
 from app.shared.scheme import StatusFailure, StatusSuccess
 from app.shared.scheme.respose.schedule import create_schedule_response
-from app.shared.scheme.rides import RideTravelResponse
+from app.shared.scheme.rides.status import RideTravelStatusResponse
 from app.shared.types import UUID
 from app.shared.types.enum import RoleUser
 
@@ -19,7 +19,7 @@ class RideUseCase:
         self.user_service = get_user_service()
 
     @contextlib.asynccontextmanager
-    async def delete_ride(self, code: int, schedule_id: UUID, remove_seat=False, remove_passenger=False):
+    async def delete_ride(self, code: int, schedule_id: UUID, remove_seat=False, remove_passenger=True):
         schedule = await self.schedule_service.get(schedule_id)
 
         if schedule is None:
@@ -44,7 +44,7 @@ class RideUseCase:
         if remove_seat:
             schedule.seats.append(ride.seat)
 
-        if remove_passenger and schedule.passengers is not None:
+        if remove_passenger and schedule.passengers is not None and ride in schedule.passengers:
             schedule.passengers.remove(ride)
 
         yield ride
@@ -87,7 +87,7 @@ class RideUseCase:
             message="Ride created successfully."
         )
 
-    async def current(self, code: int, role: RoleUser) -> RideTravelResponse:
+    async def current(self, code: int, role: RoleUser) -> RideTravelStatusResponse:
         user = await self.user_service.get(code)
 
         if user is None:
@@ -104,7 +104,7 @@ class RideUseCase:
         if ride is None:
             raise NotFoundException("Ride not found.")
 
-        return RideTravelResponse(
+        return RideTravelStatusResponse(
             uuid=ride.id,
             seat=ride.seat,
             cancel=ride.cancel,

@@ -8,9 +8,10 @@ from app.shared.models.schedule import ScheduleTravel
 from app.shared.scheme import StatusSuccess
 from app.shared.scheme.filter import FilteringOptionsRequest
 from app.shared.scheme.location import GeoLocationModel
-from app.shared.scheme.respose.schedule import create_schedule_response
+from app.shared.scheme.respose.schedule import create_schedule_response, create_schedule_status_response
 from app.shared.scheme.schedule import ScheduleTravelRequest, ScheduleTravelResponse, DriverUser, PassengerUser, \
     ScheduleTravelUpdateRequest
+from app.shared.scheme.schedule.status import ScheduleTravelStatusResponse
 from app.shared.types.enum import RoleUser, Status
 
 
@@ -40,11 +41,11 @@ class ScheduleTravelUseCase:
             message="New schedule traveled successfully."
         )
 
-    async def get_current(self, code: int) -> ScheduleTravelResponse:
+    async def get_current(self, code: int) -> ScheduleTravelStatusResponse:
         user = await self.user_service.get(code)
         schedule = await self.schedule_service.get_current(user=user)
 
-        return create_schedule_response(schedule)
+        return create_schedule_status_response(schedule)
 
     async def get_all(self, limit=10) -> list[ScheduleTravelResponse]:
         async def iter_all_schedules():

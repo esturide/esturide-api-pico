@@ -8,6 +8,7 @@ from app.shared.dependencies import ScheduleDependency, AuthUserCodeCredentials,
 from app.shared.scheme import StatusMessage, StatusResponse
 from app.shared.scheme.filter import FilteringOptionsRequest
 from app.shared.scheme.schedule import ScheduleTravelRequest, ScheduleTravelResponse, ScheduleTravelUpdateRequest
+from app.shared.scheme.schedule.status import ScheduleTravelStatusResponse
 from app.shared.types.enum import Status
 
 schedule_router = APIRouter(prefix="/schedule", tags=["Schedule travels"])
@@ -80,7 +81,7 @@ async def search_schedule(
     }
 
 
-@schedule_router.get("/current", response_model=StatusResponse[ScheduleTravelResponse])
+@schedule_router.get("/current", response_model=StatusResponse[ScheduleTravelStatusResponse])
 async def get_current_schedule(schedule_case: ScheduleDependency, auth_user: AuthUserCodeCredentials):
     schedule = await schedule_case.get_current(auth_user)
 

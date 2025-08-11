@@ -1,5 +1,6 @@
 from app.shared.models.schedule import ScheduleTravel
 from app.shared.scheme.location import GeoLocationModel
+from app.shared.scheme.rides.status import RidePassengerResponse
 from app.shared.scheme.schedule import ScheduleTravelResponse, DriverUser, PassengerUser
 from app.shared.scheme.schedule.status import ScheduleTravelStatusResponse
 
@@ -18,21 +19,6 @@ def create_schedule_response(schedule: ScheduleTravel) -> ScheduleTravelResponse
             longitude=0,
         )
     )
-
-    """
-    all_passengers_response = [
-        PassengerUser(
-            code=ride.passenger.code,
-            firstName=ride.passenger.first_name,
-            maternalSurname=ride.passenger.maternal_surname,
-            paternalSurname=ride.passenger.paternal_surname,
-            position=GeoLocationModel(
-                latitude=0,
-                longitude=0,
-            )
-        ) for ride in all_passengers
-    ] if all_passengers is not None else []
-    """
 
     origin = GeoLocationModel(
         longitude=schedule.origin.longitude,
@@ -75,18 +61,33 @@ def create_schedule_status_response(schedule: ScheduleTravel) -> ScheduleTravelS
         )
     )
 
-    all_passengers_response = [
-        PassengerUser(
-            code=ride.passenger.code,
-            firstName=ride.passenger.first_name,
-            maternalSurname=ride.passenger.maternal_surname,
-            paternalSurname=ride.passenger.paternal_surname,
-            position=GeoLocationModel(
-                latitude=0,
-                longitude=0,
+    all_rides = []
+
+    if all_passengers is not None:
+        for ride in all_passengers:
+            passenger = ride.passenger
+
+            passenger_user_model = PassengerUser(
+                code=passenger.code,
+                firstName=passenger.first_name,
+                maternalSurname=passenger.maternal_surname,
+                paternalSurname=passenger.paternal_surname,
+                position=GeoLocationModel(
+                    latitude=0,
+                    longitude=0,
+                )
             )
-        ) for ride in all_passengers
-    ] if all_passengers is not None else []
+
+            ride_response_model = RidePassengerResponse(
+                uuid=ride.id,
+                seat=ride.seat,
+                cancel=ride.cancel,
+                over=ride.over,
+                accept=ride.accept,
+                passenger=passenger_user_model,
+            )
+
+            all_rides.append(ride_response_model)
 
     origin = GeoLocationModel(
         longitude=schedule.origin.longitude,
@@ -98,7 +99,7 @@ def create_schedule_status_response(schedule: ScheduleTravel) -> ScheduleTravelS
         latitude=schedule.destination.latitude,
     )
 
-    return ScheduleTravelResponse(
+    return ScheduleTravelStatusResponse(
         uuid=schedule.id,
         driver=driver_response,
         price=schedule.price,
@@ -110,4 +111,5 @@ def create_schedule_status_response(schedule: ScheduleTravel) -> ScheduleTravelS
         seats=schedule.seats,
         origin=origin,
         destination=destination,
+        rides=all_rides,
     )
