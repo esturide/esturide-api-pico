@@ -93,8 +93,11 @@ class RideUseCase:
         if user is None:
             raise NotFoundException("User not found.")
 
-        all_ride = await self.ride_service.get_all_rides_from_user(user)
-        ride = all_ride[0]
+        all_rides = await self.ride_service.get_all_rides_from_user(user)
+        if len(all_rides) == 0 or all([ride.is_finished for ride in all_rides]):
+            raise NotFoundException("You don't have any pending ride.")
+
+        ride = all_rides[0]
 
         schedule = await self.schedule_service.get_from_ride(ride)
 
