@@ -1,0 +1,25 @@
+services:
+  api:
+    build: .
+    container_name: esturide-api-pico
+    hostname: esturide-api
+    image: esturide-api:latest
+    restart: always
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+      - .:/docs
+    depends_on:
+      - db
+      - cache
+    networks:
+      - net
+
+volumes:
+  db_data:
+  docs:
+
+networks:
+  net:
+    driver: bridge
