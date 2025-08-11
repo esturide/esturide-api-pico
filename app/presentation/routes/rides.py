@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
 from app.shared.dependencies import AuthUserCodeAndRoleCredentials, RideDependency
-from app.shared.scheme import StatusSuccess, StatusResponse
+from app.shared.scheme import StatusResponse
 from app.shared.scheme.rides.status import RideTravelStatusResponse
 from app.shared.types import UUID
 from app.shared.types.enum import Status

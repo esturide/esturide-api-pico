@@ -2,9 +2,9 @@ from fireo.fields import TextField, IDField, DateTime, NumberField, ReferenceFie
     NestedModel
 from fireo.models import Model
 
-from app.shared.models.user import User
 from app.shared.models.ride import RideTravel
 from app.shared.models.tracking import Tracking
+from app.shared.models.user import User
 
 
 class ScheduleTravel(Model):

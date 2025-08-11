@@ -45,7 +45,6 @@ def create_schedule_response(schedule: ScheduleTravel) -> ScheduleTravelResponse
     )
 
 
-
 def create_schedule_status_response(schedule: ScheduleTravel) -> ScheduleTravelStatusResponse:
     driver = schedule.driver
     all_passengers = schedule.passengers

@@ -35,7 +35,7 @@ async def get_all_schedule(limit: int, schedule_case: ScheduleDependency, is_aut
 
 @schedule_router.post("/filtering", response_model=StatusResponse[list[ScheduleTravelResponse]])
 async def filtering_schedule(options: FilteringOptionsRequest, limit: int, schedule_case: ScheduleDependency,
-                          user_auth: AuthUserCodeAndRoleCredentials):
+                             user_auth: AuthUserCodeAndRoleCredentials):
     code, role = user_auth
 
     results = await schedule_case.search(code, role, options, limit)

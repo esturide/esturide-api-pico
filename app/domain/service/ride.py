@@ -1,4 +1,3 @@
-import contextlib
 import functools
 
 from app.core.exception import NotFoundException
@@ -34,7 +33,7 @@ class RideService:
         return await RideRepository.filter(passenger=passenger)
 
     async def get(self, uuid: UUID) -> RideTravel:
-        ride =  await RideRepository.get(uuid)
+        ride = await RideRepository.get(uuid)
 
         if ride is None:
             raise NotFoundException("Ride not found.")
@@ -43,7 +42,6 @@ class RideService:
 
     async def save(self, ride: RideTravel):
         await RideRepository.save(ride)
-
 
 
 @functools.lru_cache

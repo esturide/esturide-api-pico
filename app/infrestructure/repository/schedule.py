@@ -3,7 +3,6 @@ from app.shared.models.ride import RideTravel
 from app.shared.models.schedule import ScheduleTravel
 from app.shared.models.user import User
 from app.shared.types import UUID
-from app.shared.types.enum import RoleUser
 from app.shared.utils import async_task
 
 

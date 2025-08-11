@@ -4,13 +4,10 @@ from app.core.exception import ValidationException, InvalidRequestException
 from app.domain.service.auth import get_auth_service
 from app.domain.service.schedule import get_schedule_service
 from app.domain.service.user import get_user_service
-from app.shared.models.schedule import ScheduleTravel
 from app.shared.scheme import StatusSuccess
 from app.shared.scheme.filter import FilteringOptionsRequest
-from app.shared.scheme.location import GeoLocationModel
 from app.shared.scheme.respose.schedule import create_schedule_response, create_schedule_status_response
-from app.shared.scheme.schedule import ScheduleTravelRequest, ScheduleTravelResponse, DriverUser, PassengerUser, \
-    ScheduleTravelUpdateRequest
+from app.shared.scheme.schedule import ScheduleTravelRequest, ScheduleTravelResponse, ScheduleTravelUpdateRequest
 from app.shared.scheme.schedule.status import ScheduleTravelStatusResponse
 from app.shared.types.enum import RoleUser, Status
 
