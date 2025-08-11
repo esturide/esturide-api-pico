@@ -21,7 +21,6 @@ iniconfig~=2.0.0
 mypy~=1.13.0
 mypy-extensions~=1.0.0
 fireo~=2.2.2
-google-cloud-firestore~=2.21.0
 packaging~=24.2
 passlib~=1.7.4
 phonenumbers~=8.13.55
