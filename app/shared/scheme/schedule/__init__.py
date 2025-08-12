@@ -56,5 +56,5 @@ class ScheduleTravelUpdateRequest(BaseModel):
     terminate: Optional[bool]
     cancel: Optional[bool]
 
-    starting: Optional[datetime] = Field(..., title="Time starting", alias='starting')
-    terminated: Optional[datetime] = Field(..., title="Time finished", alias='terminated')
+    starting: Optional[datetime] = Field(None, title="Time starting", alias='starting')
+    terminated: Optional[datetime] = Field(None, title="Time finished", alias='terminated')

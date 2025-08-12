@@ -32,6 +32,10 @@ class ScheduleTravel(Model):
     tracking = ListField(NestedModel(Tracking), required=False)
 
     @property
+    def is_enabled(self):
+        return self.starting is not None and self.terminated is not None
+
+    @property
     def is_started(self):
         return self.starting is not None
 
@@ -41,4 +45,16 @@ class ScheduleTravel(Model):
 
     @property
     def is_finished(self):
-        return self.terminated or self.cancel
+        return self.terminated is not None
+
+    @property
+    def is_cancelled(self):
+        return self.starting is not None and any([self.terminated, self.cancel])
+
+    @property
+    def is_active(self):
+        return self.starting is not None and self.terminated is None and self.is_current
+
+    @property
+    def have_passengers(self):
+        return self.passengers is not None

@@ -1,3 +1,4 @@
+import contextlib
 import functools
 
 from app.core.exception import NotFoundException
@@ -42,6 +43,12 @@ class RideService:
 
     async def save(self, ride: RideTravel):
         await RideRepository.save(ride)
+
+    @contextlib.asynccontextmanager
+    async def update(self, ride: RideTravel):
+        yield ride
+
+        await self.save(ride)
 
 
 @functools.lru_cache

@@ -1,4 +1,5 @@
 import functools
+from datetime import datetime
 
 from app.core.exception import ValidationException, InvalidRequestException
 from app.domain.service.auth import get_auth_service
@@ -66,10 +67,15 @@ class ScheduleTravelUseCase:
 
         schedule = await self.schedule_service.get_current(user=user)
 
+        if schedule.is_finished:
+            raise InvalidRequestException("You cannot make the following changes.")
+
         schedule.terminate = req.terminate if req.terminate else schedule.terminate
         schedule.cancel = req.cancel if req.cancel else schedule.cancel
         schedule.starting = req.starting if schedule.starting is None else schedule.starting
-        schedule.terminated = req.terminated if schedule.terminated is None else schedule.terminated
+
+        if schedule.terminate or schedule.cancel:
+            schedule.terminated = datetime.now()
 
         status = await self.schedule_service.save(schedule)
 
