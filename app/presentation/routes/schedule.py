@@ -8,6 +8,7 @@ from app.shared.dependencies import ScheduleDependency, AuthUserCodeCredentials,
 from app.shared.scheme import StatusMessage, StatusResponse
 from app.shared.scheme.filter import FilteringOptionsRequest
 from app.shared.scheme.schedule import ScheduleTravelRequest, ScheduleTravelResponse, ScheduleTravelUpdateRequest
+from app.shared.scheme.schedule.status import ScheduleTravelStatusResponse
 from app.shared.types.enum import Status
 
 schedule_router = APIRouter(prefix="/schedule", tags=["Schedule travels"])
@@ -34,7 +35,7 @@ async def get_all_schedule(limit: int, schedule_case: ScheduleDependency, is_aut
 
 @schedule_router.post("/filtering", response_model=StatusResponse[list[ScheduleTravelResponse]])
 async def filtering_schedule(options: FilteringOptionsRequest, limit: int, schedule_case: ScheduleDependency,
-                          user_auth: AuthUserCodeAndRoleCredentials):
+                             user_auth: AuthUserCodeAndRoleCredentials):
     code, role = user_auth
 
     results = await schedule_case.search(code, role, options, limit)
@@ -80,7 +81,7 @@ async def search_schedule(
     }
 
 
-@schedule_router.get("/current", response_model=StatusResponse[ScheduleTravelResponse])
+@schedule_router.get("/current", response_model=StatusResponse[ScheduleTravelStatusResponse])
 async def get_current_schedule(schedule_case: ScheduleDependency, auth_user: AuthUserCodeCredentials):
     schedule = await schedule_case.get_current(auth_user)
 
@@ -90,9 +91,9 @@ async def get_current_schedule(schedule_case: ScheduleDependency, auth_user: Aut
     }
 
 
-@schedule_router.put("/")
+@schedule_router.put("/update")
 async def update_current_schedule(req: ScheduleTravelUpdateRequest, schedule_case: ScheduleDependency,
-                                  user_auth: AuthUserCodeAndRoleCredentials):
+                                  user_auth: AuthUserCodeAndRoleCredentials) -> StatusMessage:
     code, role = user_auth
 
     return await schedule_case.update(code, role, req)
