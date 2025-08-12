@@ -4,7 +4,7 @@ from app.core.exception import ValidationException, InvalidRequestException
 from app.domain.service.auth import get_auth_service
 from app.domain.service.schedule import get_schedule_service
 from app.domain.service.user import get_user_service
-from app.shared.scheme import StatusSuccess
+from app.shared.scheme import StatusSuccess, StatusFailure
 from app.shared.scheme.filter import FilteringOptionsRequest
 from app.shared.scheme.respose.schedule import create_schedule_response, create_schedule_status_response
 from app.shared.scheme.schedule import ScheduleTravelRequest, ScheduleTravelResponse, ScheduleTravelUpdateRequest
@@ -74,15 +74,13 @@ class ScheduleTravelUseCase:
         status = await self.schedule_service.save(schedule)
 
         if status:
-            return {
-                "status": Status.success,
-                "message": "Schedule is updated.",
-            }
+            return StatusSuccess(
+                message="Updated schedule successfully."
+            )
 
-        return {
-            "status": Status.failure,
-            "message": "Cannot updated schedule.",
-        }
+        return StatusFailure(
+            message="Cannot updated schedule."
+        )
 
 
 @functools.lru_cache

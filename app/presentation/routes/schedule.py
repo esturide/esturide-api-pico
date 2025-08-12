@@ -91,9 +91,9 @@ async def get_current_schedule(schedule_case: ScheduleDependency, auth_user: Aut
     }
 
 
-@schedule_router.put("/")
+@schedule_router.put("/update")
 async def update_current_schedule(req: ScheduleTravelUpdateRequest, schedule_case: ScheduleDependency,
-                                  user_auth: AuthUserCodeAndRoleCredentials):
+                                  user_auth: AuthUserCodeAndRoleCredentials) -> StatusMessage:
     code, role = user_auth
 
     return await schedule_case.update(code, role, req)
