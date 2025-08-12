@@ -43,6 +43,17 @@ def check_if_expired(token: Token, secret_key: str, algorithm: str) -> bool:
         return True
 
 
+def decode_no_exception(token: Token, secret_key: str, algorithm: str) -> dict | None:
+    try:
+        return decode(token, secret_key, algorithm)
+    except jwt.ExpiredSignatureError:
+        return None
+    except jwt.InvalidSignatureError:
+        return None
+    except jwt.DecodeError:
+        return None
+
+
 @contextlib.contextmanager
 def secure_decode(token: Token, secret_key: str, algorithm: str):
     try:

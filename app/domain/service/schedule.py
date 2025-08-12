@@ -10,11 +10,10 @@ from app.shared.models.user import User
 from app.shared.scheme.filter import FilteringOptionsRequest
 from app.shared.scheme.schedule import ScheduleTravelRequest
 from app.shared.types import UUID
-from app.shared.types.enum import RoleUser
 
 
 class ScheduleTravelService:
-    async def create(self, req: ScheduleTravelRequest, user: User) -> bool:
+    async def create(self, req: ScheduleTravelRequest, user: User) -> ScheduleTravel | None:
         origin = GeoPoint(
             latitude=req.origin.latitude,
             longitude=req.origin.longitude,
@@ -34,7 +33,12 @@ class ScheduleTravelService:
             passengers=[]
         )
 
-        return await ScheduleRepository.save(schedule)
+        status = await ScheduleRepository.save(schedule)
+
+        if status:
+            return schedule
+
+        return None
 
     async def get(self, uuid: UUID) -> ScheduleTravel:
         return await ScheduleRepository.get_from_uuid(uuid)
