@@ -22,14 +22,17 @@ async def schedule_new_travel(schedule: ScheduleTravelRequest, schedule_case: Sc
 
 @schedule_router.get("/", response_model=StatusResponse[list[ScheduleTravelResponse]])
 async def get_all_schedule(limit: int, schedule_case: ScheduleDependency, is_auth: UserIsAuthenticated):
-    if not is_auth:
-        raise UnauthorizedAccessException()
+    if is_auth:
+        all_schedule = await schedule_case.get_all(limit)
 
-    all_schedule = await schedule_case.get_all(limit)
+        return {
+            "status": Status.success,
+            "data": all_schedule,
+        }
 
     return {
-        "status": Status.success,
-        "data": all_schedule,
+        "status": Status.failure,
+        "data": [],
     }
 
 

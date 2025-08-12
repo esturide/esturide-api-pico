@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import Depends, HTTPException
 
 from app.core import get_settings
-from app.core.oauth2 import oauth2_scheme, secure_decode, decode
+from app.core.oauth2 import oauth2_scheme, secure_decode, decode, decode_no_exception
 from app.shared.models.user import User
 from app.shared.types import Token
 from app.shared.types.enum import RoleUser
@@ -53,9 +53,8 @@ async def is_user_authenticated(token: Annotated[Token, Depends(oauth2_scheme)])
     if token is None:
         return False
 
-    with secure_decode(token, settings.secret_key, settings.algorithm) as decoded:
-        if decoded.get("code") is not None:
-            return True
+    if data_decode := decode_no_exception(token, settings.secret_key, settings.algorithm):
+        return data_decode.get('code') is not None
 
     return False
 
