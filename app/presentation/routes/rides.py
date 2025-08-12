@@ -4,7 +4,6 @@ from app.shared.dependencies import AuthUserCodeAndRoleCredentials, RideDependen
 from app.shared.scheme import StatusResponse, StatusMessage
 from app.shared.scheme.rides import RideTravelUpdateRequest, RideTravelRequest
 from app.shared.scheme.rides.status import RideTravelStatusResponse
-from app.shared.types import UUID
 from app.shared.types.enum import Status
 
 rides_router = APIRouter(prefix="/rides", tags=["Rides"])

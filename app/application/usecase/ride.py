@@ -4,7 +4,7 @@ import functools
 
 from fastapi import BackgroundTasks
 
-from app.core.exception import NotFoundException, InvalidRequestException
+from app.core.exception import NotFoundException, InvalidRequestException, ResourceNotFoundException
 from app.domain.service.ride import get_ride_service, RideService
 from app.domain.service.schedule import get_schedule_service
 from app.domain.service.user import get_user_service
@@ -110,7 +110,8 @@ class RideUseCase:
         passenger = await self.user_service.get(code)
         schedule, ride = await self.get_current_from_user(passenger)
 
-
+        if schedule.is_finished:
+            raise ResourceNotFoundException("The scheduled trip has been cancelled.")
 
         return RideTravelStatusResponse(
             uuid=ride.id,
