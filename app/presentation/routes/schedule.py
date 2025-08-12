@@ -1,6 +1,6 @@
 import datetime
 
-from fastapi import APIRouter
+from fastapi import APIRouter, BackgroundTasks
 
 from app.core.exception import UnauthorizedAccessException
 from app.shared.dependencies import ScheduleDependency, AuthUserCodeCredentials, UserIsAuthenticated, \
@@ -16,8 +16,8 @@ schedule_router = APIRouter(prefix="/schedule", tags=["Schedule travels"])
 
 @schedule_router.post("/", response_model=StatusMessage)
 async def schedule_new_travel(schedule: ScheduleTravelRequest, schedule_case: ScheduleDependency,
-                              auth_user: AuthUserCodeCredentials):
-    return await schedule_case.create(schedule, auth_user)
+                              code: AuthUserCodeCredentials, background_tasks: BackgroundTasks):
+    return await schedule_case.create(schedule, code, background_tasks)
 
 
 @schedule_router.get("/", response_model=StatusResponse[list[ScheduleTravelResponse]])
@@ -82,8 +82,8 @@ async def search_schedule(
 
 
 @schedule_router.get("/current", response_model=StatusResponse[ScheduleTravelStatusResponse])
-async def get_current_schedule(schedule_case: ScheduleDependency, auth_user: AuthUserCodeCredentials):
-    schedule = await schedule_case.get_current(auth_user)
+async def get_current_schedule(schedule_case: ScheduleDependency, code: AuthUserCodeCredentials):
+    schedule = await schedule_case.get_current(code)
 
     return {
         "status": Status.success,
