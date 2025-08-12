@@ -24,7 +24,7 @@ class UserRequest(BaseModel):
         age = today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
 
         if age < 18:
-            raise ValueError('The person must be over 18 years old')
+            raise ValueError('The person must be over 18 years old.')
 
         return birth_date
 

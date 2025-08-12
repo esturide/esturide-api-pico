@@ -58,3 +58,10 @@ class ScheduleTravel(Model):
     @property
     def have_passengers(self):
         return self.passengers is not None
+
+    @property
+    def seats_available(self):
+        if isinstance(self.seats, list):
+            return len(self.seats) != 0
+
+        return False

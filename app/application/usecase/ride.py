@@ -10,7 +10,7 @@ from app.shared.models.schedule import ScheduleTravel
 from app.shared.models.user import User
 from app.shared.scheme import StatusFailure, StatusSuccess
 from app.shared.scheme.respose.schedule import create_schedule_response
-from app.shared.scheme.rides import RideTravelUpdateRequest
+from app.shared.scheme.rides import RideTravelUpdateRequest, RideTravelRequest
 from app.shared.scheme.rides.status import RideTravelStatusResponse
 from app.shared.types import UUID
 from app.shared.types.enum import RoleUser
@@ -40,7 +40,7 @@ class RideUseCase:
         await self.schedule_service.save(schedule)
         await self.ride_service.save(ride)
 
-    async def create(self, code: int, role: RoleUser, schedule: ScheduleTravel, seat: str):
+    async def create(self, code: int, role: RoleUser, req: RideTravelRequest):
         passenger = await self.user_service.get(code)
 
         all_rides = await self.ride_service.get_all_rides_from_user(passenger)
@@ -50,10 +50,11 @@ class RideUseCase:
                 message="You have a pending ride."
             )
 
-        ride = await self.ride_service.create(passenger, seat)
+        schedule = await self.schedule_service.get(req.uuid)
+        ride = await self.ride_service.create(passenger, req.seat)
 
-        if seat in schedule.seats:
-            schedule.seats.remove(seat)
+        if req.seat in schedule.seats:
+            schedule.seats.remove(req.seat)
         else:
             raise InvalidRequestException(
                 "The seat has already been reserved."
@@ -84,12 +85,11 @@ class RideUseCase:
 
         return schedule, ride
 
-    async def current(self, code: int, role: RoleUser) -> RideTravelStatusResponse:
-        if not role == RoleUser.passenger:
-            raise InvalidRequestException()
-
+    async def current(self, code: int) -> RideTravelStatusResponse:
         passenger = await self.user_service.get(code)
         schedule, ride = await self.get_current_from_user(passenger)
+
+
 
         return RideTravelStatusResponse(
             uuid=ride.id,
