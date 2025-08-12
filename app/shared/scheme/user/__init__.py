@@ -56,3 +56,7 @@ class AutomobileProfile(BaseModel):
     brand: str
     year: str
     model: int
+
+
+class RoleUpdateRequest(BaseModel):
+    role: RoleUser
