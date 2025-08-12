@@ -1,16 +1,15 @@
 import functools
+from datetime import datetime
 
 from app.core.exception import ValidationException, InvalidRequestException
 from app.domain.service.auth import get_auth_service
 from app.domain.service.schedule import get_schedule_service
 from app.domain.service.user import get_user_service
-from app.shared.models.schedule import ScheduleTravel
-from app.shared.scheme import StatusSuccess
+from app.shared.scheme import StatusSuccess, StatusFailure
 from app.shared.scheme.filter import FilteringOptionsRequest
-from app.shared.scheme.location import GeoLocationModel
-from app.shared.scheme.respose.schedule import create_schedule_response
-from app.shared.scheme.schedule import ScheduleTravelRequest, ScheduleTravelResponse, DriverUser, PassengerUser, \
-    ScheduleTravelUpdateRequest
+from app.shared.scheme.respose.schedule import create_schedule_response, create_schedule_status_response
+from app.shared.scheme.schedule import ScheduleTravelRequest, ScheduleTravelResponse, ScheduleTravelUpdateRequest
+from app.shared.scheme.schedule.status import ScheduleTravelStatusResponse
 from app.shared.types.enum import RoleUser, Status
 
 
@@ -40,11 +39,11 @@ class ScheduleTravelUseCase:
             message="New schedule traveled successfully."
         )
 
-    async def get_current(self, code: int) -> ScheduleTravelResponse:
+    async def get_current(self, code: int) -> ScheduleTravelStatusResponse:
         user = await self.user_service.get(code)
-        schedule = await self.schedule_service.get_current(user, RoleUser.driver)
+        schedule = await self.schedule_service.get_current(user=user)
 
-        return create_schedule_response(schedule)
+        return create_schedule_status_response(schedule)
 
     async def get_all(self, limit=10) -> list[ScheduleTravelResponse]:
         async def iter_all_schedules():
@@ -66,25 +65,28 @@ class ScheduleTravelUseCase:
         if not user.is_valid_driver:
             raise InvalidRequestException("You cannot make the following changes.")
 
-        schedule = await self.schedule_service.get_current(user, role)
+        schedule = await self.schedule_service.get_current(user=user)
+
+        if schedule.is_finished:
+            raise InvalidRequestException("You cannot make the following changes.")
 
         schedule.terminate = req.terminate if req.terminate else schedule.terminate
         schedule.cancel = req.cancel if req.cancel else schedule.cancel
         schedule.starting = req.starting if schedule.starting is None else schedule.starting
-        schedule.terminated = req.terminated if schedule.terminated is None else schedule.terminated
+
+        if schedule.terminate or schedule.cancel:
+            schedule.terminated = datetime.now()
 
         status = await self.schedule_service.save(schedule)
 
         if status:
-            return {
-                "status": Status.success,
-                "message": "Schedule is updated.",
-            }
+            return StatusSuccess(
+                message="Updated schedule successfully."
+            )
 
-        return {
-            "status": Status.failure,
-            "message": "Cannot updated schedule.",
-        }
+        return StatusFailure(
+            message="Cannot updated schedule."
+        )
 
 
 @functools.lru_cache

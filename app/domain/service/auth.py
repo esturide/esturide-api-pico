@@ -30,10 +30,10 @@ class AuthenticationCredentialsService:
 
     async def get_user_credentials_from_token(self, token: str) -> tuple[User, RoleUser]:
         decode_data = decode(token, self.settings.secret_key, self.settings.algorithm)
-        user_code = decode_data.get("code")
+        code = decode_data.get("code")
         role = decode_data.get("role")
 
-        user = await UserRepository.get_user_by_code(user_code)
+        user = await UserRepository.get_user_by_code(code)
 
         if user is None:
             raise UnauthorizedAccessException(

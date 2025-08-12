@@ -1,8 +1,10 @@
+import contextlib
 import functools
 
 from google.cloud.firestore import GeoPoint
 
 from app.infrestructure.repository.schedule import ScheduleRepository
+from app.shared.models.ride import RideTravel
 from app.shared.models.schedule import ScheduleTravel
 from app.shared.models.user import User
 from app.shared.scheme.filter import FilteringOptionsRequest
@@ -29,6 +31,7 @@ class ScheduleTravelService:
             destination=destination,
             price=req.price,
             seats=req.seats,
+            passengers=[]
         )
 
         return await ScheduleRepository.save(schedule)
@@ -36,8 +39,11 @@ class ScheduleTravelService:
     async def get(self, uuid: UUID) -> ScheduleTravel:
         return await ScheduleRepository.get_from_uuid(uuid)
 
-    async def get_current(self, user: User, role: RoleUser = RoleUser.driver) -> ScheduleTravel:
-        return await ScheduleRepository.get_current(user, role)
+    async def get_from_ride(self, ride: RideTravel) -> ScheduleTravel:
+        return await ScheduleRepository.get_current(ride=ride)
+
+    async def get_current(self, user: User) -> ScheduleTravel:
+        return await ScheduleRepository.get_current(user=user)
 
     async def get_by_driver(self, user: User) -> list[ScheduleTravel]:
         return await ScheduleRepository.get_by_driver(user)
@@ -61,6 +67,12 @@ class ScheduleTravelService:
 
     async def save(self, schedule: ScheduleTravel) -> bool:
         return await ScheduleRepository.update(schedule)
+
+    @contextlib.asynccontextmanager
+    async def update(self, schedule: ScheduleTravel):
+        yield schedule
+
+        await self.save(schedule)
 
 
 @functools.lru_cache

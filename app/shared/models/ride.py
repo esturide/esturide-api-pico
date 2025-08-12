@@ -1,4 +1,4 @@
-from fireo.fields import TextField, IDField, DateTime, NumberField, ReferenceField, GeoPoint, ListField, BooleanField, \
+from fireo.fields import TextField, IDField, DateTime, ReferenceField, ListField, BooleanField, \
     NestedModel
 from fireo.models import Model
 
@@ -20,6 +20,7 @@ class RideTravel(Model):
     starting = DateTime(required=False)
     over = BooleanField(default=False)
     cancel = BooleanField(default=False)
+    accept = BooleanField(default=False)
 
     tracking = ListField(NestedModel(Tracking), required=False)
 
