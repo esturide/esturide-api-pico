@@ -1,6 +1,7 @@
 import functools
 
 from app.domain.service.auth import get_auth_service
+from app.shared.scheme.user import RoleUpdateRequest
 from app.shared.types import Token
 from app.shared.types.enum import RoleUser
 
@@ -26,8 +27,8 @@ class AuthSessionUseCase:
     async def get_session_role(self, token: Token) -> RoleUser:
         return await self.auth_service.get_current_role(token)
 
-    async def set_session_role(self, token: Token, role: RoleUser) -> Token:
-        return await self.auth_service.change_current_role(token, role)
+    async def set_session_role(self, token: Token, req: RoleUpdateRequest) -> Token:
+        return await self.auth_service.change_current_role(token, req.role)
 
 
 @functools.lru_cache

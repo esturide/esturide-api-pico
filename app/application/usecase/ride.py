@@ -1,14 +1,19 @@
+import asyncio
 import contextlib
 import functools
 
-from app.core.exception import NotFoundException, InvalidRequestException
-from app.domain.service.ride import get_ride_service
+from fastapi import BackgroundTasks
+
+from app.core.exception import NotFoundException, InvalidRequestException, ResourceNotFoundException
+from app.domain.service.ride import get_ride_service, RideService
 from app.domain.service.schedule import get_schedule_service
 from app.domain.service.user import get_user_service
+from app.shared.const import DEFAULT_MAX_RIDE_LIFETIME_SEC
 from app.shared.models.ride import RideTravel
 from app.shared.models.schedule import ScheduleTravel
 from app.shared.models.user import User
 from app.shared.scheme import StatusFailure, StatusSuccess
+from app.shared.scheme.respose.ride import create_ride_response
 from app.shared.scheme.respose.schedule import create_schedule_response
 from app.shared.scheme.rides import RideTravelUpdateRequest, RideTravelRequest
 from app.shared.scheme.rides.status import RideTravelStatusResponse
@@ -32,15 +37,25 @@ class RideUseCase:
         if not schedule.is_active:
             schedule.seats.append(ride.seat)
 
-        if not schedule.is_active and schedule.passengers is not None and ride in schedule.passengers:
-            schedule.passengers.remove(ride)
+        if not schedule.is_active and schedule.rides is not None and ride in schedule.rides:
+            schedule.rides.remove(ride)
 
         yield ride
 
         await self.schedule_service.save(schedule)
         await self.ride_service.save(ride)
 
-    async def create(self, code: int, role: RoleUser, req: RideTravelRequest):
+    async def create(self, code: int, role: RoleUser, req: RideTravelRequest, background_tasks: BackgroundTasks):
+        def create_task(ride_service: RideService, ride: RideTravel):
+            async def task():
+                await asyncio.sleep(DEFAULT_MAX_RIDE_LIFETIME_SEC)
+
+                ride.cancel = True
+
+                await ride_service.save(ride)
+
+            return task
+
         passenger = await self.user_service.get(code)
 
         all_rides = await self.ride_service.get_all_rides_from_user(passenger)
@@ -60,12 +75,19 @@ class RideUseCase:
                 "The seat has already been reserved."
             )
 
-        if schedule.passengers is None:
-            schedule.passengers = []
+        if schedule.rides is None:
+            schedule.rides = []
 
-        schedule.passengers.append(ride)
+        schedule.rides.append(ride)
 
-        await self.schedule_service.save(schedule)
+        status = await self.schedule_service.save(schedule)
+
+        if not status:
+            return StatusFailure(
+                message="The ride could not be booked."
+            )
+
+        background_tasks.add_task(create_task(self.ride_service, ride))
 
         return StatusSuccess(
             message="Ride created successfully."
@@ -80,6 +102,9 @@ class RideUseCase:
 
         schedule = await self.schedule_service.get_from_ride(ride)
 
+        if schedule is None:
+            raise NotFoundException("Schedule not found.")
+
         if ride is None:
             raise NotFoundException("Ride not found.")
 
@@ -89,14 +114,10 @@ class RideUseCase:
         passenger = await self.user_service.get(code)
         schedule, ride = await self.get_current_from_user(passenger)
 
-        return RideTravelStatusResponse(
-            uuid=ride.id,
-            seat=ride.seat,
-            cancel=ride.cancel,
-            over=ride.over,
-            accept=ride.accept,
-            travel=create_schedule_response(schedule)
-        )
+        if schedule.is_finished:
+            raise ResourceNotFoundException("The scheduled trip has been cancelled.")
+
+        return create_ride_response(schedule, ride)
 
     async def cancel(self, passenger: User, role: RoleUser, schedule: ScheduleTravel, ride: RideTravel):
         async with self.delete_ride(passenger, schedule, ride) as ride:

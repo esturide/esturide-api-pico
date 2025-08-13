@@ -21,7 +21,7 @@ class ScheduleTravel(Model):
     cancel = BooleanField(default=False)
 
     driver = ReferenceField(User, required=True)
-    passengers = ListField(ReferenceField(RideTravel), required=False)
+    rides = ListField(ReferenceField(RideTravel), required=False)
     max_passengers = NumberField(default=3)
 
     origin = GeoPoint(required=True)
@@ -57,7 +57,7 @@ class ScheduleTravel(Model):
 
     @property
     def have_passengers(self):
-        return self.passengers is not None
+        return self.rides is not None
 
     @property
     def seats_available(self):

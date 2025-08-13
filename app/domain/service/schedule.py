@@ -1,8 +1,11 @@
 import contextlib
+import datetime
 import functools
 
 from google.cloud.firestore import GeoPoint
 
+from app.domain.service.ride import RideService
+from app.infrestructure.repository.ride import RideRepository
 from app.infrestructure.repository.schedule import ScheduleRepository
 from app.shared.models.ride import RideTravel
 from app.shared.models.schedule import ScheduleTravel
@@ -13,7 +16,7 @@ from app.shared.types import UUID
 
 
 class ScheduleTravelService:
-    async def create(self, req: ScheduleTravelRequest, user: User) -> bool:
+    async def create(self, req: ScheduleTravelRequest, user: User) -> ScheduleTravel | None:
         origin = GeoPoint(
             latitude=req.origin.latitude,
             longitude=req.origin.longitude,
@@ -30,18 +33,23 @@ class ScheduleTravelService:
             destination=destination,
             price=req.price,
             seats=req.seats,
-            passengers=[]
+            rides=[]
         )
 
-        return await ScheduleRepository.save(schedule)
+        status = await ScheduleRepository.save(schedule)
+
+        if status:
+            return schedule
+
+        return None
 
     async def get(self, uuid: UUID) -> ScheduleTravel:
         return await ScheduleRepository.get_from_uuid(uuid)
 
-    async def get_from_ride(self, ride: RideTravel) -> ScheduleTravel:
+    async def get_from_ride(self, ride: RideTravel) -> ScheduleTravel | None:
         return await ScheduleRepository.get_current(ride=ride)
 
-    async def get_current(self, user: User) -> ScheduleTravel:
+    async def get_current(self, user: User) -> ScheduleTravel | None:
         return await ScheduleRepository.get_current(user=user)
 
     async def get_by_driver(self, user: User) -> list[ScheduleTravel]:
@@ -67,11 +75,22 @@ class ScheduleTravelService:
     async def save(self, schedule: ScheduleTravel) -> bool:
         return await ScheduleRepository.update(schedule)
 
-    @contextlib.asynccontextmanager
-    async def update(self, schedule: ScheduleTravel):
-        yield schedule
+    async def finished(self, schedule: ScheduleTravel, cancel=None, terminate=None) -> tuple[bool, ScheduleTravel]:
+        if terminate is not None:
+            schedule.terminate = terminate
+        elif cancel is not None:
+            schedule.cancel = cancel
 
-        await self.save(schedule)
+        schedule.terminated = datetime.datetime.now()
+
+        if isinstance(schedule.rides, list):
+            for rides in schedule.rides:
+                rides.cancel = True
+                await RideRepository.save(rides)
+
+        status = await ScheduleRepository.save(schedule)
+
+        return status, schedule
 
 
 @functools.lru_cache

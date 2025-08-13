@@ -1,11 +1,11 @@
-import time
+from fastapi import APIRouter
+from fastapi_sse import sse_handler
 
-import anyio.to_thread
-from fastapi import APIRouter, HTTPException
+from app.shared.scheme import StatusSuccess, StatusMessage
 
-from app.shared.scheme import StatusSuccess
-
-root_router = APIRouter()
+root_router = APIRouter(
+    tags=["Root router"]
+)
 
 
 @root_router.get("/")
@@ -13,17 +13,10 @@ async def endpoint_status():
     return StatusSuccess()
 
 
-@root_router.get("/no-async")
-async def endpoint_async():
-    def async_task():
-        time.sleep(5)
-        return "It's ok"
+@root_router.get("/stream", response_model=StatusMessage)
+@sse_handler()
+async def message_generator(some_url_arg: str, repeat: int = 5):
+    for i in range(repeat):
+        yield StatusSuccess(message=f"Hello, {some_url_arg}!")
 
-    result = await anyio.to_thread.run_sync(async_task)
-
-    return {"result": result}
-
-
-@root_router.get("/exceptions")
-async def endpoint_exceptions():
-    raise HTTPException(500, "Generic exception.")
+    yield StatusSuccess(message="Another message")

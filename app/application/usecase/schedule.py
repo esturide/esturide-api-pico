@@ -1,10 +1,15 @@
+import asyncio
 import functools
 from datetime import datetime
 
-from app.core.exception import ValidationException, InvalidRequestException
+from fastapi import BackgroundTasks
+
+from app.core.exception import ValidationException, InvalidRequestException, NotFoundException
 from app.domain.service.auth import get_auth_service
-from app.domain.service.schedule import get_schedule_service
+from app.domain.service.schedule import get_schedule_service, ScheduleTravelService
 from app.domain.service.user import get_user_service
+from app.shared.const import DEFAULT_MAX_SCHEDULE_LIFETIME_SEC
+from app.shared.models.schedule import ScheduleTravel
 from app.shared.scheme import StatusSuccess, StatusFailure
 from app.shared.scheme.filter import FilteringOptionsRequest
 from app.shared.scheme.respose.schedule import create_schedule_response, create_schedule_status_response
@@ -19,9 +24,16 @@ class ScheduleTravelUseCase:
         self.user_service = get_user_service()
         self.auth_service = get_auth_service()
 
-    async def create(self, req: ScheduleTravelRequest, code: int):
-        if not req.price >= 1:
-            raise ValidationException("Invalid price.")
+    async def create(self, req: ScheduleTravelRequest, code: int, background_tasks: BackgroundTasks):
+        def create_task(schedule_service: ScheduleTravelService, schedule: ScheduleTravel):
+            async def task():
+                await asyncio.sleep(DEFAULT_MAX_SCHEDULE_LIFETIME_SEC)
+
+                schedule.cancel = True
+
+                await schedule_service.save(schedule)
+
+            return task
 
         user = await self.user_service.get(code)
 
@@ -33,7 +45,14 @@ class ScheduleTravelUseCase:
         if len(all_schedule) != 0 and all([not schedule.is_finished for schedule in all_schedule]):
             raise InvalidRequestException("You currently have a pending trip.")
 
-        await self.schedule_service.create(req, user)
+        schedule = await self.schedule_service.create(req, user)
+
+        if schedule is None:
+            return StatusFailure(
+                message="The trip could not be scheduled."
+            )
+
+        background_tasks.add_task(create_task(self.schedule_service, schedule))
 
         return StatusSuccess(
             message="New schedule traveled successfully."
@@ -42,6 +61,12 @@ class ScheduleTravelUseCase:
     async def get_current(self, code: int) -> ScheduleTravelStatusResponse:
         user = await self.user_service.get(code)
         schedule = await self.schedule_service.get_current(user=user)
+
+        if schedule is None:
+            raise NotFoundException("Schedule not found.")
+
+        if schedule.is_finished:
+            raise InvalidRequestException("You currently have no scheduled trips available.")
 
         return create_schedule_status_response(schedule)
 
@@ -67,25 +92,25 @@ class ScheduleTravelUseCase:
 
         schedule = await self.schedule_service.get_current(user=user)
 
+        if schedule is None:
+            raise NotFoundException("Schedule not found.")
+
         if schedule.is_finished:
             raise InvalidRequestException("You cannot make the following changes.")
 
-        schedule.terminate = req.terminate if req.terminate else schedule.terminate
-        schedule.cancel = req.cancel if req.cancel else schedule.cancel
-        schedule.starting = req.starting if schedule.starting is None else schedule.starting
+        if req.starting is not None:
+            schedule.starting = req.starting
 
-        if schedule.terminate or schedule.cancel:
-            schedule.terminated = datetime.now()
-
+        status, schedule = await self.schedule_service.finished(schedule, req.cancel, req.terminate)
         status = await self.schedule_service.save(schedule)
 
         if status:
             return StatusSuccess(
-                message="Updated schedule successfully."
+                message="Changes applied to the scheduled trip."
             )
 
         return StatusFailure(
-            message="Cannot updated schedule."
+            message="Changes not applied to the scheduled trip."
         )
 
 
