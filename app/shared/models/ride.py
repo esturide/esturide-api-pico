@@ -2,7 +2,7 @@ from fireo.fields import TextField, IDField, DateTime, ReferenceField, ListField
     NestedModel
 from fireo.models import Model
 
-from app.shared.models.tracking import Tracking
+from app.shared.models.tracking import TrackingRecord
 from app.shared.models.user import User
 
 
@@ -22,7 +22,7 @@ class RideTravel(Model):
     cancel = BooleanField(default=False)
     accept = BooleanField(default=False)
 
-    tracking = ListField(NestedModel(Tracking), required=False)
+    tracking = ListField(ReferenceField(TrackingRecord), required=False)
 
     @property
     def is_finished(self):

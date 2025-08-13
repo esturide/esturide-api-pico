@@ -3,7 +3,7 @@ from fireo.fields import TextField, IDField, DateTime, NumberField, ReferenceFie
 from fireo.models import Model
 
 from app.shared.models.ride import RideTravel
-from app.shared.models.tracking import Tracking
+from app.shared.models.tracking import TrackingRecord
 from app.shared.models.user import User
 
 
@@ -29,7 +29,7 @@ class ScheduleTravel(Model):
     price = NumberField(required=True)
     seats = ListField(TextField(), required=True)
 
-    tracking = ListField(NestedModel(Tracking), required=False)
+    tracking = ListField(NestedModel(TrackingRecord), required=False)
 
     @property
     def is_enabled(self):

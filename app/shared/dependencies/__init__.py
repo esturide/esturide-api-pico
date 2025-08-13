@@ -9,6 +9,7 @@ from app.application.usecase.auth import AuthSessionUseCase, get_auth_session_ca
 from app.application.usecase.notify import NotifyUseCase, get_notify_user_case
 from app.application.usecase.ride import get_ride_use_case, RideUseCase
 from app.application.usecase.schedule import ScheduleTravelUseCase, get_schedule_use_case
+from app.application.usecase.tracking import TrackingUseCase, get_tracking_use_case
 from app.application.usecase.user import UserUseCase, get_user_use_case
 from app.core.oauth2 import oauth2_scheme
 from app.shared.credentials import get_user_code_from_credentials, is_user_authenticated, \
@@ -31,5 +32,6 @@ ScheduleDependency = Annotated[ScheduleTravelUseCase, Depends(get_schedule_use_c
 RideDependency = Annotated[RideUseCase, Depends(get_ride_use_case)]
 AdminManagerDependency = Annotated[AdminManagerUseCase, Depends(get_admin_manager_use_case)]
 NotifyDependency = Annotated[NotifyUseCase, Depends(get_notify_user_case)]
+TrackingDependency = Annotated[TrackingUseCase, Depends(get_tracking_use_case)]
 
 AuthDependency = Annotated[AuthSessionUseCase, Depends(get_auth_session_case)]

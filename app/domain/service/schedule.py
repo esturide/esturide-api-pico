@@ -31,8 +31,10 @@ class ScheduleTravelService:
             destination=destination,
             price=req.price,
             seats=req.seats,
-            rides=[]
         )
+
+        schedule.rides = []
+        schedule.tracking = []
 
         status = await ScheduleRepository.save(schedule)
 
