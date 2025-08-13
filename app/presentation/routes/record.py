@@ -8,7 +8,7 @@ record_route = APIRouter(prefix="/record", tags=["Record tracking route"])
 
 
 @record_route.post('/')
-async def record_location(tracking: TrackingDependency, location: GeoLocationModel,
+async def user_location_tracking(tracking: TrackingDependency, location: GeoLocationModel,
                           user_auth: AuthUserCodeAndRoleCredentials) -> StatusMessage:
     code, role = user_auth
 
