@@ -1,7 +1,10 @@
-from fastapi import APIRouter
-from fastapi_sse import sse_handler
+import typing
 
-from app.shared.scheme import StatusSuccess, StatusMessage
+from fastapi import APIRouter, Cookie
+from fastapi.responses import JSONResponse
+from fastapi.websockets import WebSocket
+
+from app.shared.scheme import StatusSuccess
 
 root_router = APIRouter(
     tags=["Root router"]
@@ -13,10 +16,25 @@ async def endpoint_status():
     return StatusSuccess()
 
 
-@root_router.get("/stream", response_model=StatusMessage)
-@sse_handler()
-async def message_generator(some_url_arg: str, repeat: int = 5):
-    for i in range(repeat):
-        yield StatusSuccess(message=f"Hello, {some_url_arg}!")
+@root_router.get("/cookie")
+async def read_items(ads_id: typing.Annotated[str | None, Cookie()] = None):
+    return {
+        "ads_id": ads_id
+    }
 
-    yield StatusSuccess(message="Another message")
+
+@root_router.post("/cookie")
+def create_cookie():
+    content = {"message": "Come to the dark side, we have cookies"}
+
+    response = JSONResponse(content=content)
+    response.set_cookie(key="fakesession", value="fake-cookie-session-value")
+
+    return response
+
+
+@root_router.websocket("/ws")
+async def websocket(websocket: WebSocket):
+    await websocket.accept()
+    await websocket.send_json({"msg": "Hello WebSocket"})
+    await websocket.close()
