@@ -52,7 +52,8 @@ async def search_location(address: str, geolocator: NominatimDepend, is_auth: Us
 
 
 @location_route.post('/record')
-async def record_location(tracking: TrackingDependency, location: GeoLocationModel, user_auth: AuthUserCodeAndRoleCredentials) -> StatusMessage:
+async def record_location(tracking: TrackingDependency, location: GeoLocationModel,
+                          user_auth: AuthUserCodeAndRoleCredentials) -> StatusMessage:
     code, role = user_auth
 
     return await tracking.register(code, role, location)

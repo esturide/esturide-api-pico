@@ -1,5 +1,4 @@
-from fireo.fields import TextField, IDField, DateTime, ReferenceField, ListField, BooleanField, \
-    NestedModel
+from fireo.fields import TextField, IDField, DateTime, ReferenceField, ListField, BooleanField
 from fireo.models import Model
 
 from app.shared.models.tracking import TrackingRecord

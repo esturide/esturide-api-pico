@@ -10,7 +10,7 @@ from app.domain.service.user import get_user_service
 from app.shared.models.tracking import TrackingRecord
 from app.shared.scheme import StatusSuccess, StatusFailure
 from app.shared.scheme.location import GeoLocationModel
-from app.shared.types.enum import RoleUser, Status
+from app.shared.types.enum import RoleUser
 
 
 class TrackingUseCase:
@@ -21,15 +21,14 @@ class TrackingUseCase:
         self.tracking_service = TrackingService()
 
     async def register(self, code: int, role: RoleUser, location: GeoLocationModel):
-        status = False
         user = await self.user_service.get(code)
+        status = False
 
         tracking = TrackingRecord()
         tracking.location = GeoPoint(
             location.latitude,
             location.longitude,
         )
-
 
         if role == RoleUser.passenger:
             ride = await self.ride_service.get_current_ride_from_user(user)
