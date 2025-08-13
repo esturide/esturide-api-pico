@@ -13,6 +13,7 @@ from app.shared.models.ride import RideTravel
 from app.shared.models.schedule import ScheduleTravel
 from app.shared.models.user import User
 from app.shared.scheme import StatusFailure, StatusSuccess
+from app.shared.scheme.respose.ride import create_ride_response
 from app.shared.scheme.respose.schedule import create_schedule_response
 from app.shared.scheme.rides import RideTravelUpdateRequest, RideTravelRequest
 from app.shared.scheme.rides.status import RideTravelStatusResponse
@@ -36,8 +37,8 @@ class RideUseCase:
         if not schedule.is_active:
             schedule.seats.append(ride.seat)
 
-        if not schedule.is_active and schedule.passengers is not None and ride in schedule.passengers:
-            schedule.passengers.remove(ride)
+        if not schedule.is_active and schedule.rides is not None and ride in schedule.rides:
+            schedule.rides.remove(ride)
 
         yield ride
 
@@ -74,10 +75,10 @@ class RideUseCase:
                 "The seat has already been reserved."
             )
 
-        if schedule.passengers is None:
-            schedule.passengers = []
+        if schedule.rides is None:
+            schedule.rides = []
 
-        schedule.passengers.append(ride)
+        schedule.rides.append(ride)
 
         status = await self.schedule_service.save(schedule)
 
@@ -101,6 +102,9 @@ class RideUseCase:
 
         schedule = await self.schedule_service.get_from_ride(ride)
 
+        if schedule is None:
+            raise NotFoundException("Schedule not found.")
+
         if ride is None:
             raise NotFoundException("Ride not found.")
 
@@ -113,14 +117,7 @@ class RideUseCase:
         if schedule.is_finished:
             raise ResourceNotFoundException("The scheduled trip has been cancelled.")
 
-        return RideTravelStatusResponse(
-            uuid=ride.id,
-            seat=ride.seat,
-            cancel=ride.cancel,
-            over=ride.over,
-            accept=ride.accept,
-            travel=create_schedule_response(schedule)
-        )
+        return create_ride_response(schedule, ride)
 
     async def cancel(self, passenger: User, role: RoleUser, schedule: ScheduleTravel, ride: RideTravel):
         async with self.delete_ride(passenger, schedule, ride) as ride:
