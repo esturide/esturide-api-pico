@@ -98,17 +98,10 @@ class ScheduleTravelUseCase:
         if schedule.is_finished:
             raise InvalidRequestException("You cannot make the following changes.")
 
-        if req.terminate is not None:
-            schedule.terminate = req.terminate
-        elif req.cancel is not None:
-            schedule.cancel = req.cancel
-
         if req.starting is not None:
             schedule.starting = req.starting
 
-        if schedule.terminate or schedule.cancel:
-            schedule.terminated = datetime.now()
-
+        status, schedule = await self.schedule_service.finished(schedule, req.cancel, req.terminate)
         status = await self.schedule_service.save(schedule)
 
         if status:

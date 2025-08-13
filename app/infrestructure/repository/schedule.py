@@ -60,7 +60,7 @@ class ScheduleRepository:
 
         def filter_schedule_task_passenger():
             return list(ScheduleTravel.collection
-                        .filter('passengers', 'array_contains', ride)
+                        .filter('rides', 'array_contains', ride)
                         .fetch())
 
         all_schedule = []
