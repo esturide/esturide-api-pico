@@ -14,6 +14,7 @@ from app.presentation.routes.admin import admin_route
 from app.presentation.routes.auth import auth_route
 from app.presentation.routes.location import location_route
 from app.presentation.routes.notify import notify_route
+from app.presentation.routes.record import record_route
 from app.presentation.routes.rides import rides_router
 from app.presentation.routes.schedule import schedule_router
 from app.presentation.routes.user import user_router
@@ -37,5 +38,6 @@ def get_app():
     app.include_router(rides_router)
     app.include_router(notify_route)
     app.include_router(location_route)
+    app.include_router(record_route)
 
     return app

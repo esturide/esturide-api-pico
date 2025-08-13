@@ -17,6 +17,7 @@ class RideService:
 
         ride.passenger = passenger
         ride.seat = seat
+        ride.tracking = []
 
         await RideRepository.save(ride)
 

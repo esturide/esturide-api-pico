@@ -122,9 +122,15 @@ class ScheduleRepository:
 
     @staticmethod
     async def save(schedule: ScheduleTravel):
-        await async_task(lambda s: s.save(), schedule)
+        def save_schedule(s):
+            try:
+                s.save()
+            except TypeError:
+                return False
+            else:
+                return True
 
-        return True
+        return await async_task(save_schedule, schedule)
 
     @staticmethod
     async def update(schedule: ScheduleTravel):

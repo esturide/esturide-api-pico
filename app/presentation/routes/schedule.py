@@ -2,7 +2,6 @@ import datetime
 
 from fastapi import APIRouter, BackgroundTasks
 
-from app.core.exception import UnauthorizedAccessException
 from app.shared.dependencies import ScheduleDependency, AuthUserCodeCredentials, UserIsAuthenticated, \
     AuthUserCodeAndRoleCredentials
 from app.shared.scheme import StatusMessage, StatusResponse
