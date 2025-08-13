@@ -7,7 +7,7 @@ from app.shared.types.enum import Status
 
 notify_route = APIRouter(
     prefix="/notify",
-    tags=["Notification System route"]
+    tags=["Notification route"]
 )
 
 
