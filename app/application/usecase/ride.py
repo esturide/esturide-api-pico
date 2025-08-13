@@ -101,6 +101,9 @@ class RideUseCase:
 
         schedule = await self.schedule_service.get_from_ride(ride)
 
+        if schedule is None:
+            raise NotFoundException("Schedule not found.")
+
         if ride is None:
             raise NotFoundException("Ride not found.")
 

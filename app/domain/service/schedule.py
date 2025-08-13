@@ -43,10 +43,10 @@ class ScheduleTravelService:
     async def get(self, uuid: UUID) -> ScheduleTravel:
         return await ScheduleRepository.get_from_uuid(uuid)
 
-    async def get_from_ride(self, ride: RideTravel) -> ScheduleTravel:
+    async def get_from_ride(self, ride: RideTravel) -> ScheduleTravel | None:
         return await ScheduleRepository.get_current(ride=ride)
 
-    async def get_current(self, user: User) -> ScheduleTravel:
+    async def get_current(self, user: User) -> ScheduleTravel | None:
         return await ScheduleRepository.get_current(user=user)
 
     async def get_by_driver(self, user: User) -> list[ScheduleTravel]:

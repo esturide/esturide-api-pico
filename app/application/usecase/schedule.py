@@ -4,7 +4,7 @@ from datetime import datetime
 
 from fastapi import BackgroundTasks
 
-from app.core.exception import ValidationException, InvalidRequestException
+from app.core.exception import ValidationException, InvalidRequestException, NotFoundException
 from app.domain.service.auth import get_auth_service
 from app.domain.service.schedule import get_schedule_service, ScheduleTravelService
 from app.domain.service.user import get_user_service
@@ -62,6 +62,9 @@ class ScheduleTravelUseCase:
         user = await self.user_service.get(code)
         schedule = await self.schedule_service.get_current(user=user)
 
+        if schedule is None:
+            raise NotFoundException("Schedule not found.")
+
         if schedule.is_finished:
             raise InvalidRequestException("You currently have no scheduled trips available.")
 
@@ -88,6 +91,9 @@ class ScheduleTravelUseCase:
             raise InvalidRequestException("You cannot make the following changes.")
 
         schedule = await self.schedule_service.get_current(user=user)
+
+        if schedule is None:
+            raise NotFoundException("Schedule not found.")
 
         if schedule.is_finished:
             raise InvalidRequestException("You cannot make the following changes.")
