@@ -1,10 +1,8 @@
-import contextlib
 import datetime
 import functools
 
 from google.cloud.firestore import GeoPoint
 
-from app.domain.service.ride import RideService
 from app.infrestructure.repository.ride import RideRepository
 from app.infrestructure.repository.schedule import ScheduleRepository
 from app.shared.models.ride import RideTravel

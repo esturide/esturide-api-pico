@@ -1,10 +1,8 @@
 from fastapi import APIRouter
 from fastapi_sse import sse_handler
-from starlette.responses import StreamingResponse
 
 from app.shared.dependencies import NotifyDependency, AuthUserCodeAndRoleCredentials
 from app.shared.scheme import StatusResponse
-from app.shared.scheme.rides.status import RideTravelStatusResponse
 from app.shared.types.enum import Status
 
 notify_route = APIRouter(
@@ -25,7 +23,6 @@ async def notify_ride_status(notify: NotifyDependency, user_auth: AuthUserCodeAn
         )
 
 
-
 @notify_route.get("/schedule")
 @sse_handler()
 async def notify_ride_status(notify: NotifyDependency, user_auth: AuthUserCodeAndRoleCredentials):
@@ -36,4 +33,3 @@ async def notify_ride_status(notify: NotifyDependency, user_auth: AuthUserCodeAn
             status=Status.success,
             data=data,
         )
-
