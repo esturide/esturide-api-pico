@@ -89,8 +89,6 @@ class RideUseCase:
         passenger = await self.user_service.get(code)
         schedule, ride = await self.get_current_from_user(passenger)
 
-
-
         return RideTravelStatusResponse(
             uuid=ride.id,
             seat=ride.seat,

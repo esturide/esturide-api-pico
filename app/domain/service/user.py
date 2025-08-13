@@ -3,7 +3,6 @@ from datetime import datetime
 
 from app.infrestructure.repository.user import UserRepository
 from app.shared.encrypt import salty_password
-from app.shared.models.ride import RideTravel
 from app.shared.models.user import User
 from app.shared.scheme.user import UserRequest
 

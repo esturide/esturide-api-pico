@@ -10,7 +10,6 @@ from app.shared.models.user import User
 from app.shared.scheme.filter import FilteringOptionsRequest
 from app.shared.scheme.schedule import ScheduleTravelRequest
 from app.shared.types import UUID
-from app.shared.types.enum import RoleUser
 
 
 class ScheduleTravelService:

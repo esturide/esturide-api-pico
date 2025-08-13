@@ -10,7 +10,7 @@ from app.shared.scheme.filter import FilteringOptionsRequest
 from app.shared.scheme.respose.schedule import create_schedule_response, create_schedule_status_response
 from app.shared.scheme.schedule import ScheduleTravelRequest, ScheduleTravelResponse, ScheduleTravelUpdateRequest
 from app.shared.scheme.schedule.status import ScheduleTravelStatusResponse
-from app.shared.types.enum import RoleUser, Status
+from app.shared.types.enum import RoleUser
 
 
 class ScheduleTravelUseCase:
