@@ -14,7 +14,6 @@ from app.shared.models.schedule import ScheduleTravel
 from app.shared.models.user import User
 from app.shared.scheme import StatusFailure, StatusSuccess
 from app.shared.scheme.respose.ride import create_ride_response
-from app.shared.scheme.respose.schedule import create_schedule_response
 from app.shared.scheme.rides import RideTravelUpdateRequest, RideTravelRequest
 from app.shared.scheme.rides.status import RideTravelStatusResponse
 from app.shared.types import UUID

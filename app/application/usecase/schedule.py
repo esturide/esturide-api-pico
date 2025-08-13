@@ -1,10 +1,9 @@
 import asyncio
 import functools
-from datetime import datetime
 
 from fastapi import BackgroundTasks
 
-from app.core.exception import ValidationException, InvalidRequestException, NotFoundException
+from app.core.exception import InvalidRequestException, NotFoundException
 from app.domain.service.auth import get_auth_service
 from app.domain.service.schedule import get_schedule_service, ScheduleTravelService
 from app.domain.service.user import get_user_service
