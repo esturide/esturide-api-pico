@@ -51,7 +51,7 @@ class ScheduleRepository:
         return await async_task(get_schedule)
 
     @staticmethod
-    async def get_current(user: User | None = None, ride: RideTravel | None = None, *args) -> ScheduleTravel:
+    async def get_current(user: User | None = None, ride: RideTravel | None = None, *args) -> ScheduleTravel | None:
         def filter_schedule_task_driver():
             return list(ScheduleTravel.collection
                         .filter(driver=user)
@@ -60,7 +60,7 @@ class ScheduleRepository:
 
         def filter_schedule_task_passenger():
             return list(ScheduleTravel.collection
-                        .filter('passengers', 'array_contains', ride)
+                        .filter('rides', 'array_contains', ride)
                         .fetch())
 
         all_schedule = []
@@ -73,7 +73,7 @@ class ScheduleRepository:
             raise InvalidRequestException("You cannot make the request with the current user role.")
 
         if len(all_schedule) == 0:
-            raise InvalidRequestException("You currently have a pending trip.")
+            return None
 
         return all_schedule[0]
 
