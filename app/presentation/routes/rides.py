@@ -28,7 +28,7 @@ async def get_current_ride(user_auth: AuthUserCodeAndRoleCredentials, ride: Ride
     )
 
 
-@rides_router.put('/update')
+@rides_router.post('/update')
 async def update_ride(req: RideTravelUpdateRequest, user_auth: AuthUserCodeAndRoleCredentials,
                       ride: RideDependency) -> StatusMessage:
     code, role = user_auth

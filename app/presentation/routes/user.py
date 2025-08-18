@@ -20,12 +20,12 @@ async def get_user(code: int, user_dep: UserDependency):
     return await user_dep.get(code)
 
 
-@user_router.put('/{code}', response_model=StatusMessage)
+@user_router.post('/{code}', response_model=StatusMessage)
 async def update_user(code: int, user: ProfileUpdateRequest, user_dep: UserDependency,
                       auth_user: AuthUserCodeCredentials):
     return await user_dep.update(code, user, auth_user)
 
 
-@user_router.delete('/{code}', response_model=StatusMessage)
+@user_router.post('/{code}', response_model=StatusMessage)
 async def delete_user(code: int, user_dep: UserDependency, auth_user: AuthUserCodeCredentials):
     return await user_dep.delete(code, auth_user)
