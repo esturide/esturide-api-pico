@@ -93,7 +93,7 @@ async def get_current_schedule(schedule_case: ScheduleDependency, code: AuthUser
     }
 
 
-@schedule_router.put("/update")
+@schedule_router.post("/update")
 async def update_current_schedule(req: ScheduleTravelUpdateRequest, schedule_case: ScheduleDependency,
                                   user_auth: AuthUserCodeAndRoleCredentials) -> StatusMessage:
     code, role = user_auth
