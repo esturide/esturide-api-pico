@@ -39,9 +39,6 @@ class AuthSessionUseCase:
         if not user.is_verified:
             raise UnauthorizedAccessException("User is not verified to make that change.")
 
-        if current_role == role:
-            raise InvalidRequestException("The user has the same requested role.")
-
         if role in [RoleUser.staff, RoleUser.admin]:
             if not user.is_valid_admin and role == RoleUser.admin:
                 raise UnauthorizedAccessException("The user does not have administrator permissions.")
