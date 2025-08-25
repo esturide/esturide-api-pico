@@ -1,5 +1,6 @@
 import functools
 
+from app.core.exception import UnauthorizedAccessException, InvalidRequestException
 from app.domain.service.auth import get_auth_service
 from app.shared.scheme.user import RoleUpdateRequest
 from app.shared.types import Token
@@ -22,13 +23,29 @@ class AuthSessionUseCase:
         return await self.auth_service.validate(token)
 
     async def refresh(self, token: Token) -> Token:
-        return await self.auth_service.refresh(token)
+        user, role = await self.auth_service.get_user_credentials_from_token(token)
+
+        return await self.auth_service.refresh(user, role)
 
     async def get_session_role(self, token: Token) -> RoleUser:
-        return await self.auth_service.get_current_role(token)
+        user, current_role = await self.auth_service.get_user_credentials_from_token(token)
+
+        return current_role
 
     async def set_session_role(self, token: Token, req: RoleUpdateRequest) -> Token:
-        return await self.auth_service.change_current_role(token, req.role)
+        role = req.role
+        user, current_role = await self.auth_service.get_user_credentials_from_token(token)
+
+        if not user.is_verified:
+            raise UnauthorizedAccessException("User is not verified to make that change.")
+
+        if role in [RoleUser.staff, RoleUser.admin]:
+            if not user.is_valid_admin and role == RoleUser.admin:
+                raise UnauthorizedAccessException("The user does not have administrator permissions.")
+            elif not user.is_valid_staff and role == RoleUser.staff:
+                raise UnauthorizedAccessException("The user does not have staff permissions.")
+
+        return await self.auth_service.refresh(user, role)
 
 
 @functools.lru_cache
