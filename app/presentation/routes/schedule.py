@@ -6,17 +6,26 @@ from app.shared.dependencies import ScheduleDependency, AuthUserCodeCredentials,
     AuthUserCodeAndRoleCredentials
 from app.shared.scheme import StatusMessage, StatusResponse
 from app.shared.scheme.filter import FilteringOptionsRequest
-from app.shared.scheme.schedule import ScheduleTravelRequest, ScheduleTravelResponse, ScheduleTravelUpdateRequest
+from app.shared.scheme.schedule import ScheduleTravelRequest, ScheduleTravelResponse, ScheduleTravelUpdateRequest, \
+    ScheduleTravelFixedPointRequest
 from app.shared.scheme.schedule.status import ScheduleTravelStatusResponse
 from app.shared.types.enum import Status
 
 schedule_router = APIRouter(prefix="/schedule", tags=["Schedule travels"])
 
 
+@schedule_router.post("/dynamic", response_model=StatusMessage)
+async def schedule_new_travel_dynamic(schedule: ScheduleTravelRequest, schedule_case: ScheduleDependency,
+                              auth: AuthUserCodeAndRoleCredentials, background_tasks: BackgroundTasks):
+    code, role = auth
+    return await schedule_case.create(schedule, code, role, background_tasks)
+
+
 @schedule_router.post("/", response_model=StatusMessage)
-async def schedule_new_travel(schedule: ScheduleTravelRequest, schedule_case: ScheduleDependency,
-                              code: AuthUserCodeCredentials, background_tasks: BackgroundTasks):
-    return await schedule_case.create(schedule, code, background_tasks)
+async def schedule_new_travel(schedule: ScheduleTravelFixedPointRequest, schedule_case: ScheduleDependency,
+                              auth: AuthUserCodeAndRoleCredentials, background_tasks: BackgroundTasks):
+    code, role = auth
+    return await schedule_case.create(schedule, code, role, background_tasks)
 
 
 @schedule_router.get("/", response_model=StatusResponse[list[ScheduleTravelResponse]])
