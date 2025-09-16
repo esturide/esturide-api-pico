@@ -1,9 +1,11 @@
+import asyncio
+import random
 from typing import List
 
 from fastapi import APIRouter
 
 from app.core.exception import NotFoundException
-from app.shared.dependencies import NominatimDepend, UserIsAuthenticated
+from app.shared.dependencies import UserIsAuthenticated, GoogleGeolocationDepend
 from app.shared.scheme import StatusResponse
 from app.shared.scheme.location import GeoLocationModel, GeoLocationResultResponse, LocationAddressModel
 from app.shared.types.enum import Status
@@ -13,61 +15,65 @@ location_route = APIRouter(prefix="/location", tags=["Location address"])
 
 
 @location_route.post("/search", response_model=StatusResponse[List[GeoLocationResultResponse]])
-async def search_address(search: LocationAddressModel, geolocator: NominatimDepend, is_auth: UserIsAuthenticated):
-    if is_auth:
-        address = search.address
-
-        results = await async_task(
-            lambda s: geolocator.geocode(s, exactly_one=False),
-            address
-        )
-
-        if not results:
-            raise NotFoundException(
-                detail="No results were found for the specified address."
-            )
-
-        founds = []
-
-        for locations in results:
-            founds.append({
-                "address": locations.address,
-                "latitude": locations.latitude,
-                "longitude": locations.longitude
-            })
-
+async def search_address(search: LocationAddressModel, geolocator: GoogleGeolocationDepend, is_auth: UserIsAuthenticated):
+    if not is_auth:
         return {
-            "status": Status.success,
-            "data": founds,
+            "status": Status.failure,
+            "data": [],
         }
 
+    await asyncio.sleep(random.randint(1, 3))
+
+    address = search.address
+
+    results = await async_task(
+        lambda s: geolocator.geocode(s, exactly_one=False),
+        address
+    )
+
+    if not results:
+        raise NotFoundException(
+            detail="No results were found for the specified address."
+        )
+
+    founds = []
+
+    for locations in results:
+        founds.append({
+            "address": locations.address,
+            "latitude": locations.latitude,
+            "longitude": locations.longitude
+        })
+
     return {
-        "status": Status.failure,
-        "data": [],
+        "status": Status.success,
+        "data": founds,
     }
 
 
 @location_route.post("/reverse", response_model=StatusResponse[LocationAddressModel])
-async def search_address(location: GeoLocationModel, geolocator: NominatimDepend, is_auth: UserIsAuthenticated):
-    if is_auth:
-        coords = (location.latitude, location.longitude)
-
-        results = await async_task(
-            geolocator.reverse,
-            coords
-        )
-
-        if not results:
-            raise NotFoundException(
-                detail="No results were found for the specified geolocation."
-            )
-
+async def search_address(location: GeoLocationModel, geolocator: GoogleGeolocationDepend, is_auth: UserIsAuthenticated):
+    if not is_auth:
         return {
-            "status": Status.success,
-            "data": { "address": results.address },
+            "status": Status.failure,
+            "data": {"address": ""},
         }
 
+    await asyncio.sleep(random.randint(1, 3))
+
+    coords = (location.latitude, location.longitude)
+
+    results = await async_task(
+        geolocator.reverse,
+        coords
+    )
+
+    if not results:
+        raise NotFoundException(
+            detail="No results were found for the specified geolocation."
+        )
+
     return {
-        "status": Status.failure,
-            "data": { "address": "" },
+        "status": Status.success,
+        "data": { "address": results.address },
     }
