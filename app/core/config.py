@@ -10,6 +10,8 @@ class DefaultSettings(BaseSettings):
     algorithm: str
     access_token_expire_minutes: int
 
+    api_google_geolocation_key: str
+
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding='utf-8')
 
 
