@@ -1,10 +1,12 @@
 import datetime
 from typing import List, Optional
 
+from geopy.geocoders.base import Geocoder
 from pydantic import BaseModel, Field, field_validator, model_validator, NaiveDatetime, FutureDatetime
 
+from app.domain.service.location.geo import search_from_address
 from app.shared.const import DEFAULT_PRICE, DEFAULT_MIN_PRICE
-from app.shared.scheme.location import GeoLocationModel
+from app.shared.scheme.location import GeoLocationModel, GeoLocationAddressModel
 from app.shared.types import UUID
 from app.shared.types.enum.default_location import DefaultLocation, DEFAULT_LOCATION, get_gps_from_location
 
@@ -55,7 +57,7 @@ class ScheduleTravelFromAddressRequest(BaseModel):
     def check_if_valid_address(self):
         if self.return_home and self.origin not in DefaultLocation:
             raise ValueError("You can't return home from that direction.")
-        elif self.destination not in DefaultLocation:
+        elif not self.return_home and self.destination not in DefaultLocation:
             raise ValueError("You can't go to that address if you leave the house.")
 
         return self
@@ -64,7 +66,7 @@ class ScheduleTravelFromAddressRequest(BaseModel):
     def address_from_default_location(self) -> tuple[float, float]:
         if self.return_home and self.origin in DefaultLocation:
             return get_gps_from_location(DefaultLocation(self.origin))
-        elif self.destination in DefaultLocation:
+        elif not self.return_home and self.destination in DefaultLocation:
             return get_gps_from_location(DefaultLocation(self.destination))
 
         raise ValueError("Invalid location.")

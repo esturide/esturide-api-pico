@@ -6,7 +6,6 @@ from geopy.geocoders.base import Geocoder
 
 from app.core.exception import InvalidRequestException, NotFoundException
 from app.domain.service.auth import get_auth_service
-from app.domain.service.location import get_location_service
 from app.domain.service.schedule import get_schedule_service, ScheduleTravelService
 from app.domain.service.user import get_user_service
 from app.shared.const import DEFAULT_MAX_SCHEDULE_LIFETIME_SEC
@@ -14,7 +13,8 @@ from app.shared.models.schedule import ScheduleTravel
 from app.shared.scheme import StatusSuccess, StatusFailure
 from app.shared.scheme.filter import FilteringOptionsRequest
 from app.shared.scheme.respose.schedule import create_schedule_response, create_schedule_status_response
-from app.shared.scheme.schedule import ScheduleTravelResponse, ScheduleTravelUpdateRequest, ScheduleTravelFromAddressRequest
+from app.shared.scheme.schedule import ScheduleTravelResponse, ScheduleTravelUpdateRequest, \
+    ScheduleTravelFromAddressRequest
 from app.shared.scheme.schedule.status import ScheduleTravelStatusResponse
 from app.shared.types.enum import RoleUser
 
@@ -24,9 +24,9 @@ class ScheduleTravelUseCase:
         self.schedule_service = get_schedule_service()
         self.user_service = get_user_service()
         self.auth_service = get_auth_service()
-        # self.location_service = get_location_service()
 
-    async def create(self, req: ScheduleTravelFromAddressRequest, code: int, role: RoleUser, geocoder: Geocoder, background_tasks: BackgroundTasks):
+    async def create(self, req: ScheduleTravelFromAddressRequest, code: int, role: RoleUser, geocoder: Geocoder,
+                     background_tasks: BackgroundTasks):
         def create_task(schedule_service: ScheduleTravelService, schedule: ScheduleTravel):
             async def task():
                 await asyncio.sleep(DEFAULT_MAX_SCHEDULE_LIFETIME_SEC)
@@ -41,39 +41,6 @@ class ScheduleTravelUseCase:
             raise InvalidRequestException('Role must be driver.')
 
         user = await self.user_service.get(code)
-
-        """
-        if isinstance(req, ScheduleTravelFixedPointRequest):
-            if not self.location_service.is_local(req.a):
-                raise InvalidRequestException('Location out of range of the ZMG.')
-
-            req = ScheduleTravelRequest(
-                price=req.price,
-                max_passengers=req.max_passengers,
-                seats=req.seats,
-                start=req.origin,
-                end=req.destination,
-            )
-        elif isinstance(req, ScheduleTravelRequest):
-            if not self.location_service.is_local(req.origin) or not self.location_service.is_local(req.destination):
-                raise InvalidRequestException('Location out of range of the ZMG.')
-
-            if not user.is_valid_staff or not user.is_valid_driver:
-                raise InvalidRequestException('User does not have permission to request dynamic trips.')
-        elif isinstance(req, ScheduleTravelFromAddressRequest):
-            origins = await self.location_service.search(geocoder, req.origin)
-            destinations = await self.location_service.search(geocoder, req.destination)
-
-            req = ScheduleTravelRequest(
-                price=req.price,
-                max_passengers=req.max_passengers,
-                seats=req.seats,
-                start=origins[0],
-                end=destinations[0],
-            )
-        else:
-            raise ValueError("Invalid request type.")
-        """
 
         if not user.is_valid_driver:
             raise InvalidRequestException('User is not an approved driver.')
@@ -104,7 +71,13 @@ class ScheduleTravelUseCase:
             raise NotFoundException("Schedule not found.")
 
         if schedule.is_finished:
-            raise InvalidRequestException("You currently have no scheduled trips available.")
+            raise NotFoundException("You currently have no scheduled trips available.")
+
+        if schedule.lifetime_exceeded:
+            schedule.cancel = True
+            await self.schedule_service.save(schedule)
+
+            raise InvalidRequestException("Currently the trip has exceeded the life time limit.")
 
         return create_schedule_status_response(schedule)
 
