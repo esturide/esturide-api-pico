@@ -1,28 +1,47 @@
 import datetime
 import functools
 
+from geopy.geocoders.base import Geocoder
 from google.cloud.firestore import GeoPoint
 
+from app.domain.service.location.geo import search_from_address
 from app.infrestructure.repository.ride import RideRepository
 from app.infrestructure.repository.schedule import ScheduleRepository
+from app.shared.models.location import LocationModel
 from app.shared.models.ride import RideTravel
 from app.shared.models.schedule import ScheduleTravel
 from app.shared.models.user import User
 from app.shared.scheme.filter import FilteringOptionsRequest
-from app.shared.scheme.schedule import ScheduleTravelRequest
+from app.shared.scheme.schedule import ScheduleTravelFromAddressRequest
 from app.shared.types import UUID
 
 
 class ScheduleTravelService:
-    async def create(self, req: ScheduleTravelRequest, user: User) -> ScheduleTravel | None:
-        origin = GeoPoint(
-            latitude=req.origin.latitude,
-            longitude=req.origin.longitude,
+    async def create(self, geocoder: Geocoder, req: ScheduleTravelFromAddressRequest,
+                     user: User) -> ScheduleTravel | None:
+        origin_address_result = await search_from_address(geocoder, req.origin)
+        destination_address_result = await search_from_address(geocoder, req.destination)
+
+        if len(origin_address_result) == 0 or len(destination_address_result) == 0:
+            return None
+
+        origin_location = origin_address_result[0]
+        destination_location = destination_address_result[0]
+
+        origin = LocationModel(
+            location=GeoPoint(
+                latitude=origin_location.latitude,
+                longitude=origin_location.longitude,
+            ),
+            address=req.origin
         )
 
-        destination = GeoPoint(
-            latitude=req.destination.latitude,
-            longitude=req.destination.longitude,
+        destination = LocationModel(
+            location=GeoPoint(
+                latitude=destination_location.latitude,
+                longitude=destination_location.longitude,
+            ),
+            address=req.destination
         )
 
         schedule = ScheduleTravel(

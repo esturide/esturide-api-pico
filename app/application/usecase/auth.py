@@ -1,6 +1,6 @@
 import functools
 
-from app.core.exception import UnauthorizedAccessException, InvalidRequestException
+from app.core.exception import UnauthorizedAccessException
 from app.domain.service.auth import get_auth_service
 from app.shared.scheme.user import RoleUpdateRequest
 from app.shared.types import Token

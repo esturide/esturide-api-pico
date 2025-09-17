@@ -42,7 +42,13 @@ async def global_exception_handler(request, exc):
 
 
 async def validation_exception_handler(request, exc):
+    errors = exc.errors()
+    error_messages = []
+
+    for error in errors:
+        error_messages.append(error.get('msg', 'Error message not available.'))
+
     return JSONResponse(
         status_code=422,
-        content={"message": "Validation error", "details": exc.errors()},
+        content={"message": "Validation error.", "details": error_messages},
     )

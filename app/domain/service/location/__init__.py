@@ -1,4 +1,5 @@
 import functools
+
 from shapely.geometry import Point, Polygon, MultiPolygon
 
 from app.shared.scheme.location import GeoLocationModel
@@ -27,6 +28,7 @@ class LocationService:
             )
 
         return False
+
 
 @functools.lru_cache
 def get_location_service():
