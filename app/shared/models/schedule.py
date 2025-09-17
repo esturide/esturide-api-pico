@@ -24,10 +24,11 @@ class ScheduleTravel(Model):
     rides = ListField(ReferenceField(RideTravel), required=False)
     max_passengers = NumberField(default=3)
 
-    origin = GeoPoint(required=True)
-    destination = GeoPoint(required=True)
     price = NumberField(required=True)
     seats = ListField(TextField(), required=True)
+
+    origin = GeoPoint(required=True)
+    destination = GeoPoint(required=True)
 
     tracking = ListField(NestedModel(TrackingRecord), required=False)
 

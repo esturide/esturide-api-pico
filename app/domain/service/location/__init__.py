@@ -1,7 +1,10 @@
 import functools
+
+from geopy.geocoders.base import Geocoder
 from shapely.geometry import Point, Polygon, MultiPolygon
 
-from app.shared.scheme.location import GeoLocationModel
+from app.shared.scheme.location import GeoLocationModel, LocationAddressModel, GeoLocationAddressModel
+from app.shared.utils import async_task
 
 
 class LocationService:
@@ -27,6 +30,7 @@ class LocationService:
             )
 
         return False
+
 
 @functools.lru_cache
 def get_location_service():

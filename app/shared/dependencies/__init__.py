@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import Depends, File
 from fastapi.security import OAuth2PasswordRequestForm
 
-from geopy.geocoders import GoogleV3, Nominatim
+from geopy.geocoders.base import Geocoder
 
 from app.application.usecase.admin import AdminManagerUseCase, get_admin_manager_use_case
 from app.application.usecase.auth import AuthSessionUseCase, get_auth_session_case
@@ -26,8 +26,8 @@ AuthUserCodeAndRoleCredentials = Annotated[tuple[int, RoleUser], Depends(get_use
 UserIsAuthenticated = Annotated[bool, Depends(is_user_authenticated)]
 
 FileRequest = Annotated[bytes | None, File()]
-NominatimDepend = Annotated[Nominatim, Depends(get_nominatim_locator_agent)]
-GoogleGeolocationDepend = Annotated[GoogleV3, Depends(get_google_locator_agent)]
+NominatimDepend = Annotated[Geocoder, Depends(get_nominatim_locator_agent)]
+GoogleGeolocationDepend = Annotated[Geocoder, Depends(get_google_locator_agent)]
 
 UserDependency = Annotated[UserUseCase, Depends(get_user_use_case)]
 ScheduleDependency = Annotated[ScheduleTravelUseCase, Depends(get_schedule_use_case)]
