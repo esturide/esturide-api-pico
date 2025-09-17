@@ -15,7 +15,8 @@ location_route = APIRouter(prefix="/location", tags=["Location address"])
 
 
 @location_route.post("/search", response_model=StatusResponse[List[GeoLocationAddressModel]])
-async def search_address(search: LocationAddressModel, geolocator: GoogleGeolocationDepend, is_auth: UserIsAuthenticated):
+async def search_address(search: LocationAddressModel, geolocator: GoogleGeolocationDepend,
+                         is_auth: UserIsAuthenticated):
     if not is_auth:
         return {
             "status": Status.failure,
@@ -75,5 +76,5 @@ async def search_address(location: GeoLocationModel, geolocator: GoogleGeolocati
 
     return {
         "status": Status.success,
-        "data": { "address": results.address },
+        "data": {"address": results.address},
     }

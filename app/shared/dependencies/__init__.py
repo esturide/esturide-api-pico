@@ -2,7 +2,6 @@ from typing import Annotated
 
 from fastapi import Depends, File
 from fastapi.security import OAuth2PasswordRequestForm
-
 from geopy.geocoders.base import Geocoder
 
 from app.application.usecase.admin import AdminManagerUseCase, get_admin_manager_use_case

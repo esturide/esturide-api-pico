@@ -1,4 +1,4 @@
-from fireo.fields import IDField, DateTime, GeoPoint, TextField
+from fireo.fields import IDField, GeoPoint, TextField
 from fireo.models import Model
 
 

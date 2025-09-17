@@ -6,7 +6,8 @@ from app.shared.dependencies import ScheduleDependency, AuthUserCodeCredentials,
     AuthUserCodeAndRoleCredentials, GoogleGeolocationDepend
 from app.shared.scheme import StatusMessage, StatusResponse
 from app.shared.scheme.filter import FilteringOptionsRequest
-from app.shared.scheme.schedule import ScheduleTravelResponse, ScheduleTravelUpdateRequest, ScheduleTravelFromAddressRequest
+from app.shared.scheme.schedule import ScheduleTravelResponse, ScheduleTravelUpdateRequest, \
+    ScheduleTravelFromAddressRequest
 from app.shared.scheme.schedule.status import ScheduleTravelStatusResponse
 from app.shared.types.enum import Status
 
@@ -15,7 +16,8 @@ schedule_router = APIRouter(prefix="/schedule", tags=["Schedule travels"])
 
 @schedule_router.post("/", response_model=StatusMessage)
 async def schedule_new_travel(schedule: ScheduleTravelFromAddressRequest, schedule_case: ScheduleDependency,
-                              auth: AuthUserCodeAndRoleCredentials, geocoder: GoogleGeolocationDepend, background_tasks: BackgroundTasks):
+                              auth: AuthUserCodeAndRoleCredentials, geocoder: GoogleGeolocationDepend,
+                              background_tasks: BackgroundTasks):
     code, role = auth
     return await schedule_case.create(schedule, code, role, geocoder, background_tasks)
 

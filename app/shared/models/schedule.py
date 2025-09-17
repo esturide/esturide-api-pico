@@ -1,6 +1,6 @@
 import datetime
 
-from fireo.fields import TextField, IDField, DateTime, NumberField, ReferenceField, GeoPoint, ListField, BooleanField, \
+from fireo.fields import TextField, IDField, DateTime, NumberField, ReferenceField, ListField, BooleanField, \
     NestedModel
 from fireo.models import Model
 

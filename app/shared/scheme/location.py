@@ -22,6 +22,7 @@ class GeoLocationModel(BaseModel):
 
         raise ValueError('Invalid latitude.')
 
+
 class LocationAddressModel(BaseModel):
     address: str = Field("", alias='address')
 

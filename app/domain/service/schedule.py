@@ -17,7 +17,8 @@ from app.shared.types import UUID
 
 
 class ScheduleTravelService:
-    async def create(self, geocoder: Geocoder, req: ScheduleTravelFromAddressRequest, user: User) -> ScheduleTravel | None:
+    async def create(self, geocoder: Geocoder, req: ScheduleTravelFromAddressRequest,
+                     user: User) -> ScheduleTravel | None:
         origin_address_result = await search_from_address(geocoder, req.origin)
         destination_address_result = await search_from_address(geocoder, req.destination)
 

@@ -1,14 +1,12 @@
 import datetime
 from typing import List, Optional
 
-from geopy.geocoders.base import Geocoder
-from pydantic import BaseModel, Field, field_validator, model_validator, NaiveDatetime, FutureDatetime
+from pydantic import BaseModel, Field, field_validator, model_validator, FutureDatetime
 
-from app.domain.service.location.geo import search_from_address
-from app.shared.const import DEFAULT_PRICE, DEFAULT_MIN_PRICE
-from app.shared.scheme.location import GeoLocationModel, GeoLocationAddressModel
+from app.shared.const import DEFAULT_MIN_PRICE
+from app.shared.scheme.location import GeoLocationModel
 from app.shared.types import UUID
-from app.shared.types.enum.default_location import DefaultLocation, DEFAULT_LOCATION, get_gps_from_location
+from app.shared.types.enum.default_location import DefaultLocation, get_gps_from_location
 
 
 class CurrentUser(BaseModel):

@@ -1,10 +1,8 @@
 import functools
 
-from geopy.geocoders.base import Geocoder
 from shapely.geometry import Point, Polygon, MultiPolygon
 
-from app.shared.scheme.location import GeoLocationModel, LocationAddressModel, GeoLocationAddressModel
-from app.shared.utils import async_task
+from app.shared.scheme.location import GeoLocationModel
 
 
 class LocationService:
