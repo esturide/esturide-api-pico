@@ -23,9 +23,9 @@ class GeoLocationModel(BaseModel):
         raise ValueError('Invalid latitude.')
 
 
-class GeoLocationResultResponse(GeoLocationModel):
+class LocationAddressModel(BaseModel):
     address: str = Field("", alias='address')
 
 
-class LocationAddressModel(BaseModel):
+class GeoLocationAddressModel(GeoLocationModel):
     address: str = Field("", alias='address')

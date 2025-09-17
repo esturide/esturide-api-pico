@@ -9,7 +9,7 @@ record_route = APIRouter(prefix="/record", tags=["Record tracking route"])
 
 @record_route.post('/')
 async def user_location_tracking(tracking: TrackingDependency, location: GeoLocationModel,
-                          user_auth: AuthUserCodeAndRoleCredentials) -> StatusMessage:
+                                 user_auth: AuthUserCodeAndRoleCredentials) -> StatusMessage:
     code, role = user_auth
 
     return await tracking.register(code, role, location)
