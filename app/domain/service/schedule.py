@@ -7,6 +7,7 @@ from google.cloud.firestore import GeoPoint
 from app.domain.service.location.geo import search_from_address
 from app.infrestructure.repository.ride import RideRepository
 from app.infrestructure.repository.schedule import ScheduleRepository
+from app.shared.models.location import LocationModel
 from app.shared.models.ride import RideTravel
 from app.shared.models.schedule import ScheduleTravel
 from app.shared.models.user import User
@@ -23,17 +24,23 @@ class ScheduleTravelService:
         if len(origin_address_result) == 0 or len(destination_address_result) == 0:
             return None
 
-        origin = origin_address_result[0]
-        destination = destination_address_result[0]
+        origin_location = origin_address_result[0]
+        destination_location = destination_address_result[0]
 
-        origin = GeoPoint(
-            latitude=origin.latitude,
-            longitude=origin.longitude,
+        origin = LocationModel(
+            location=GeoPoint(
+                latitude=origin_location.latitude,
+                longitude=origin_location.longitude,
+            ),
+            address=req.origin
         )
 
-        destination = GeoPoint(
-            latitude=destination.latitude,
-            longitude=destination.longitude,
+        destination = LocationModel(
+            location=GeoPoint(
+                latitude=destination_location.latitude,
+                longitude=destination_location.longitude,
+            ),
+            address=req.destination
         )
 
         schedule = ScheduleTravel(

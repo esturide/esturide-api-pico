@@ -2,6 +2,7 @@ from fireo.fields import TextField, IDField, DateTime, NumberField, ReferenceFie
     NestedModel
 from fireo.models import Model
 
+from app.shared.models.location import LocationModel
 from app.shared.models.ride import RideTravel
 from app.shared.models.tracking import TrackingRecord
 from app.shared.models.user import User
@@ -27,8 +28,8 @@ class ScheduleTravel(Model):
     price = NumberField(required=True)
     seats = ListField(TextField(), required=True)
 
-    origin = GeoPoint(required=True)
-    destination = GeoPoint(required=True)
+    origin = NestedModel(LocationModel, required=True)
+    destination = NestedModel(LocationModel, required=True)
 
     tracking = ListField(NestedModel(TrackingRecord), required=False)
 
