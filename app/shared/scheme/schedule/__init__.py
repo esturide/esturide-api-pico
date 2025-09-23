@@ -108,7 +108,7 @@ class ScheduleTravelResponse(BaseModel):
 
 
 class ScheduleTravelUpdateRequest(BaseModel):
-    terminate: Optional[bool] = Field(None, alias='terminate')
-    cancel: Optional[bool] = Field(None, alias='cancel')
+    terminate: Optional[bool] = Field(default=None, alias='terminate')
+    cancel: Optional[bool] = Field(default=None, alias='cancel')
 
-    starting: Optional[datetime.datetime] = Field(None, title="Time starting", alias='starting')
+    starting: Optional[datetime.datetime] = Field(default=None, title="Time starting", alias='starting')

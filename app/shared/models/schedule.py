@@ -80,11 +80,11 @@ class ScheduleTravel(Model):
         if not isinstance(self.starting, datetime.datetime):
             return False
 
-        now = datetime.datetime.now()
-        time_difference = now - self.starting
+        now = datetime.datetime.now(datetime.timezone.utc)
+        # time_difference = now - self.starting
         eight_hours = datetime.timedelta(hours=DEFAULT_MAX_SCHEDULE_LIFETIME_HRS)
 
-        return time_difference > eight_hours
+        return now > self.starting + eight_hours
 
     @property
     def accepted_genres(self) -> List[Gender]:
