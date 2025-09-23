@@ -6,6 +6,7 @@ from pydantic import BaseModel, Field, field_validator, model_validator, FutureD
 from app.shared.const import DEFAULT_MIN_PRICE
 from app.shared.scheme.location import GeoLocationModel, GeoLocationAddressModel
 from app.shared.types import UUID
+from app.shared.types.enum import Gender
 from app.shared.types.enum.default_location import DefaultLocation, get_gps_from_location
 
 
@@ -32,9 +33,20 @@ class ScheduleTravelFromAddressRequest(BaseModel):
 
     start_date: FutureDatetime = Field(..., title="Date and time when the trip begins", alias='startDate')
 
-    price: int = Field(..., title="Price of the travel", alias='price')
-    max_passengers: int = Field(4, title="Max passengers", alias='maxPassengers')
+    price: int = Field(DEFAULT_MIN_PRICE, title="Price of the travel", alias='price')
     seats: List[str] = Field(['A', 'B', 'C'], title="All seats", alias='seats')
+
+    gender_filter: list[Gender] = Field(["male", "female"], title="Filter of genders", alias='genderFilter')
+
+    @field_validator('gender_filter')
+    @classmethod
+    def check_gender(cls, gender: list[Gender]):
+        if len(gender) > 2:
+            raise ValueError("There seems to be an error regarding the number of filters.")
+        elif len(gender) == 0:
+            raise ValueError('You cannot start a trip with these filters.')
+
+        return gender
 
     @field_validator('price')
     @classmethod
@@ -68,6 +80,10 @@ class ScheduleTravelFromAddressRequest(BaseModel):
             return get_gps_from_location(DefaultLocation(self.destination))
 
         raise ValueError("Invalid location.")
+
+    @property
+    def max_passengers(self):
+        return len(self.seats)
 
 
 class ScheduleTravelResponse(BaseModel):
