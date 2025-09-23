@@ -14,6 +14,7 @@ from app.shared.models.user import User
 from app.shared.scheme.filter import FilteringOptionsRequest
 from app.shared.scheme.schedule import ScheduleTravelFromAddressRequest
 from app.shared.types import UUID
+from app.shared.types.enum import Gender
 
 
 class ScheduleTravelService:
@@ -50,6 +51,7 @@ class ScheduleTravelService:
             destination=destination,
             price=req.price,
             seats=req.seats,
+            gender_filter=[gender.value for gender in req.gender_filter],
         )
 
         schedule.rides = []

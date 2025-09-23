@@ -1,4 +1,5 @@
 import datetime
+from typing import List
 
 from fireo.fields import TextField, IDField, DateTime, NumberField, ReferenceField, ListField, BooleanField, \
     NestedModel
@@ -9,6 +10,7 @@ from app.shared.models.location import LocationModel
 from app.shared.models.ride import RideTravel
 from app.shared.models.tracking import TrackingRecord
 from app.shared.models.user import User
+from app.shared.types.enum import Gender
 
 
 class ScheduleTravel(Model):
@@ -33,6 +35,8 @@ class ScheduleTravel(Model):
 
     origin = NestedModel(LocationModel, required=True)
     destination = NestedModel(LocationModel, required=True)
+
+    gender_filter = ListField(TextField(), required=True)
 
     tracking = ListField(NestedModel(TrackingRecord), required=False)
 
@@ -81,3 +85,10 @@ class ScheduleTravel(Model):
         eight_hours = datetime.timedelta(hours=DEFAULT_MAX_SCHEDULE_LIFETIME_HRS)
 
         return time_difference > eight_hours
+
+    @property
+    def accepted_genres(self) -> List[Gender]:
+        if isinstance(self.gender_filter, list):
+            return [Gender(gender) for gender in self.gender_filter]
+
+        return []

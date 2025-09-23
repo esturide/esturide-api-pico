@@ -1,8 +1,9 @@
 from app.shared.models.schedule import ScheduleTravel
-from app.shared.scheme.location import GeoLocationModel
+from app.shared.scheme.location import GeoLocationModel, GeoLocationAddressModel
 from app.shared.scheme.rides.status import RidePassengerResponse
 from app.shared.scheme.schedule import ScheduleTravelResponse, DriverUser, PassengerUser
 from app.shared.scheme.schedule.status import ScheduleTravelStatusResponse
+from app.shared.types.enum import Gender
 
 
 def create_schedule_response(schedule: ScheduleTravel) -> ScheduleTravelResponse:
@@ -88,14 +89,16 @@ def create_schedule_status_response(schedule: ScheduleTravel) -> ScheduleTravelS
 
             all_rides.append(ride_response_model)
 
-    origin = GeoLocationModel(
-        longitude=schedule.origin.longitude,
-        latitude=schedule.origin.latitude,
+    origin = GeoLocationAddressModel(
+        longitude=schedule.origin.location.longitude,
+        latitude=schedule.origin.location.latitude,
+        address=schedule.origin.address
     )
 
-    destination = GeoLocationModel(
-        longitude=schedule.destination.longitude,
-        latitude=schedule.destination.latitude,
+    destination = GeoLocationAddressModel(
+        longitude=schedule.destination.location.longitude,
+        latitude=schedule.destination.location.latitude,
+        address=schedule.destination.address
     )
 
     return ScheduleTravelStatusResponse(
@@ -111,4 +114,5 @@ def create_schedule_status_response(schedule: ScheduleTravel) -> ScheduleTravelS
         origin=origin,
         destination=destination,
         rides=all_rides,
+        genderFilter=schedule.accepted_genres
     )

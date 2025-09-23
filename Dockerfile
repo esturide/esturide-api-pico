@@ -1,4 +1,4 @@
-FROM python:3.12
+FROM python:3.13.7
 
 ENV PYTHONUNBUFFERED True
 ENV APP_HOME /app
