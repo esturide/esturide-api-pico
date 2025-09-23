@@ -4,7 +4,7 @@ from typing import List, Optional
 from pydantic import BaseModel, Field, field_validator, model_validator, FutureDatetime
 
 from app.shared.const import DEFAULT_MIN_PRICE
-from app.shared.scheme.location import GeoLocationModel
+from app.shared.scheme.location import GeoLocationModel, GeoLocationAddressModel
 from app.shared.types import UUID
 from app.shared.types.enum.default_location import DefaultLocation, get_gps_from_location
 
@@ -85,8 +85,8 @@ class ScheduleTravelResponse(BaseModel):
     max_passengers: int = Field(4, alias='maxPassengers')
     seats: List[str] = Field(['A', 'B', 'C'], title="All seats", alias='seats')
 
-    origin: GeoLocationModel
-    destination: GeoLocationModel
+    origin: GeoLocationAddressModel
+    destination: GeoLocationAddressModel
 
 
 class ScheduleTravelUpdateRequest(BaseModel):
