@@ -81,7 +81,6 @@ class ScheduleTravel(Model):
             return False
 
         now = datetime.datetime.now(datetime.timezone.utc)
-        # time_difference = now - self.starting
         eight_hours = datetime.timedelta(hours=DEFAULT_MAX_SCHEDULE_LIFETIME_HRS)
 
         return now > self.starting + eight_hours
