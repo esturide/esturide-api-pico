@@ -63,15 +63,6 @@ class ScheduleTravelFromAddressRequest(BaseModel):
 
         return self
 
-    @model_validator(mode="after")
-    def check_if_valid_address(self):
-        if self.return_home and self.origin not in DefaultLocation:
-            raise ValueError("You can't return home from that direction.")
-        elif not self.return_home and self.destination not in DefaultLocation:
-            raise ValueError("You can't go to that address if you leave the house.")
-
-        return self
-
     @property
     def address_from_default_location(self) -> tuple[float, float]:
         if self.return_home and self.origin in DefaultLocation:
