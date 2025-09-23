@@ -36,7 +36,7 @@ class ScheduleTravelFromAddressRequest(BaseModel):
     price: int = Field(DEFAULT_MIN_PRICE, title="Price of the travel", alias='price')
     seats: List[str] = Field(['A', 'B', 'C'], title="All seats", alias='seats')
 
-    gender_filter: list[Gender] = Field(["male", "female"], title="Filter of genders", alias='genderFilter')
+    gender_filter: List[Gender] = Field(["male", "female"], title="Filter of genders", alias='genderFilter')
 
     @field_validator('gender_filter')
     @classmethod
@@ -103,6 +103,8 @@ class ScheduleTravelResponse(BaseModel):
 
     origin: GeoLocationAddressModel
     destination: GeoLocationAddressModel
+
+    gender_filter: list[Gender] = Field(..., title="Filter of genders", alias='genderFilter')
 
 
 class ScheduleTravelUpdateRequest(BaseModel):

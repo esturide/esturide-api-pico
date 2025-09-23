@@ -3,6 +3,7 @@ from app.shared.scheme.location import GeoLocationModel, GeoLocationAddressModel
 from app.shared.scheme.rides.status import RidePassengerResponse
 from app.shared.scheme.schedule import ScheduleTravelResponse, DriverUser, PassengerUser
 from app.shared.scheme.schedule.status import ScheduleTravelStatusResponse
+from app.shared.types.enum import Gender
 
 
 def create_schedule_response(schedule: ScheduleTravel) -> ScheduleTravelResponse:
@@ -113,4 +114,5 @@ def create_schedule_status_response(schedule: ScheduleTravel) -> ScheduleTravelS
         origin=origin,
         destination=destination,
         rides=all_rides,
+        genderFilter=schedule.accepted_genres
     )
