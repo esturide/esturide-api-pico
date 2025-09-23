@@ -112,7 +112,9 @@ class ScheduleTravelUseCase:
         if req.starting is not None:
             schedule.starting = req.starting
 
-        status, schedule = await self.schedule_service.finished(schedule, req.cancel, req.terminate)
+        if any((req.cancel, req.terminate)):
+            status, schedule = await self.schedule_service.finished(schedule, req.cancel, req.terminate)
+
         status = await self.schedule_service.save(schedule)
 
         if status:
