@@ -1,5 +1,5 @@
 import datetime
-from typing import List, Optional
+from typing import Optional, Set
 
 from pydantic import BaseModel, Field, field_validator, model_validator, FutureDatetime
 
@@ -29,14 +29,14 @@ class PassengerUser(CurrentUser):
 class ScheduleTravelFromAddressRequest(BaseModel):
     origin: str | DefaultLocation = Field(..., title="Location where the schedule begins", alias='origin')
     destination: str | DefaultLocation = Field(..., title="Location where the schedule ends", alias='destination')
-    return_home: bool = Field(..., title="Indicates whether the trip is a return home", alias='returnHome')
+    return_home: Optional[bool] = Field(default=None, title="Indicates whether the trip is a return home", alias='returnHome')
 
     start_date: FutureDatetime = Field(..., title="Date and time when the trip begins", alias='startDate')
 
     price: int = Field(DEFAULT_MIN_PRICE, title="Price of the travel", alias='price')
-    seats: List[str] = Field(['A', 'B', 'C'], title="All seats", alias='seats')
+    seats: Set[str] = Field(['A', 'B', 'C'], title="All seats", alias='seats')
 
-    gender_filter: List[Gender] = Field(["male", "female"], title="Filter of genders", alias='genderFilter')
+    gender_filter: Set[Gender] = Field(["male", "female"], title="Filter of genders", alias='genderFilter')
 
     @field_validator('gender_filter')
     @classmethod
@@ -99,12 +99,12 @@ class ScheduleTravelResponse(BaseModel):
     terminated: Optional[datetime.datetime] = Field(..., title="Time finished", alias='terminated')
 
     max_passengers: int = Field(4, alias='maxPassengers')
-    seats: List[str] = Field(['A', 'B', 'C'], title="All seats", alias='seats')
+    seats: Set[str] = Field(['A', 'B', 'C'], title="All seats", alias='seats')
 
     origin: GeoLocationAddressModel
     destination: GeoLocationAddressModel
 
-    gender_filter: list[Gender] = Field(..., title="Filter of genders", alias='genderFilter')
+    gender_filter: Set[Gender] = Field(..., title="Filter of genders", alias='genderFilter')
 
 
 class ScheduleTravelUpdateRequest(BaseModel):
