@@ -21,14 +21,16 @@ def create_schedule_response(schedule: ScheduleTravel) -> ScheduleTravelResponse
         )
     )
 
-    origin = GeoLocationModel(
-        longitude=schedule.origin.longitude,
-        latitude=schedule.origin.latitude,
+    origin = GeoLocationAddressModel(
+        longitude=schedule.origin.location.longitude,
+        latitude=schedule.origin.location.latitude,
+        address=schedule.origin.address,
     )
 
-    destination = GeoLocationModel(
-        longitude=schedule.destination.longitude,
-        latitude=schedule.destination.latitude,
+    destination = GeoLocationAddressModel(
+        longitude=schedule.destination.location.longitude,
+        latitude=schedule.destination.location.latitude,
+        address=schedule.destination.address,
     )
 
     return ScheduleTravelResponse(
@@ -43,6 +45,7 @@ def create_schedule_response(schedule: ScheduleTravel) -> ScheduleTravelResponse
         seats=schedule.seats,
         origin=origin,
         destination=destination,
+        genderFilter=schedule.accepted_genres
     )
 
 

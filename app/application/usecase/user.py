@@ -1,9 +1,9 @@
 import functools
 
-from app.core.exception import ResponseException
+from app.core.exception import ResponseException, NotFoundException
 from app.domain.service.user import get_user_service
 from app.shared.scheme import StatusMessage, StatusSuccess, StatusFailure
-from app.shared.scheme.user import UserRequest, ProfileUpdateRequest
+from app.shared.scheme.user import UserRequest, ProfileUpdateRequest, UserResponse
 
 
 class UserUseCase:
@@ -27,6 +27,20 @@ class UserUseCase:
 
         return StatusFailure()
 
+    async def get(self, code: int):
+        user = await self.user_service.get(code)
+
+        if not user:
+            raise NotFoundException("User not found.")
+
+        return UserResponse(
+            code=code,
+            firstName=user.first_name,
+            maternalSurname=user.maternal_surname,
+            paternalSurname=user.paternal_surname,
+            email=user.email,
+            role=user.role,
+        )
 
 @functools.lru_cache
 def get_user_use_case() -> UserUseCase:
