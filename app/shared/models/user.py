@@ -2,6 +2,7 @@ from fireo.fields import TextField, IDField, DateTime, NumberField
 from fireo.models import Model
 
 from app.shared.encrypt import check_same_password
+from app.shared.fields import UserRoleField
 from app.shared.types.enum import RoleUser
 
 
@@ -26,7 +27,9 @@ class User(Model):
     phone_number = TextField()
     address = TextField()
 
-    role = TextField(default=RoleUser.not_verified.value, choices=[role.value for role in RoleUser])
+    # role = TextField(default=str(RoleUser.not_verified), choices=list(map(lambda r: str(r), RoleUser)))
+
+    role = UserRoleField(default=RoleUser.not_verified)
 
     def same_password(self, password) -> bool:
         return check_same_password(
