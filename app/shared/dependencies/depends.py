@@ -15,4 +15,4 @@ def get_nominatim_locator_agent() -> Geocoder:
 def get_google_locator_agent() -> Geocoder:
     settings = get_settings()
 
-    return GoogleV3(api_key=settings.api_google_geolocation_key)
+    return GoogleV3(api_key=settings.api_google_key)
