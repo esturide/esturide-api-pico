@@ -70,7 +70,16 @@ class ScheduleTravelService:
         return await ScheduleRepository.get_current(ride=ride)
 
     async def get_current(self, user: User) -> ScheduleTravel | None:
-        return await ScheduleRepository.get_current(user=user)
+        schedule = await ScheduleRepository.get_current(user=user)
+
+        if schedule is None:
+            return None
+
+        if schedule.lifetime_exceeded:
+            schedule.cancel = True
+            await self.save(schedule)
+
+        return schedule
 
     async def get_by_driver(self, user: User) -> list[ScheduleTravel]:
         return await ScheduleRepository.get_by_driver(user)
