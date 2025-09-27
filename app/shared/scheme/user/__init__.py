@@ -6,7 +6,7 @@ from pydantic_extra_types.phone_numbers import PhoneNumber
 from app.shared.types.enum import RoleUser
 
 
-class UserRequest(BaseModel):
+class UserProfile(BaseModel):
     code: int
 
     first_name: str = Field(..., title="firstName", alias="firstName")
@@ -27,6 +27,10 @@ class UserRequest(BaseModel):
             raise ValueError('The person must be over 18 years old.')
 
         return birth_date
+
+
+class UserRequest(UserProfile):
+    pass
 
 
 class UserResponse(BaseModel):
