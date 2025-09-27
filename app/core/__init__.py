@@ -25,9 +25,7 @@ def get_root_app() -> FastAPI:
         lifespan=lifespan,
     )
 
-    origins = [
-        "*",
-    ]
+    origins = settings.allowed_origins
 
     app.add_middleware(
         CORSMiddleware,

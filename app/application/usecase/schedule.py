@@ -1,5 +1,6 @@
 import asyncio
 import functools
+from typing import Optional
 
 from fastapi import BackgroundTasks
 from geopy.geocoders.base import Geocoder
@@ -63,6 +64,21 @@ class ScheduleTravelUseCase:
             message="New schedule traveled successfully."
         )
 
+    async def find_schedule_if_exist(self, code: int) -> Optional[ScheduleTravelStatusResponse]:
+        user = await self.user_service.get(code)
+        schedule = await self.schedule_service.get_current(user=user)
+
+        if schedule is None:
+            return None
+
+        if schedule.is_finished:
+            return None
+
+        if schedule.lifetime_exceeded:
+            return None
+
+        return create_schedule_status_response(schedule)
+
     async def get_current(self, code: int) -> ScheduleTravelStatusResponse:
         user = await self.user_service.get(code)
         schedule = await self.schedule_service.get_current(user=user)
@@ -74,10 +90,7 @@ class ScheduleTravelUseCase:
             raise NotFoundException("You currently have no scheduled trips available.")
 
         if schedule.lifetime_exceeded:
-            schedule.cancel = True
-            await self.schedule_service.save(schedule)
-
-            raise InvalidRequestException("Currently the trip has exceeded the life time limit.")
+            raise NotFoundException("The life limit has been exceeded.")
 
         return create_schedule_status_response(schedule)
 
