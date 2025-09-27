@@ -1,6 +1,7 @@
 import asyncio
 import contextlib
 import functools
+from typing import Optional
 
 from fastapi import BackgroundTasks
 
@@ -108,6 +109,15 @@ class RideUseCase:
             raise NotFoundException("Ride not found.")
 
         return schedule, ride
+
+    async def find_ride_if_exist(self, code: int) -> Optional[RideTravelStatusResponse]:
+        passenger = await self.user_service.get(code)
+        schedule, ride = await self.get_current_from_user(passenger)
+
+        if schedule.is_finished:
+            return None
+
+        return create_ride_response(schedule, ride)
 
     async def current(self, code: int) -> RideTravelStatusResponse:
         passenger = await self.user_service.get(code)
