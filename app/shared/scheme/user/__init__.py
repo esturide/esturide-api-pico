@@ -16,7 +16,6 @@ class UserProfile(BaseModel):
     birth_date: datetime.date = Field(..., title="Birth date", alias="birthDate", description="The user's birth date")
     phone_number: PhoneNumber = Field(..., title="Phone number", alias="phoneNumber")
     email: EmailStr = Field(..., title="Email", alias='email')
-    password: SecretStr
 
     @field_validator('birth_date')
     def check_age(cls, birth_date):
@@ -30,7 +29,7 @@ class UserProfile(BaseModel):
 
 
 class UserRequest(UserProfile):
-    pass
+    password: SecretStr
 
 
 class UserResponse(BaseModel):

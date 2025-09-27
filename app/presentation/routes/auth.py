@@ -86,9 +86,9 @@ async def refresh_role(token: OAuth2Scheme, req: RoleUpdateRequest, auth: AuthDe
     }
 
 
-@auth_route.get("/user", response_model=StatusResponse[UserResponse])
-async def get_user_from_token(code: AuthUserCodeCredentials, user: UserDependency):
-    user_profile = await user.get(code)
+@auth_route.get("/user", response_model=StatusResponse[UserProfile])
+async def get_profile(code: AuthUserCodeCredentials, user: UserDependency):
+    user_profile = await user.get_profile(code)
 
     return {
         "status": Status.success,
