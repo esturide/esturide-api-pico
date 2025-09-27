@@ -13,9 +13,9 @@ class DefaultSettings(BaseSettings):
 
     api_google_key: str
 
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding='utf-8')
-
     origin_cors: str
+
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding='utf-8', extra='ignore')
 
     @property
     def allowed_origins(self) -> typing.List[str]:
