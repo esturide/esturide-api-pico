@@ -9,7 +9,7 @@ check_router = APIRouter(
 )
 
 
-@check_router.get('/ride', response_model=StatusMessage)
+@check_router.get('/find/ride', response_model=StatusMessage)
 async def current_ride_found(ride: RideDependency, code: AuthUserCodeCredentials):
     is_found = await ride.find_ride_if_exist(code) is not None
 
@@ -19,7 +19,7 @@ async def current_ride_found(ride: RideDependency, code: AuthUserCodeCredentials
         return StatusFailure(message="You don't have a current ride.")
 
 
-@check_router.get('/schedule', response_model=StatusMessage)
+@check_router.get('/find/schedule', response_model=StatusMessage)
 async def current_schedule_found(schedule: ScheduleDependency, code: AuthUserCodeCredentials):
     is_found = await schedule.find_schedule_if_exist(code) is not None
 
