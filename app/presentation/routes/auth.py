@@ -4,7 +4,7 @@ from passlib.context import CryptContext
 from app.shared.dependencies import OAuth2Form, AuthDependency, OAuth2Scheme, AuthUserCodeCredentials, UserDependency
 from app.shared.scheme import StatusMessage, StatusResponse
 from app.shared.scheme.auth import AccessCredentialForm, AccessLogin, AccessCredential
-from app.shared.scheme.user import RoleUpdateRequest, UserProfile, UserResponse
+from app.shared.scheme.user import RoleUpdateRequest, UserProfile
 from app.shared.types.enum import Status, RoleUser
 
 auth_route = APIRouter(
@@ -94,4 +94,3 @@ async def get_profile(code: AuthUserCodeCredentials, user: UserDependency):
         "status": Status.success,
         "data": user_profile
     }
-

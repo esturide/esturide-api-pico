@@ -93,20 +93,15 @@ class RideUseCase:
             message="Ride created successfully."
         )
 
-    async def get_current_from_user(self, user: User) -> tuple[ScheduleTravel, RideTravel]:
+    async def get_current_from_user(self, user: User) -> tuple[ScheduleTravel | None, RideTravel | None]:
         all_rides = await self.ride_service.get_all_rides_from_user(user)
+
         if len(all_rides) == 0 or all([ride.is_finished for ride in all_rides]):
-            raise NotFoundException("You don't have any pending ride.")
+            return None, None
 
         ride = all_rides[0]
 
         schedule = await self.schedule_service.get_from_ride(ride)
-
-        if schedule is None:
-            raise NotFoundException("Schedule not found.")
-
-        if ride is None:
-            raise NotFoundException("Ride not found.")
 
         return schedule, ride
 
@@ -114,7 +109,16 @@ class RideUseCase:
         passenger = await self.user_service.get(code)
         schedule, ride = await self.get_current_from_user(passenger)
 
+        if schedule is None and ride is None:
+            return None
+
         if schedule.is_finished:
+            return None
+
+        if schedule is None:
+            return None
+
+        if ride is None:
             return None
 
         return create_ride_response(schedule, ride)
@@ -122,6 +126,12 @@ class RideUseCase:
     async def current(self, code: int) -> RideTravelStatusResponse:
         passenger = await self.user_service.get(code)
         schedule, ride = await self.get_current_from_user(passenger)
+
+        if schedule is None:
+            raise NotFoundException("Schedule not found.")
+
+        if ride is None:
+            raise NotFoundException("Ride not found.")
 
         if schedule.is_finished:
             raise ResourceNotFoundException("The scheduled trip has been cancelled.")
@@ -147,6 +157,12 @@ class RideUseCase:
     async def update(self, req: RideTravelUpdateRequest, code: int, role: RoleUser):
         passenger = await self.user_service.get(code)
         schedule, ride = await self.get_current_from_user(passenger)
+
+        if schedule is None:
+            raise NotFoundException("Schedule not found.")
+
+        if ride is None:
+            raise NotFoundException("Ride not found.")
 
         if req.cancel:
             return await self.cancel(passenger, role, schedule, ride)
