@@ -7,6 +7,9 @@ from app.shared.scheme.location import GeoLocationModel
 
 
 class FilteringOptionsRequest(BaseModel):
+    origin: str
+    destination: str
+
     terminate: bool = Field(False)
     cancel: bool = Field(False)
 
@@ -20,6 +23,8 @@ class FilteringOptionsRequest(BaseModel):
     destination: typing.Optional[GeoLocationModel] = Field(None)
 
     order_by_date: bool = Field(False, title="Order by date", alias='orderByDate')
+
+    seats: typing.Set[str] = Field(['A', 'B', 'C'], alias='seats')
 
     @model_validator(mode='after')
     def validate_dates(self) -> 'FilteringOptionsRequest':
