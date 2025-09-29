@@ -99,6 +99,7 @@ class ScheduleTravelService:
             price_range=(options.min_price, options.max_price),
             order_date=options.order_by_date,
             limit=limit,
+            seats=options.seats
         )
 
     async def save(self, schedule: ScheduleTravel) -> bool:

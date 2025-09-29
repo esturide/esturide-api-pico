@@ -30,8 +30,8 @@ def get_app():
     app.add_exception_handler(HTTPException, http_exception_handler)
     app.add_exception_handler(InvalidSignatureError, invalid_credentials_handler)
     app.add_exception_handler(RequestValidationError, validation_exception_handler)
-    app.add_exception_handler(FailedPrecondition, database_exception_handler)
     app.add_exception_handler(Exception, global_exception_handler)
+    # app.add_exception_handler(FailedPrecondition, database_exception_handler)
 
     app.include_router(root_router)
     app.include_router(auth_route)

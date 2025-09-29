@@ -1,8 +1,10 @@
+from typing import Optional
+
 from app.core.exception import InvalidRequestException
 from app.shared.models.ride import RideTravel
 from app.shared.models.schedule import ScheduleTravel
 from app.shared.models.user import User
-from app.shared.types import UUID
+from app.shared.types import UUID, SeatList, GenderList, Seats, Gender
 from app.shared.utils import async_task
 
 
@@ -15,8 +17,17 @@ class ScheduleRepository:
             terminated=None,
             price_range: tuple[float, float | None] = (1, None),
             order_date: bool = False,
-            limit: int = 10
+            limit: int = 10,
+            seats: Optional[SeatList] = None,
+            genders: Optional[GenderList] = None,
     ) -> list[ScheduleTravel]:
+        if seats is None:
+            seats = {Seats.A, Seats.C, Seats.B}
+
+        if genders is None:
+            genders = {Gender.male, Gender.female}
+
+
         def filter_schedule():
             min_price, max_price = price_range
 
@@ -41,7 +52,12 @@ class ScheduleRepository:
 
             return list(schedules.fetch(limit))
 
-        return await async_task(filter_schedule)
+        seats_filter = set([seat.value for seat in seats])
+        genders_filter = set([gender.value for gender in genders])
+
+        all_schedules = await async_task(filter_schedule)
+
+        return all_schedules
 
     @staticmethod
     async def get_from_uuid(uuid: UUID) -> ScheduleTravel:
