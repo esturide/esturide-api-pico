@@ -1,5 +1,6 @@
 from fastapi.responses import JSONResponse
 
+from app.shared.dependencies.depends import get_logger
 from app.shared.scheme import StatusMessage
 from app.shared.types.enum import Status
 
@@ -35,6 +36,10 @@ async def invalid_credentials_handler(request, exc):
 
 
 async def global_exception_handler(request, exc):
+    logger = get_logger()
+
+    logger.error(exc.errors())
+
     return JSONResponse(
         status_code=500,
         content={"detail": "An unexpected error occurred. Please try again later."}
@@ -42,11 +47,14 @@ async def global_exception_handler(request, exc):
 
 
 async def validation_exception_handler(request, exc):
+    logger = get_logger()
     errors = exc.errors()
     error_messages = []
 
     for error in errors:
         error_messages.append(error.get('msg', 'Error message not available.'))
+
+    logger.error(exc.errors())
 
     return JSONResponse(
         status_code=422,
@@ -55,10 +63,12 @@ async def validation_exception_handler(request, exc):
 
 
 async def database_exception_handler(request, exc):
+    logger = get_logger()
     error_response = StatusMessage(
         status=Status.failure,
-        message="Database error."
+        message="Error in database query."
     )
 
-    return JSONResponse(status_code=500, content=error_response.model_dump())
+    logger.error(exc.errors())
 
+    return JSONResponse(status_code=500, content=error_response.model_dump())

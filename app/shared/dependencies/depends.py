@@ -1,4 +1,5 @@
 import functools
+import logging
 
 from geopy.geocoders import GoogleV3, Nominatim
 from geopy.geocoders.base import Geocoder
@@ -16,3 +17,10 @@ def get_google_locator_agent() -> Geocoder:
     settings = get_settings()
 
     return GoogleV3(api_key=settings.api_google_key)
+
+@functools.lru_cache
+def get_logger() -> logging.Logger:
+    logger = logging.getLogger('uvicorn.error')
+    logger.setLevel(logging.DEBUG)
+
+    return logger
