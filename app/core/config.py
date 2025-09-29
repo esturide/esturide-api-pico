@@ -5,6 +5,10 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class DefaultSettings(BaseSettings):
+    cache_host: str
+    cache_port: str
+    cache_password: str
+
     db_credential: str
 
     secret_key: str

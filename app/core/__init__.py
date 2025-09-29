@@ -7,6 +7,7 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.gzip import GZipMiddleware
 
 from app.core.config import get_settings
+from app.shared.dependencies import get_cache
 
 DEFAULT_APP_NAME = "Esturide (p) API"
 
@@ -17,8 +18,13 @@ def get_root_app() -> FastAPI:
 
     @contextlib.asynccontextmanager
     async def lifespan(_app: FastAPI):
+        redis = get_cache()
+        redis.ping()
+
         fireo.connection(from_file=settings.db_credential)
+
         yield
+
 
     app = FastAPI(
         title=DEFAULT_APP_NAME,
