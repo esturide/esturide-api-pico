@@ -1,7 +1,4 @@
-import datetime
-import typing
-
-from fastapi import APIRouter, BackgroundTasks, Query
+from fastapi import APIRouter, BackgroundTasks
 
 from app.shared.dependencies import ScheduleDependency, AuthUserCodeCredentials, UserIsAuthenticated, \
     AuthUserCodeAndRoleCredentials, GoogleGeolocationDepend
@@ -45,43 +42,6 @@ async def filtering_schedule(options: FilteringOptionsRequest, limit: int, sched
     code, role = user_auth
 
     results = await schedule_case.search(code, role, options, limit)
-
-    return {
-        "status": Status.success,
-        "data": results,
-    }
-
-
-@schedule_router.get("/search", response_model=StatusResponse[list[ScheduleTravelResponse]])
-async def search_schedule(
-        schedule_case: ScheduleDependency,
-        user_auth: AuthUserCodeAndRoleCredentials,
-        terminate: bool = False,
-        cancel: bool = False,
-        starting: datetime.datetime | None = None,
-        terminated: datetime.datetime | None = None,
-        min_price: float = 1,
-        max_price: float | None = None,
-        limit: int = 10,
-        seats: typing.Set[str] = Query({'A', 'B', 'C'}, description="List of seats")
-):
-    code, role = user_auth
-    options = FilteringOptionsRequest(
-        terminate=terminate,
-        cancel=cancel,
-        starting=starting,
-        terminated=terminated,
-        min_price=min_price,
-        max_price=max_price,
-        seats=seats
-    )
-
-    results = await schedule_case.search(
-        code,
-        role,
-        options,
-        limit
-    )
 
     return {
         "status": Status.success,

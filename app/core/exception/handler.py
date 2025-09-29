@@ -52,3 +52,13 @@ async def validation_exception_handler(request, exc):
         status_code=422,
         content={"message": "Validation error.", "details": error_messages},
     )
+
+
+async def database_exception_handler(request, exc):
+    error_response = StatusMessage(
+        status=Status.failure,
+        message="Database error."
+    )
+
+    return JSONResponse(status_code=500, content=error_response.model_dump())
+

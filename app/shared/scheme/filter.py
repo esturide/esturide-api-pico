@@ -1,33 +1,32 @@
 import datetime
-import typing
+from typing import Optional
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, model_validator, field_validator
 
-from app.shared.scheme.location import GeoLocationModel
+from app.shared.types import SeatList, GenderList
 
 
 class FilteringOptionsRequest(BaseModel):
-    origin: str
-    destination: str
+    origin: Optional[str] = Field(default=None, alias='origin')
+    destination: Optional[str] = Field(default=None, alias='destination')
 
     terminate: bool = Field(False)
     cancel: bool = Field(False)
 
-    starting: typing.Optional[datetime.datetime] = Field(None)
-    terminated: typing.Optional[datetime.datetime] = Field(None)
+    starting: Optional[datetime.datetime] = Field(default=None, alias='starting', description='Start date and time')
+    terminated: Optional[datetime.datetime] = Field(default=None, alias='terminated', description='End date and time')
 
-    min_price: float = Field(1, ge=0)
-    max_price: typing.Optional[float] = Field(None)
+    min_price: float = Field(1, ge=1, alias='minPrice')
+    max_price: Optional[float] = Field(default=None, alias='maxPrice')
 
-    origin: typing.Optional[GeoLocationModel] = Field(None)
-    destination: typing.Optional[GeoLocationModel] = Field(None)
+    order_by_date: bool = Field(default=None, title="Order by date", alias='orderByDate')
 
-    order_by_date: bool = Field(False, title="Order by date", alias='orderByDate')
+    seats: SeatList = Field({'A', 'B', 'C'}, alias='seats')
 
-    seats: typing.Set[str] = Field(['A', 'B', 'C'], alias='seats')
+    gender: GenderList = Field({'male', 'female'}, alias='gender')
 
     @model_validator(mode='after')
-    def validate_dates(self) -> 'FilteringOptionsRequest':
+    def validate_dates(self):
         if self.max_price is not None:
             if self.min_price >= self.max_price:
                 raise ValueError('Invalid price.')
