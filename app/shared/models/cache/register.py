@@ -2,8 +2,6 @@ import datetime
 
 from redis_om import HashModel, Field
 
-from app.shared.dependencies.depends.db import get_cache
-
 
 class RegisterCustomer(HashModel):
     id: str = Field(index=True)
