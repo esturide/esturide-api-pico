@@ -51,3 +51,5 @@ httpx>=0.28.1
 fastapi-sse>=1.1.1
 shapely>=2.1.1
 redis-om>=1.0.3b0
+sqlalchemy>=2.0.43
+sqlalchemy.orm>=1.2.10
