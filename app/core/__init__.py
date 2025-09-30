@@ -22,6 +22,7 @@ def get_root_app() -> FastAPI:
         get_document_db()
 
         redis = get_async_cache()
+
         await redis.ping()
 
         yield
