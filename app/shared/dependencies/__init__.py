@@ -3,7 +3,8 @@ from typing import Annotated
 from fastapi import Depends, File
 from fastapi.security import OAuth2PasswordRequestForm
 from geopy.geocoders.base import Geocoder
-from redis import Redis
+from fireo.database import Database
+from redis.asyncio import Redis
 
 from app.application.usecase.admin import AdminManagerUseCase, get_admin_manager_use_case
 from app.application.usecase.auth import AuthSessionUseCase, get_auth_session_case
@@ -16,7 +17,7 @@ from app.core.oauth2 import oauth2_scheme
 from app.shared.credentials import get_user_code_from_credentials, is_user_authenticated, \
     get_user_code_and_role_code_from_credentials
 from app.shared.dependencies.depends import get_nominatim_locator_agent, get_google_locator_agent
-from app.shared.dependencies.depends.db import get_cache
+from app.shared.dependencies.depends.db import get_async_cache, get_document_db
 from app.shared.types import Token
 from app.shared.types.enum import RoleUser
 
@@ -39,4 +40,5 @@ TrackingDependency = Annotated[TrackingUseCase, Depends(get_tracking_use_case)]
 
 AuthDependency = Annotated[AuthSessionUseCase, Depends(get_auth_session_case)]
 
-CacheDependency = Annotated[Redis, Depends(get_cache)]
+DatabaseDependency = Annotated[Database, Depends(get_document_db)]
+CacheDependency = Annotated[Redis, Depends(get_async_cache)]
