@@ -10,9 +10,6 @@ services:
     volumes:
       - .:/app
       - .:/docs
-    depends_on:
-      - db
-      - cache
     networks:
       - net
 

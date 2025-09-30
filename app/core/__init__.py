@@ -6,9 +6,7 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.gzip import GZipMiddleware
 
 from app.core.config import get_settings
-from app.shared.dependencies import get_async_cache
-from app.shared.dependencies.depends.db import get_document_db
-
+from app.shared.dependencies.depends.database import get_document_db
 
 DEFAULT_APP_NAME = "Esturide (p) API"
 
@@ -21,13 +19,7 @@ def get_root_app() -> FastAPI:
     async def lifespan(_app: FastAPI):
         get_document_db()
 
-        redis = get_async_cache()
-
-        await redis.ping()
-
         yield
-
-        await redis.close()
 
 
     app = FastAPI(

@@ -5,11 +5,16 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class DefaultSettings(BaseSettings):
-    cache_host: str
-    cache_port: str
-    cache_password: str
+    db_cache_host: str
+    db_cache_port: int
+    db_cache_password: str
 
-    db_credential: str
+    db_sql_instance: str
+    db_sql_name: str
+    db_sql_password: str
+    db_sql_user: str
+
+    db_firebase_credential: str
 
     secret_key: str
     algorithm: str
@@ -27,5 +32,5 @@ class DefaultSettings(BaseSettings):
 
 
 @lru_cache
-def get_settings():
+def get_settings() -> DefaultSettings:
     return DefaultSettings()

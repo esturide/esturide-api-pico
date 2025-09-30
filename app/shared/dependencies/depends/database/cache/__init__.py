@@ -1,7 +1,5 @@
 import functools
 
-import fireo
-import fireo.database
 import redis
 import redis.asyncio
 
@@ -13,11 +11,11 @@ def get_async_cache():
     settings = get_settings()
 
     redis_client = redis.asyncio.Redis(
-        host=settings.cache_host,
-        port=settings.cache_port,
+        host=settings.db_cache_host,
+        port=settings.db_cache_port,
         decode_responses=True,
         username="default",
-        password=settings.cache_password,
+        password=settings.db_cache_password,
     )
 
     return redis_client
@@ -28,18 +26,11 @@ def get_cache():
     settings = get_settings()
 
     redis_client = redis.Redis(
-        host=settings.cache_host,
-        port=settings.cache_port,
+        host=settings.db_cache_host,
+        port=settings.db_cache_port,
         decode_responses=True,
         username="default",
-        password=settings.cache_password,
+        password=settings.db_cache_password,
     )
 
     return redis_client
-
-
-@functools.lru_cache
-def get_document_db() -> fireo.database.Database:
-    settings = get_settings()
-
-    return fireo.connection(from_file=settings.db_credential)
