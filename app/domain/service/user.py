@@ -1,36 +1,44 @@
 import functools
 from datetime import datetime
 
-from app.infrestructure.repository.user import UserRepository
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.infrestructure.repository.sql.UserCostumerRepository import UserCostumerRepository
 from app.shared.encrypt import salty_password
-from app.shared.models.user import User
+from app.shared.models.database import UserCustomer
 from app.shared.scheme.user import UserRequest
 
 
 class UserService:
-    async def get(self, code: int):
-        return await UserRepository.get_user_by_code(code)
+    def __init__(self):
+        self.users_repository = UserCostumerRepository()
 
-    async def create(self, req: UserRequest):
+    async def get(self, session: AsyncSession, usercode: int) -> UserCustomer | None:
+        return await self.users_repository.get_user_by_usercode(session, usercode)
+
+    async def create(self, session: AsyncSession, req: UserRequest) -> bool:
         salt, hashed_password = salty_password(req.password.get_secret_value())
         birth_date = datetime.combine(req.birth_date, datetime.min.time())
 
-        user = User(
-            code=req.code,
-            first_name=req.first_name,
+        user = UserCustomer(
+            usercode=req.usercode,
+            hashed_password=hashed_password,
+            salt=salt,
+            firstname=req.firstname,
             paternal_surname=req.paternal_surname,
             maternal_surname=req.maternal_surname,
             birth_date=birth_date,
-            email=req.email,
+            email=str(req.email),
             curp=req.curp,
             phone_number=req.phone_number,
-            hashed_password=hashed_password,
-            salt=salt,
+            address=req.address
         )
 
-        return await UserRepository.save(user)
+        status = await self.users_repository.save(session, user)
 
-    async def delete(self, code: int):
+        return status is not None
+
+    async def delete(self, session: AsyncSession, code: int):
         pass
 
 

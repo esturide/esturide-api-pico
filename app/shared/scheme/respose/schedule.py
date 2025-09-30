@@ -10,8 +10,8 @@ def create_schedule_response(schedule: ScheduleTravel) -> ScheduleTravelResponse
     all_passengers = schedule.rides
 
     driver_response = DriverUser(
-        code=driver.code,
-        firstName=driver.first_name,
+        code=driver.usercode,
+        firstName=driver.firstname,
         maternalSurname=driver.maternal_surname,
         paternalSurname=driver.paternal_surname,
         position=GeoLocationModel(
@@ -53,8 +53,8 @@ def create_schedule_status_response(schedule: ScheduleTravel) -> ScheduleTravelS
     all_passengers = schedule.rides
 
     driver_response = DriverUser(
-        code=driver.code,
-        firstName=driver.first_name,
+        code=driver.usercode,
+        firstName=driver.firstname,
         maternalSurname=driver.maternal_surname,
         paternalSurname=driver.paternal_surname,
         position=GeoLocationModel(
@@ -70,8 +70,8 @@ def create_schedule_status_response(schedule: ScheduleTravel) -> ScheduleTravelS
             passenger = ride.passenger
 
             passenger_user_model = PassengerUser(
-                code=passenger.code,
-                firstName=passenger.first_name,
+                code=passenger.usercode,
+                firstName=passenger.firstname,
                 maternalSurname=passenger.maternal_surname,
                 paternalSurname=passenger.paternal_surname,
                 position=GeoLocationModel(

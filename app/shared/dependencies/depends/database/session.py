@@ -1,8 +1,10 @@
+import contextlib
+
 from sqlalchemy.ext.asyncio import async_sessionmaker
 from sqlalchemy.orm import sessionmaker
 
 from app.shared.dependencies.depends.database.cache import get_cache
-from app.shared.dependencies.depends.database.sql import get_sql_db
+from app.shared.dependencies.depends.database.sql import get_sql_db, get_sql_async_db
 
 
 def get_session_sql_db():
@@ -17,8 +19,11 @@ def get_session_sql_db():
         db.close()
 
 
+@contextlib.asynccontextmanager
 async def get_session_sql_async_db():
-    engine = get_sql_db()
+    engine = get_sql_async_db()
+    await engine.connect()
+
     AsyncSessionLocal = async_sessionmaker(bind=engine, autocommit=False, autoflush=False)
 
     async with AsyncSessionLocal() as session:

@@ -16,6 +16,8 @@ class DefaultSettings(BaseSettings):
 
     db_firebase_credential: str
 
+    google_application_credentials: str
+
     secret_key: str
     algorithm: str
     access_token_expire_minutes: int

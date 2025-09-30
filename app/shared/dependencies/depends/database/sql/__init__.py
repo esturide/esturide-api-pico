@@ -1,5 +1,7 @@
 import functools
 
+import google.auth
+
 from google.cloud.sql.connector import Connector
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 from sqlalchemy import create_engine
@@ -10,7 +12,9 @@ from app.core import get_settings
 @functools.lru_cache()
 def get_sql_db():
     settings = get_settings()
-    connector = Connector()
+
+    credentials, project = google.auth.load_credentials_from_file(settings.google_application_credentials)
+    connector = Connector(credentials=credentials)
 
     def getconn():
         conn = connector.connect(
@@ -31,7 +35,9 @@ def get_sql_db():
 @functools.lru_cache()
 def get_sql_async_db():
     settings = get_settings()
-    connector = Connector()
+
+    credentials, project = google.auth.load_credentials_from_file(settings.google_application_credentials)
+    connector = Connector(credentials=credentials)
 
     def getconn():
         conn = connector.connect(
@@ -41,6 +47,7 @@ def get_sql_async_db():
             password=settings.db_sql_password,
             db=settings.db_sql_name,
         )
+
         return conn
 
     return create_async_engine(

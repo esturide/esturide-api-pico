@@ -38,7 +38,8 @@ async def invalid_credentials_handler(request, exc):
 async def global_exception_handler(request, exc):
     logger = get_logger()
 
-    logger.error(exc.errors())
+    if hasattr(exc, "errors"):
+        logger.error(exc.errors())
 
     return JSONResponse(
         status_code=500,

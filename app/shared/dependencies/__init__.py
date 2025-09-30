@@ -5,7 +5,8 @@ from fastapi.security import OAuth2PasswordRequestForm
 from geopy.geocoders.base import Geocoder
 from fireo.database import Database as FirebaseDatabase
 from redis.asyncio import Redis as RedisCache
-from sqlalchemy.orm import Session as SQLSession
+from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.application.usecase.admin import AdminManagerUseCase, get_admin_manager_use_case
 from app.application.usecase.auth import AuthSessionUseCase, get_auth_session_case
@@ -20,7 +21,8 @@ from app.shared.credentials import get_user_code_from_credentials, is_user_authe
 from app.shared.dependencies.depends import get_nominatim_locator_agent, get_google_locator_agent
 from app.shared.dependencies.depends.database import get_document_db
 from app.shared.dependencies.depends.database.cache import get_async_cache
-from app.shared.dependencies.depends.database.session import get_session_sql_db, get_session_redis_cache
+from app.shared.dependencies.depends.database.session import get_session_sql_db, get_session_redis_cache, \
+    get_session_sql_async_db
 from app.shared.types import Token
 from app.shared.types.enum import RoleUser
 
@@ -45,5 +47,6 @@ AuthDependency = Annotated[AuthSessionUseCase, Depends(get_auth_session_case)]
 
 FirebaseDependency = Annotated[FirebaseDatabase, Depends(get_document_db)]
 RedisDependency = Annotated[RedisCache, Depends(get_async_cache)]
-SessionDatabase = Annotated[SQLSession, Depends(get_session_sql_db)]
+SessionDatabase = Annotated[Session, Depends(get_session_sql_db)]
+AsyncSessionDatabase = Annotated[AsyncSession, Depends(get_session_sql_async_db)]
 SessionCache = Annotated[RedisCache, Depends(get_session_redis_cache)]

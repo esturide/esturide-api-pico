@@ -1,63 +1,67 @@
 import functools
 
+from pydantic import EmailStr
+from pydantic_extra_types.phone_numbers import PhoneNumber
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.core.exception import NotFoundException, UnauthorizedAccessException
-from app.domain.service.user import get_user_service
+from app.domain.service.user import UserService
 from app.shared.scheme import StatusMessage, StatusSuccess, StatusFailure
 from app.shared.scheme.user import UserRequest, ProfileUpdateRequest, UserResponse, UserProfile
 
 
 class UserUseCase:
     def __init__(self):
-        self.user_service = get_user_service()
+        self.user_service = UserService()
 
-    async def create(self, user: UserRequest) -> StatusMessage:
-        status = await self.user_service.create(user)
+    async def create(self, session: AsyncSession, user: UserRequest) -> StatusMessage:
+        status = await self.user_service.create(session, user)
 
         return StatusSuccess() if status else StatusFailure()
 
-    async def update(self, code: int, req: ProfileUpdateRequest, auth_user: int) -> StatusMessage:
+    async def update(self, session: AsyncSession, code: int, req: ProfileUpdateRequest, auth_user: int) -> StatusMessage:
         if not code == auth_user:
             raise UnauthorizedAccessException("Invalid code.")
 
         return StatusFailure()
 
-    async def delete(self, code: int, auth_user: int) -> StatusMessage:
+    async def delete(self, session: AsyncSession, code: int, auth_user: int) -> StatusMessage:
         if not code == auth_user:
             raise UnauthorizedAccessException("Invalid code.")
 
         return StatusFailure()
 
-    async def get(self, code: int) -> UserResponse:
-        user = await self.user_service.get(code)
+    async def get(self, session: AsyncSession, usercode: int) -> UserResponse:
+        user = await self.user_service.get(usercode)
 
         if not user:
             raise NotFoundException("User not found.")
 
         return UserResponse(
-            code=code,
-            firstName=user.first_name,
+            code=usercode,
+            firstName=user.firstname,
             maternalSurname=user.maternal_surname,
             paternalSurname=user.paternal_surname,
-            email=user.email,
+            email=EmailStr(user.email),
             role=user.role,
         )
 
-    async def get_profile(self, code: int) -> UserProfile:
+    async def get_profile(self, session: AsyncSession, code: int) -> UserProfile:
         user = await self.user_service.get(code)
 
         if not user:
             raise NotFoundException("User not found.")
 
         return UserProfile(
-            code=code,
-            firstName=user.first_name,
+            usercode=code,
+            firstName=user.firstname,
             maternalSurname=user.maternal_surname,
             paternalSurname=user.paternal_surname,
             curp=user.curp,
             birthDate=user.birth_date,
-            phoneNumber=user.phone_number,
-            email=user.email,
-            role=user.role,
+            phoneNumber=PhoneNumber(user.phone_number),
+            email=EmailStr(user.email),
+            address=user.address
         )
 
 
