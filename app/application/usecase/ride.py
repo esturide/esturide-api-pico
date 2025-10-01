@@ -7,12 +7,13 @@ from fastapi import BackgroundTasks
 
 from app.core.exception import NotFoundException, InvalidRequestException, ResourceNotFoundException
 from app.domain.service.ride import get_ride_service, RideService
-from app.domain.service.schedule import get_schedule_service
-from app.domain.service.user import get_user_service
+from app.domain.service.schedule import get_schedule_service, ScheduleTravelService
+from app.domain.service.user import UserService
 from app.shared.const import DEFAULT_MAX_RIDE_LIFETIME_SEC
 from app.shared.models.ride import RideTravel
 from app.shared.models.schedule import ScheduleTravel
 from app.shared.models.user import User
+from app.shared.pattern.singleton import Singleton
 from app.shared.scheme import StatusFailure, StatusSuccess
 from app.shared.scheme.respose.ride import create_ride_response
 from app.shared.scheme.rides import RideTravelUpdateRequest, RideTravelRequest
@@ -21,11 +22,11 @@ from app.shared.types import UUID
 from app.shared.types.enum import RoleUser
 
 
-class RideUseCase:
+class RideUseCase(metaclass=Singleton):
     def __init__(self):
-        self.ride_service = get_ride_service()
-        self.schedule_service = get_schedule_service()
-        self.user_service = get_user_service()
+        self.ride_service = RideService()
+        self.schedule_service = ScheduleTravelService()
+        self.user_service = UserService()
 
     @contextlib.asynccontextmanager
     async def delete_ride(self, passenger: User, schedule: ScheduleTravel, ride: RideTravel):

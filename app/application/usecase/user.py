@@ -1,14 +1,14 @@
 import functools
 
 from app.core.exception import NotFoundException, UnauthorizedAccessException
-from app.domain.service.user import get_user_service
+from app.domain.service.user import UserService
 from app.shared.scheme import StatusMessage, StatusSuccess, StatusFailure
 from app.shared.scheme.user import UserRequest, ProfileUpdateRequest, UserResponse, UserProfile
 
 
 class UserUseCase:
     def __init__(self):
-        self.user_service = get_user_service()
+        self.user_service = UserService()
 
     async def create(self, user: UserRequest) -> StatusMessage:
         status = await self.user_service.create(user)

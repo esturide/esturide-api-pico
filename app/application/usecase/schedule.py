@@ -6,9 +6,9 @@ from fastapi import BackgroundTasks
 from geopy.geocoders.base import Geocoder
 
 from app.core.exception import InvalidRequestException, NotFoundException
-from app.domain.service.auth import get_auth_service
+from app.domain.service.auth import AuthenticationCredentialsService
 from app.domain.service.schedule import get_schedule_service, ScheduleTravelService
-from app.domain.service.user import get_user_service
+from app.domain.service.user import UserService
 from app.shared.const import DEFAULT_MAX_SCHEDULE_LIFETIME_SEC
 from app.shared.models.schedule import ScheduleTravel
 from app.shared.scheme import StatusSuccess, StatusFailure
@@ -23,8 +23,8 @@ from app.shared.types.enum import RoleUser
 class ScheduleTravelUseCase:
     def __init__(self):
         self.schedule_service = get_schedule_service()
-        self.user_service = get_user_service()
-        self.auth_service = get_auth_service()
+        self.user_service = UserService()
+        self.auth_service = AuthenticationCredentialsService()
 
     async def create(self, req: ScheduleTravelFromAddressRequest, code: int, role: RoleUser, geocoder: Geocoder,
                      background_tasks: BackgroundTasks):

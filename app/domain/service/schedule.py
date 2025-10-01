@@ -11,12 +11,17 @@ from app.shared.models.location import LocationModel
 from app.shared.models.ride import RideTravel
 from app.shared.models.schedule import ScheduleTravel
 from app.shared.models.user import User
+from app.shared.pattern.singleton import Singleton
 from app.shared.scheme.filter import FilteringOptionsRequest
 from app.shared.scheme.schedule import ScheduleTravelFromAddressRequest
 from app.shared.types import UUID
 
 
-class ScheduleTravelService:
+class ScheduleTravelService(metaclass=Singleton):
+    def __init__(self):
+        self.ride_repository = RideRepository()
+        self.schedule_repository = ScheduleRepository()
+
     async def create(self, geocoder: Geocoder, req: ScheduleTravelFromAddressRequest,
                      user: User) -> ScheduleTravel | None:
         origin_address_result = await search_from_address(geocoder, req.origin)
@@ -56,7 +61,7 @@ class ScheduleTravelService:
         schedule.rides = []
         schedule.tracking = []
 
-        status = await ScheduleRepository.save(schedule)
+        status = await self.schedule_repository.save(schedule)
 
         if status:
             return schedule
@@ -64,13 +69,13 @@ class ScheduleTravelService:
         return None
 
     async def get(self, uuid: UUID) -> ScheduleTravel:
-        return await ScheduleRepository.get_from_uuid(uuid)
+        return await self.schedule_repository.get_from_uuid(uuid)
 
     async def get_from_ride(self, ride: RideTravel) -> ScheduleTravel | None:
-        return await ScheduleRepository.get_current(ride=ride)
+        return await self.schedule_repository.get_current(ride=ride)
 
     async def get_current(self, user: User) -> ScheduleTravel | None:
-        schedule = await ScheduleRepository.get_current(user=user)
+        schedule = await self.schedule_repository.get_current(user=user)
 
         if schedule is None:
             return None
@@ -82,16 +87,16 @@ class ScheduleTravelService:
         return schedule
 
     async def get_by_driver(self, user: User) -> list[ScheduleTravel]:
-        return await ScheduleRepository.get_by_driver(user)
+        return await self.schedule_repository.get_by_driver(user)
 
     async def get_by_passenger(self, user: User) -> list[ScheduleTravel]:
-        return await ScheduleRepository.get_by_passenger(user)
+        return await self.schedule_repository.get_by_passenger(user)
 
     async def all(self, limit=10) -> list[ScheduleTravel]:
-        return await ScheduleRepository.get_all(limit)
+        return await self.schedule_repository.get_all(limit)
 
     async def filtering(self, options: FilteringOptionsRequest, limit: int) -> list[ScheduleTravel]:
-        return await ScheduleRepository.filtering(
+        return await self.schedule_repository.filtering(
             terminate=options.terminate,
             cancel=options.cancel,
             starting=options.starting,
@@ -103,7 +108,7 @@ class ScheduleTravelService:
         )
 
     async def save(self, schedule: ScheduleTravel) -> bool:
-        return await ScheduleRepository.update(schedule)
+        return await self.schedule_repository.update(schedule)
 
     async def finished(self, schedule: ScheduleTravel, cancel=None, terminate=None) -> tuple[bool, ScheduleTravel]:
         if terminate is not None:
@@ -116,9 +121,9 @@ class ScheduleTravelService:
         if isinstance(schedule.rides, list):
             for rides in schedule.rides:
                 rides.cancel = True
-                await RideRepository.save(rides)
+                await self.ride_repository.save(rides)
 
-        status = await ScheduleRepository.save(schedule)
+        status = await self.schedule_repository.save(schedule)
 
         return status, schedule
 

@@ -1,16 +1,18 @@
 from typing import Optional
 
 from app.core.exception import InvalidRequestException
+from app.infrestructure.repository.firebase import AsyncSessionRepository
 from app.shared.models.ride import RideTravel
 from app.shared.models.schedule import ScheduleTravel
 from app.shared.models.user import User
+from app.shared.pattern.singleton import Singleton
 from app.shared.types import UUID, SeatList, GenderList, Seats, Gender
 from app.shared.utils import async_task
 
 
-class ScheduleRepository:
-    @staticmethod
+class ScheduleRepository(AsyncSessionRepository, metaclass=Singleton):
     async def filtering(
+            self,
             terminate=False,
             cancel=False,
             starting=None,
@@ -59,15 +61,13 @@ class ScheduleRepository:
 
         return all_schedules
 
-    @staticmethod
-    async def get_from_uuid(uuid: UUID) -> ScheduleTravel:
+    async def get_from_uuid(self, uuid: UUID) -> ScheduleTravel:
         def get_schedule():
             return ScheduleTravel.collection.get(id=uuid)
 
         return await async_task(get_schedule)
 
-    @staticmethod
-    async def get_current(user: User | None = None, ride: RideTravel | None = None, *args) -> ScheduleTravel | None:
+    async def get_current(self, user: User | None = None, ride: RideTravel | None = None, *args) -> ScheduleTravel | None:
         def filter_schedule_task_driver():
             return list(ScheduleTravel.collection
                         .filter(driver=user)
@@ -93,8 +93,7 @@ class ScheduleRepository:
 
         return all_schedule[0]
 
-    @staticmethod
-    async def get_by_driver(user: User, limit=10) -> list[ScheduleTravel]:
+    async def get_by_driver(self, user: User, limit=10) -> list[ScheduleTravel]:
         if limit <= 1:
             raise InvalidRequestException("Limit must be greater than 1.")
 
@@ -109,8 +108,7 @@ class ScheduleRepository:
 
         return all_schedule
 
-    @staticmethod
-    async def get_by_passenger(user: User, limit=10) -> list[ScheduleTravel]:
+    async def get_by_passenger(self, user: User, limit=10) -> list[ScheduleTravel]:
         if limit <= 1:
             raise InvalidRequestException("Limit must be greater than 1.")
 
@@ -123,8 +121,7 @@ class ScheduleRepository:
 
         return await async_task(filter_schedule_task, user)
 
-    @staticmethod
-    async def get_all(limit=10):
+    async def get_all(self, limit=10):
         if limit <= 1:
             raise InvalidRequestException("Limit must be greater than 1.")
 
@@ -135,21 +132,3 @@ class ScheduleRepository:
                         .fetch())
 
         return await async_task(filter_schedule_task)
-
-    @staticmethod
-    async def save(schedule: ScheduleTravel):
-        def save_schedule(s):
-            try:
-                s.save()
-            except TypeError:
-                return False
-            else:
-                return True
-
-        return await async_task(save_schedule, schedule)
-
-    @staticmethod
-    async def update(schedule: ScheduleTravel):
-        await async_task(lambda s: s.update(), schedule)
-
-        return True

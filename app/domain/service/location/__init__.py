@@ -1,11 +1,10 @@
-import functools
-
 from shapely.geometry import Point, Polygon, MultiPolygon
 
+from app.shared.pattern.singleton import Singleton
 from app.shared.scheme.location import GeoLocationModel
 
 
-class LocationService:
+class LocationService(metaclass=Singleton):
     GDL = Polygon([(-103.38, 20.67), (-103.35, 20.67), (-103.35, 20.65), (-103.38, 20.65)])
     ZAPOPAN = Polygon([(-103.45, 20.75), (-103.40, 20.75), (-103.40, 20.70), (-103.45, 20.70)])
     TLAQUEPAQUE = Polygon([(-103.35, 20.65), (-103.30, 20.65), (-103.30, 20.60), (-103.35, 20.60)])
@@ -28,8 +27,3 @@ class LocationService:
             )
 
         return False
-
-
-@functools.lru_cache
-def get_location_service():
-    return LocationService()

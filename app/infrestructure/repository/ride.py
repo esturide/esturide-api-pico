@@ -1,21 +1,22 @@
 import datetime
 
+from app.infrestructure.repository.firebase import AsyncSessionRepository
 from app.shared.models.ride import RideTravel
 from app.shared.models.user import User
+from app.shared.pattern.singleton import Singleton
 from app.shared.types import UUID
 from app.shared.utils import async_task
 
 
-class RideRepository:
-    @staticmethod
-    async def get(uuid: UUID) -> RideTravel | None:
+class RideRepository(AsyncSessionRepository, metaclass=Singleton):
+    async def get(self, uuid: UUID) -> RideTravel | None:
         def get_ride():
             return RideTravel.collection.get(id=uuid)
 
         return await async_task(get_ride)
 
-    @staticmethod
     async def filter(
+            self,
             passenger: User,
             over=False,
             order_date=True,
@@ -44,15 +45,3 @@ class RideRepository:
             return list(rides.fetch(limit))
 
         return await async_task(filter_rides)
-
-    @staticmethod
-    async def save(ride: RideTravel):
-        await async_task(lambda s: s.save(), ride)
-
-        return True
-
-    @staticmethod
-    async def update(ride: RideTravel):
-        await async_task(lambda s: s.update(), ride)
-
-        return True

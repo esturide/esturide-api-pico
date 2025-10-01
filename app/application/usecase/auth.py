@@ -1,7 +1,7 @@
 import functools
 
 from app.core.exception import UnauthorizedAccessException
-from app.domain.service.auth import get_auth_service
+from app.domain.service.auth import AuthenticationCredentialsService
 from app.shared.scheme.user import RoleUpdateRequest
 from app.shared.types import Token
 from app.shared.types.enum import RoleUser
@@ -9,7 +9,7 @@ from app.shared.types.enum import RoleUser
 
 class AuthSessionUseCase:
     def __init__(self):
-        self.auth_service = get_auth_service()
+        self.auth_service = AuthenticationCredentialsService()
 
     async def login(self, code: int, password: str):
         token = await self.auth_service.authenticate(

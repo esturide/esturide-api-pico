@@ -3,12 +3,18 @@ import functools
 
 from app.core.exception import NotFoundException
 from app.infrestructure.repository.ride import RideRepository
+from app.infrestructure.repository.schedule import ScheduleRepository
 from app.shared.models.ride import RideTravel
 from app.shared.models.user import User
+from app.shared.pattern.singleton import Singleton
 from app.shared.types import UUID
 
 
-class RideService:
+class RideService(metaclass=Singleton):
+    def __init__(self):
+        self.ride_repository = RideRepository()
+        self.schedule_repository = ScheduleRepository()
+
     async def create(self, passenger: User, seat: str) -> RideTravel:
         if seat not in ['A', 'B', 'C']:
             raise ""
@@ -19,7 +25,7 @@ class RideService:
         ride.seat = seat
         ride.tracking = []
 
-        await RideRepository.save(ride)
+        await self.ride_repository.save(ride)
 
         return ride
 
@@ -32,10 +38,10 @@ class RideService:
         return all_rides[0]
 
     async def get_all_rides_from_user(self, passenger: User) -> list[RideTravel]:
-        return await RideRepository.filter(passenger=passenger)
+        return await self.ride_repository.filter(passenger=passenger)
 
     async def get(self, uuid: UUID) -> RideTravel:
-        ride = await RideRepository.get(uuid)
+        ride = await self.ride_repository.get(uuid)
 
         if ride is None:
             raise NotFoundException("Ride not found.")
@@ -43,7 +49,7 @@ class RideService:
         return ride
 
     async def save(self, ride: RideTravel):
-        await RideRepository.save(ride)
+        await self.ride_repository.save(ride)
 
     @contextlib.asynccontextmanager
     async def update(self, ride: RideTravel):

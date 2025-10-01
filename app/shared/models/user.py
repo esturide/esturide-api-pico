@@ -27,8 +27,6 @@ class User(Model):
     phone_number = TextField()
     address = TextField()
 
-    # role = TextField(default=str(RoleUser.not_verified), choices=list(map(lambda r: str(r), RoleUser)))
-
     role = UserRoleField(default=RoleUser.not_verified)
 
     def same_password(self, password) -> bool:

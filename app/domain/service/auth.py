@@ -5,16 +5,18 @@ from app.core.exception import UnauthorizedAccessException
 from app.core.oauth2 import encode, decode
 from app.infrestructure.repository.user import UserRepository
 from app.shared.models.user import User
+from app.shared.pattern.singleton import Singleton
 from app.shared.types import Token
 from app.shared.types.enum import RoleUser
 
 
-class AuthenticationCredentialsService:
+class AuthenticationCredentialsService(metaclass=Singleton):
     def __init__(self):
         self.settings = get_settings()
+        self.user_repository = UserRepository()
 
     async def get_user_if_authorized(self, code: int, password: str) -> User:
-        user = await UserRepository.get_user_by_code(code)
+        user = await self.user_repository.get_user_by_code(code)
 
         if user is None:
             raise UnauthorizedAccessException(
@@ -33,7 +35,7 @@ class AuthenticationCredentialsService:
         code = decode_data.get("code")
         role = decode_data.get("role")
 
-        user = await UserRepository.get_user_by_code(code)
+        user = await self.user_repository.get_user_by_code(code)
 
         if user is None:
             raise UnauthorizedAccessException(
@@ -77,8 +79,3 @@ class AuthenticationCredentialsService:
             self.settings.secret_key,
             self.settings.algorithm
         )
-
-
-@functools.lru_cache
-def get_auth_service() -> AuthenticationCredentialsService:
-    return AuthenticationCredentialsService()
