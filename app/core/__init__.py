@@ -2,6 +2,7 @@ import contextlib
 import functools
 
 import fireo
+
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.gzip import GZipMiddleware
@@ -18,6 +19,7 @@ def get_root_app() -> FastAPI:
     @contextlib.asynccontextmanager
     async def lifespan(_app: FastAPI):
         fireo.connection(from_file=settings.db_credential)
+
         yield
 
     app = FastAPI(

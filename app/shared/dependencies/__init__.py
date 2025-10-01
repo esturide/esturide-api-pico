@@ -25,7 +25,6 @@ AuthUserCodeAndRoleCredentials = Annotated[tuple[int, RoleUser], Depends(get_use
 UserIsAuthenticated = Annotated[bool, Depends(is_user_authenticated)]
 
 FileRequest = Annotated[bytes | None, File()]
-NominatimDepend = Annotated[Geocoder, Depends(get_nominatim_locator_agent)]
 GoogleGeolocationDepend = Annotated[Geocoder, Depends(get_google_locator_agent)]
 
 UserDependency = Annotated[UserUseCase, Depends(get_user_use_case)]

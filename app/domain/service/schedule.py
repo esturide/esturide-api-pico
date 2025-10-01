@@ -4,7 +4,7 @@ import functools
 from geopy.geocoders.base import Geocoder
 from google.cloud.firestore import GeoPoint
 
-from app.domain.service.location.geo import search_from_address
+from app.domain.service.location.geolocation import search_from_address
 from app.infrestructure.repository.ride import RideRepository
 from app.infrestructure.repository.schedule import ScheduleRepository
 from app.shared.models.location import LocationModel

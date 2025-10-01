@@ -22,6 +22,7 @@ class User(Model):
     paternal_surname = TextField()
     maternal_surname = TextField()
     birth_date = DateTime(required=True)
+
     email = TextField(required=True)
     curp = TextField(required=True)
     phone_number = TextField()

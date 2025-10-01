@@ -26,6 +26,7 @@ class UserService(metaclass=Singleton):
             birth_date=birth_date,
             email=req.email,
             curp=req.curp,
+            address=req.address,
             phone_number=req.phone_number,
             hashed_password=hashed_password,
             salt=salt,

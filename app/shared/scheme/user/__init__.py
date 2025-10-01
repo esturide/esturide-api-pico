@@ -16,6 +16,7 @@ class UserProfile(BaseModel):
     birth_date: datetime.date = Field(..., title="Birth date", alias="birthDate", description="The user's birth date")
     phone_number: PhoneNumber = Field(..., title="Phone number", alias="phoneNumber")
     email: EmailStr = Field(..., title="Email", alias='email')
+    address: str = Field(...)
 
     @field_validator('birth_date')
     def check_age(cls, birth_date):
@@ -26,6 +27,13 @@ class UserProfile(BaseModel):
             raise ValueError('The person must be over 18 years old.')
 
         return birth_date
+
+    @field_validator('code')
+    def check_age(cls, code):
+        if code <= 0:
+            raise ValueError('Invalid user code.')
+
+        return code
 
 
 class UserRequest(UserProfile):
@@ -45,7 +53,7 @@ class UserResponse(BaseModel):
 
 
 class ProfileUpdateRequest(BaseModel):
-    first_name: str
+    first_name: str = Field(..., title="firstName", alias="firstName")
     maternal_surname: str = Field(..., title="Maternal surname", alias='maternalSurname')
     paternal_surname: str = Field(..., title="Paternal surname", alias='paternalSurname')
     curp: str
