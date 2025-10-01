@@ -1,5 +1,3 @@
-import functools
-
 from app.core import get_settings
 from app.core.exception import UnauthorizedAccessException
 from app.core.oauth2 import encode, decode

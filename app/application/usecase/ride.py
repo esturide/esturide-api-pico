@@ -6,8 +6,8 @@ from typing import Optional
 from fastapi import BackgroundTasks
 
 from app.core.exception import NotFoundException, InvalidRequestException, ResourceNotFoundException
-from app.domain.service.ride import get_ride_service, RideService
-from app.domain.service.schedule import get_schedule_service, ScheduleTravelService
+from app.domain.service.ride import RideService
+from app.domain.service.schedule import ScheduleTravelService
 from app.domain.service.user import UserService
 from app.shared.const import DEFAULT_MAX_RIDE_LIFETIME_SEC
 from app.shared.models.ride import RideTravel

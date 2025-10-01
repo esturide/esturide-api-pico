@@ -1,5 +1,3 @@
-import contextlib
-
 from app.infrestructure.repository.firebase import AsyncSessionRepository
 from app.shared.models.user import User
 from app.shared.pattern.singleton import Singleton

@@ -1,4 +1,3 @@
-import functools
 from datetime import datetime
 
 from app.infrestructure.repository.user import UserRepository

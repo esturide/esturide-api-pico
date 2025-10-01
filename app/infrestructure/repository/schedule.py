@@ -29,7 +29,6 @@ class ScheduleRepository(AsyncSessionRepository, metaclass=Singleton):
         if genders is None:
             genders = {Gender.male, Gender.female}
 
-
         def filter_schedule():
             min_price, max_price = price_range
 
@@ -67,7 +66,8 @@ class ScheduleRepository(AsyncSessionRepository, metaclass=Singleton):
 
         return await async_task(get_schedule)
 
-    async def get_current(self, user: User | None = None, ride: RideTravel | None = None, *args) -> ScheduleTravel | None:
+    async def get_current(self, user: User | None = None, ride: RideTravel | None = None,
+                          *args) -> ScheduleTravel | None:
         def filter_schedule_task_driver():
             return list(ScheduleTravel.collection
                         .filter(driver=user)

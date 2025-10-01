@@ -3,7 +3,7 @@ import functools
 from google.cloud.firestore import GeoPoint
 
 from app.core.exception import ResourceNotFoundException, InvalidRequestException
-from app.domain.service.ride import get_ride_service, RideService
+from app.domain.service.ride import RideService
 from app.domain.service.schedule import get_schedule_service
 from app.domain.service.tracking import TrackingService
 from app.domain.service.user import UserService

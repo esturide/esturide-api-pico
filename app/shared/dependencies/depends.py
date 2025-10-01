@@ -18,6 +18,7 @@ def get_google_locator_agent() -> Geocoder:
 
     return GoogleV3(api_key=settings.api_google_key)
 
+
 @functools.lru_cache
 def get_logger() -> logging.Logger:
     logger = logging.getLogger('uvicorn.error')
