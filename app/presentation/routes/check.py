@@ -5,7 +5,7 @@ from app.shared.scheme import StatusMessage, StatusFailure, StatusSuccess
 
 check_router = APIRouter(
     prefix="/check",
-    tags=["Check router"]
+    tags=["Check status route"]
 )
 
 

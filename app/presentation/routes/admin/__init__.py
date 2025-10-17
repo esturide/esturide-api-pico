@@ -5,7 +5,7 @@ from app.shared.scheme.admin.schedule import ChangesScheduleRequest
 
 admin_route = APIRouter(
     prefix="/admin",
-    tags=["Admin Manager router"]
+    tags=["Admin Manager route"]
 )
 
 

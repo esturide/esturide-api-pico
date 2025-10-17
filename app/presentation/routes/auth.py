@@ -9,7 +9,7 @@ from app.shared.types.enum import Status, RoleUser
 
 auth_route = APIRouter(
     prefix="/auth",
-    tags=["Auth router"]
+    tags=["User Authentication route"]
 )
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")

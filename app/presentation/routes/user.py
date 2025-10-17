@@ -6,7 +6,7 @@ from app.shared.scheme.user import UserRequest, ProfileUpdateRequest, UserRespon
 
 user_router = APIRouter(
     prefix="/user",
-    tags=["User router"]
+    tags=["Customer User route"]
 )
 
 

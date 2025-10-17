@@ -4,7 +4,7 @@ from app.shared.dependencies import AuthUserCodeAndRoleCredentials, MatchDepende
 from app.shared.scheme import StatusResponse
 from app.shared.scheme.rides import RideTravelRequest
 
-match_router = APIRouter(prefix="/match", tags=["User Match System"])
+match_router = APIRouter(prefix="/match", tags=["User Match System route"])
 
 
 @match_router.get("/search", response_model=StatusResponse)
