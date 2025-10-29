@@ -1,5 +1,5 @@
 import datetime
-from typing import Optional, Set
+from typing import Optional, Set, List
 
 from pydantic import BaseModel, Field, field_validator, model_validator, FutureDatetime
 
@@ -39,8 +39,10 @@ class ScheduleTravelFromAddressRequest(BaseModel):
 
     gender_filter: Set[Gender] = Field(["male", "female"], title="Filter of genders", alias='genderFilter')
 
-    @field_validator('gender_filter')
+    waypoints: Set[str] = Field(default={}, title="Ride waypoints", alias='waypoints')
+
     @classmethod
+    @field_validator('gender_filter')
     def check_gender(cls, gender: list[Gender]):
         if len(gender) > 2:
             raise ValueError("There seems to be an error regarding the number of filters.")
@@ -49,8 +51,8 @@ class ScheduleTravelFromAddressRequest(BaseModel):
 
         return gender
 
-    @field_validator('price')
     @classmethod
+    @field_validator('price')
     def check_price(cls, price: int):
         if price < DEFAULT_MIN_PRICE:
             raise ValueError(f'The price cannot be less than ${price}')
@@ -97,6 +99,8 @@ class ScheduleTravelResponse(BaseModel):
     destination: GeoLocationAddressModel
 
     gender_filter: Set[Gender] = Field(..., title="Filter of genders", alias='genderFilter')
+
+    waypoints: List[GeoLocationAddressModel]
 
 
 class ScheduleTravelUpdateRequest(BaseModel):

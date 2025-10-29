@@ -1,4 +1,6 @@
+from fastapi import HTTPException
 from fastapi.responses import JSONResponse
+from google.api_core.exceptions import FailedPrecondition
 
 from app.shared.dependencies.depends import get_logger
 from app.shared.scheme import StatusMessage
@@ -67,6 +69,7 @@ async def database_exception_handler(request, exc):
         message="Error in database query."
     )
 
-    logger.error(exc.errors())
+    if isinstance(exc, FailedPrecondition):
+        logger.error(exc.errors)
 
     return JSONResponse(status_code=500, content=error_response.model_dump())

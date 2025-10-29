@@ -49,6 +49,21 @@ class ScheduleTravelService(metaclass=Singleton):
             address=req.destination
         )
 
+        waypoints = []
+        for waypoint in req.waypoints:
+            locations = await search_from_address(geocoder, waypoint)
+            location = locations[0]
+
+            waypoints.append(
+                LocationModel(
+                    location=GeoPoint(
+                        latitude=location.latitude,
+                        longitude=location.longitude,
+                    ),
+                    address=waypoint
+                )
+            )
+
         schedule = ScheduleTravel(
             driver=user,
             origin=origin,
@@ -56,6 +71,7 @@ class ScheduleTravelService(metaclass=Singleton):
             price=req.price,
             seats=list(req.seats),
             gender_filter=[gender.value for gender in req.gender_filter],
+            waypoints=waypoints,
         )
 
         schedule.rides = []

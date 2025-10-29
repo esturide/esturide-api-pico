@@ -6,7 +6,7 @@ from app.domain.service.schedule import ScheduleTravelService
 from app.domain.service.user import UserService
 from app.shared.const import DEFAULT_DELAY_TIME_NOTIFY
 from app.shared.scheme.respose.ride import create_ride_response
-from app.shared.scheme.respose.schedule import create_schedule_status_response
+from app.shared.scheme.respose.schedule import schedule_status_response
 from app.shared.types.enum import RoleUser
 
 
@@ -34,7 +34,7 @@ class NotifyUseCase:
         while True:
             schedule = await self.schedule_service.get_current(user)
 
-            yield create_schedule_status_response(schedule)
+            yield schedule_status_response(schedule)
 
             await asyncio.sleep(self.time_sleep)
 

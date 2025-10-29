@@ -5,7 +5,7 @@ from app.shared.scheme.schedule import ScheduleTravelResponse, DriverUser, Passe
 from app.shared.scheme.schedule.status import ScheduleTravelStatusResponse
 
 
-def create_schedule_response(schedule: ScheduleTravel) -> ScheduleTravelResponse:
+def model_schedule_response(schedule: ScheduleTravel) -> ScheduleTravelResponse:
     driver = schedule.driver
     all_passengers = schedule.rides
 
@@ -32,6 +32,14 @@ def create_schedule_response(schedule: ScheduleTravel) -> ScheduleTravelResponse
         address=schedule.destination.address,
     )
 
+    waypoints = [
+        GeoLocationAddressModel(
+            longitude=waypoint.location.longitude,
+            latitude=waypoint.location.latitude,
+            address=waypoint.address,
+        ) for waypoint in schedule.waypoints
+    ]
+
     return ScheduleTravelResponse(
         uuid=schedule.id,
         driver=driver_response,
@@ -44,11 +52,12 @@ def create_schedule_response(schedule: ScheduleTravel) -> ScheduleTravelResponse
         seats=schedule.seats,
         origin=origin,
         destination=destination,
-        genderFilter=schedule.accepted_genres
+        genderFilter=schedule.accepted_genres,
+        waypoints=waypoints
     )
 
 
-def create_schedule_status_response(schedule: ScheduleTravel) -> ScheduleTravelStatusResponse:
+def schedule_status_response(schedule: ScheduleTravel) -> ScheduleTravelStatusResponse:
     driver = schedule.driver
     all_passengers = schedule.rides
 

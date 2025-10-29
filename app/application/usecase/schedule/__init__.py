@@ -13,7 +13,7 @@ from app.shared.const import DEFAULT_MAX_SCHEDULE_LIFETIME_SEC
 from app.shared.models.schedule import ScheduleTravel
 from app.shared.scheme import StatusSuccess, StatusFailure
 from app.shared.scheme.filter import FilteringOptionsRequest
-from app.shared.scheme.respose.schedule import create_schedule_response, create_schedule_status_response
+from app.shared.scheme.respose.schedule import model_schedule_response, schedule_status_response
 from app.shared.scheme.schedule import ScheduleTravelResponse, ScheduleTravelUpdateRequest, \
     ScheduleTravelFromAddressRequest
 from app.shared.scheme.schedule.status import ScheduleTravelStatusResponse
@@ -77,7 +77,7 @@ class ScheduleTravelUseCase:
         if schedule.lifetime_exceeded:
             return None
 
-        return create_schedule_status_response(schedule)
+        return schedule_status_response(schedule)
 
     async def get_current(self, code: int) -> ScheduleTravelStatusResponse:
         user = await self.user_service.get(code)
@@ -92,19 +92,19 @@ class ScheduleTravelUseCase:
         if schedule.lifetime_exceeded:
             raise NotFoundException("The life limit has been exceeded.")
 
-        return create_schedule_status_response(schedule)
+        return schedule_status_response(schedule)
 
     async def get_all(self, limit=10) -> list[ScheduleTravelResponse]:
         async def iter_all_schedules():
             for schedule in await self.schedule_service.all(limit):
-                yield create_schedule_response(schedule)
+                yield model_schedule_response(schedule)
 
         return [schedule async for schedule in iter_all_schedules()]
 
     async def search(self, code: int, role: RoleUser, options: FilteringOptionsRequest, limit: int):
         async def iter_all_schedules_and_filtering():
             for schedule in await self.schedule_service.filtering(options, limit):
-                yield create_schedule_response(schedule)
+                yield model_schedule_response(schedule)
 
         return [schedule async for schedule in iter_all_schedules_and_filtering()]
 

@@ -38,6 +38,8 @@ class ScheduleTravel(Model):
 
     gender_filter = ListField(TextField(), required=True)
 
+    waypoints = ListField(NestedModel(LocationModel, required=True))
+
     tracking = ListField(NestedModel(TrackingRecord), required=False)
 
     @property
