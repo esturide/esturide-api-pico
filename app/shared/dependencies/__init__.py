@@ -3,6 +3,7 @@ from typing import Annotated
 from fastapi import Depends, File
 from fastapi.security import OAuth2PasswordRequestForm
 from geopy.geocoders.base import Geocoder
+from pymongo import AsyncMongoClient, MongoClient
 
 from app.application.usecase.admin import AdminManagerUseCase, get_admin_manager_use_case
 from app.application.usecase.auth import AuthSessionUseCase, get_auth_session_case
@@ -16,6 +17,7 @@ from app.core.oauth2 import oauth2_scheme
 from app.shared.credentials import get_user_code_from_credentials, is_user_authenticated, \
     get_user_code_and_role_code_from_credentials
 from app.shared.dependencies.depends import get_nominatim_locator_agent, get_google_locator_agent
+from app.shared.dependencies.depends.db import async_client_mongodb, client_mongodb
 from app.shared.types import Token
 from app.shared.types.enum import RoleUser
 
@@ -37,3 +39,6 @@ NotifyDependency = Annotated[NotifyUseCase, Depends(get_notify_user_case)]
 TrackingDependency = Annotated[TrackingUseCase, Depends(get_tracking_use_case)]
 
 AuthDependency = Annotated[AuthSessionUseCase, Depends(get_auth_session_case)]
+
+AsyncClientMongoDB = Annotated[AsyncMongoClient, Depends(async_client_mongodb)]
+ClientMongoDB = Annotated[MongoClient, Depends(client_mongodb)]

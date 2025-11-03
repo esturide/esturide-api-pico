@@ -1,7 +1,7 @@
 from typing import Optional
 
 from app.core.exception import InvalidRequestException
-from app.infrestructure.repository.firebase import AsyncSessionRepository
+from app.infrestructure.repository.session import AsyncSessionRepository
 from app.shared.models.ride import RideTravel
 from app.shared.models.schedule import ScheduleTravel
 from app.shared.models.user import User

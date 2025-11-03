@@ -1,27 +1,29 @@
-from fireo.fields import TextField, IDField, DateTime, ReferenceField, ListField, BooleanField
-from fireo.models import Model
+import datetime
+from typing import List
 
-from app.shared.models.tracking import TrackingRecord
+from beanie import Document, Link
+from pydantic import Field
+
+from app.shared.models.tracking import Tracking
 from app.shared.models.user import User
 
 
-class RideTravel(Model):
-    class Meta:
-        collection_name = "ride_travels"
+class RideTravel(Document):
+    class Settings:
+        name = "rides"
 
-    id = IDField()
-    created = DateTime(auto=True)
+    created: datetime.datetime = Field(default_factory=datetime.datetime.now)
 
-    passenger = ReferenceField(User, required=True)
+    passenger: Link[User]
 
-    seat = TextField(required=True)
-    on_board = BooleanField(default=False, required=False)
-    starting = DateTime(required=False)
-    over = BooleanField(default=False)
-    cancel = BooleanField(default=False)
-    accept = BooleanField(default=False)
+    seat: str
+    on_board: bool
+    starting: bool
+    over: bool
+    cancel: bool
+    accept: bool
 
-    tracking = ListField(ReferenceField(TrackingRecord), required=False)
+    tracking: List[Link[Tracking]]
 
     @property
     def is_finished(self):

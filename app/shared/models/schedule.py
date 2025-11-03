@@ -1,46 +1,44 @@
 import datetime
 from typing import List
 
-from fireo.fields import TextField, IDField, DateTime, NumberField, ReferenceField, ListField, BooleanField, \
-    NestedModel
-from fireo.models import Model
+from beanie import Document, Link
+from pydantic import Field
 
 from app.shared.const import DEFAULT_MAX_SCHEDULE_LIFETIME_HRS
 from app.shared.models.location import LocationModel
 from app.shared.models.ride import RideTravel
-from app.shared.models.tracking import TrackingRecord
+from app.shared.models.tracking import Tracking
 from app.shared.models.user import User
 from app.shared.types.enum import Gender
 
 
-class ScheduleTravel(Model):
-    class Meta:
-        collection_name = "schedule_travels"
+class ScheduleTravel(Document):
+    class Settings:
+        name = "schedules"
 
-    id = IDField()
-    created = DateTime(auto=True)
+    created: datetime.datetime = Field(default_factory=datetime.datetime.now)
 
-    starting = DateTime(required=False)
-    terminated = DateTime(required=False)
+    starting: datetime.datetime
+    terminated: datetime.datetime
 
-    terminate = BooleanField(default=False)
-    cancel = BooleanField(default=False)
+    terminate: bool
+    cancel: bool
 
-    driver = ReferenceField(User, required=True)
-    rides = ListField(ReferenceField(RideTravel), required=False)
-    max_passengers = NumberField(default=3)
+    drive: Link[User]
+    rides: List[Link[RideTravel]]
+    max_passengers: int
 
-    price = NumberField(required=True)
-    seats = ListField(TextField(), required=True)
+    price: float
+    seats: List[str]
 
-    origin = NestedModel(LocationModel, required=True)
-    destination = NestedModel(LocationModel, required=True)
+    origin: LocationModel
+    destination: LocationModel
 
-    gender_filter = ListField(TextField(), required=True)
+    gender_filter: List[str]
 
-    waypoints = ListField(NestedModel(LocationModel, required=True))
+    waypoints: List[LocationModel]
 
-    tracking = ListField(NestedModel(TrackingRecord), required=False)
+    tracking: List[Link[Tracking]]
 
     @property
     def is_enabled(self):

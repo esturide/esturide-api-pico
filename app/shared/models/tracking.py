@@ -1,11 +1,14 @@
-from fireo.fields import IDField, DateTime, GeoPoint
-from fireo.models import Model
+import datetime
+
+from beanie import Document
+from pydantic import Field
+
+from app.shared.models.location import GeoPoint
 
 
-class TrackingRecord(Model):
-    class Meta:
-        collection_name = "tracking_record"
+class Tracking(Document):
+    class Settings:
+        name = "tracking"
 
-    id = IDField()
-    created = DateTime(auto=True)
-    location = GeoPoint()
+    created: datetime.datetime = Field(default_factory=datetime.datetime.now)
+    location: GeoPoint

@@ -1,6 +1,7 @@
 import contextlib
 import functools
 
+import beanie
 import fireo
 
 from fastapi import FastAPI
@@ -8,6 +9,11 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.gzip import GZipMiddleware
 
 from app.core.config import get_settings
+from app.shared.dependencies.depends.db import async_client_mongodb
+from app.shared.models.ride import RideTravel
+from app.shared.models.schedule import ScheduleTravel
+from app.shared.models.tracking import Tracking
+from app.shared.models.user import User
 
 DEFAULT_APP_NAME = "Esturide (p) API"
 
@@ -18,7 +24,30 @@ def get_root_app() -> FastAPI:
 
     @contextlib.asynccontextmanager
     async def lifespan(_app: FastAPI):
-        fireo.connection(from_file=settings.db_credential)
+        client_db = async_client_mongodb()
+        await client_db.admin.command("ping")
+
+        await beanie.init_beanie(
+            database=client_db["Customers"],
+            document_models=[
+                User,
+            ]
+        )
+
+        await beanie.init_beanie(
+            database=client_db["Travels"],
+            document_models=[
+                RideTravel,
+                ScheduleTravel,
+            ]
+        )
+
+        await beanie.init_beanie(
+            database=client_db["Tracking"],
+            document_models=[
+                Tracking,
+            ]
+        )
 
         yield
 

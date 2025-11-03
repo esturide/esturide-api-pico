@@ -11,7 +11,10 @@ class AuthSessionUseCase:
     def __init__(self):
         self.auth_service = AuthenticationCredentialsService()
 
-    async def login(self, code: int, password: str):
+    async def login(self, code: int | str, password: str):
+        if isinstance(code, str):
+            code = int(code)
+
         token = await self.auth_service.authenticate(
             code,
             password

@@ -1,12 +1,11 @@
-from fireo.fields import IDField, GeoPoint, TextField
-from fireo.models import Model
+from pydantic import BaseModel
 
 
-class LocationModel(Model):
-    class Meta:
-        collection_name = "location_model"
+class GeoPoint(BaseModel):
+    latitude: float
+    longitude: float
 
-    id = IDField()
 
-    location = GeoPoint(required=True)
-    address = TextField(required=True)
+class LocationModel(BaseModel):
+    location: GeoPoint
+    address: str

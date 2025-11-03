@@ -13,6 +13,8 @@ class DefaultSettings(BaseSettings):
 
     api_google_key: str
 
+    mongodb_uri: str
+
     origin_cors: str
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding='utf-8', extra='ignore')
