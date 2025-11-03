@@ -1,17 +1,19 @@
 import datetime
-from typing import List
+from typing import List, Annotated
 
-from beanie import Document, Link
+from beanie import Document, Link, Indexed
 from pydantic import Field
 
 from app.shared.models.tracking import Tracking
 from app.shared.models.user import User
+from app.shared.utils.random import generate_random_code_128
 
 
-class RideTravel(Document):
+class RideTravelModel(Document):
     class Settings:
         name = "rides"
 
+    code: Annotated[int, Indexed(unique=True)] = Field(default_factory=generate_random_code_128)
     created: datetime.datetime = Field(default_factory=datetime.datetime.now)
 
     passenger: Link[User]
@@ -32,3 +34,7 @@ class RideTravel(Document):
     @property
     def is_current(self):
         return not self.over and not self.cancel
+
+    @property
+    def uuid(self):
+        return self._id

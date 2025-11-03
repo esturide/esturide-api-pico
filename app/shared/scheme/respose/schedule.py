@@ -1,11 +1,11 @@
-from app.shared.models.schedule import ScheduleTravel
-from app.shared.scheme.location import GeoLocationModel, GeoLocationAddressModel
+from app.shared.models.schedule import ScheduleTravelModel
+from app.shared.scheme.location import GeoPoint, GeoLocationAddressModel
 from app.shared.scheme.rides.status import RidePassengerResponse
 from app.shared.scheme.schedule import ScheduleTravelResponse, DriverUser, PassengerUser
 from app.shared.scheme.schedule.status import ScheduleTravelStatusResponse
 
 
-def model_schedule_response(schedule: ScheduleTravel) -> ScheduleTravelResponse:
+def model_schedule_response(schedule: ScheduleTravelModel) -> ScheduleTravelResponse:
     driver = schedule.driver
     all_passengers = schedule.rides
 
@@ -14,7 +14,7 @@ def model_schedule_response(schedule: ScheduleTravel) -> ScheduleTravelResponse:
         firstName=driver.first_name,
         maternalSurname=driver.maternal_surname,
         paternalSurname=driver.paternal_surname,
-        position=GeoLocationModel(
+        position=GeoPoint(
             latitude=0,
             longitude=0,
         )
@@ -57,7 +57,7 @@ def model_schedule_response(schedule: ScheduleTravel) -> ScheduleTravelResponse:
     )
 
 
-def schedule_status_response(schedule: ScheduleTravel) -> ScheduleTravelStatusResponse:
+def schedule_status_response(schedule: ScheduleTravelModel) -> ScheduleTravelStatusResponse:
     driver = schedule.driver
     all_passengers = schedule.rides
 
@@ -66,7 +66,7 @@ def schedule_status_response(schedule: ScheduleTravel) -> ScheduleTravelStatusRe
         firstName=driver.first_name,
         maternalSurname=driver.maternal_surname,
         paternalSurname=driver.paternal_surname,
-        position=GeoLocationModel(
+        position=GeoPoint(
             latitude=0,
             longitude=0,
         )
@@ -83,7 +83,7 @@ def schedule_status_response(schedule: ScheduleTravel) -> ScheduleTravelStatusRe
                 firstName=passenger.first_name,
                 maternalSurname=passenger.maternal_surname,
                 paternalSurname=passenger.paternal_surname,
-                position=GeoLocationModel(
+                position=GeoPoint(
                     latitude=0,
                     longitude=0,
                 )

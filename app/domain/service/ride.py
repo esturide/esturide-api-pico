@@ -4,7 +4,7 @@ import functools
 from app.core.exception import NotFoundException
 from app.infrestructure.repository.ride import RideRepository
 from app.infrestructure.repository.schedule import ScheduleRepository
-from app.shared.models.ride import RideTravel
+from app.shared.models.ride import RideTravelModel
 from app.shared.models.user import User
 from app.shared.pattern.singleton import Singleton
 from app.shared.types import UUID
@@ -15,11 +15,11 @@ class RideService(metaclass=Singleton):
         self.ride_repository = RideRepository()
         self.schedule_repository = ScheduleRepository()
 
-    async def create(self, passenger: User, seat: str) -> RideTravel:
+    async def create(self, passenger: User, seat: str) -> RideTravelModel:
         if seat not in ['A', 'B', 'C']:
             raise ""
 
-        ride = RideTravel()
+        ride = RideTravelModel()
 
         ride.passenger = passenger
         ride.seat = seat
@@ -29,7 +29,7 @@ class RideService(metaclass=Singleton):
 
         return ride
 
-    async def get_current_ride_from_user(self, passenger: User) -> RideTravel | None:
+    async def get_current_ride_from_user(self, passenger: User) -> RideTravelModel | None:
         all_rides = await self.get_all_rides_from_user(passenger)
 
         if len(all_rides) != 0 and all([rides.is_finished for rides in all_rides]):
@@ -37,10 +37,10 @@ class RideService(metaclass=Singleton):
 
         return all_rides[0]
 
-    async def get_all_rides_from_user(self, passenger: User) -> list[RideTravel]:
+    async def get_all_rides_from_user(self, passenger: User) -> list[RideTravelModel]:
         return await self.ride_repository.filter(passenger=passenger)
 
-    async def get(self, uuid: UUID) -> RideTravel:
+    async def get(self, uuid: UUID) -> RideTravelModel:
         ride = await self.ride_repository.get(uuid)
 
         if ride is None:
@@ -48,11 +48,11 @@ class RideService(metaclass=Singleton):
 
         return ride
 
-    async def save(self, ride: RideTravel):
+    async def save(self, ride: RideTravelModel):
         await self.ride_repository.save(ride)
 
     @contextlib.asynccontextmanager
-    async def update(self, ride: RideTravel):
+    async def update(self, ride: RideTravelModel):
         yield ride
 
         await self.save(ride)

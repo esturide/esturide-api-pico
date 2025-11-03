@@ -4,7 +4,7 @@ from typing import Optional, Set, List
 from pydantic import BaseModel, Field, field_validator, model_validator, FutureDatetime
 
 from app.shared.const import DEFAULT_MIN_PRICE
-from app.shared.scheme.location import GeoLocationModel, GeoLocationAddressModel
+from app.shared.scheme.location import GeoPoint, GeoLocationAddressModel
 from app.shared.types import UUID
 from app.shared.types.enum import Gender
 from app.shared.types.enum.default_location import DefaultLocation, get_gps_from_location
@@ -15,7 +15,7 @@ class CurrentUser(BaseModel):
     first_name: str = Field(..., title="First name", alias="firstName")
     maternal_surname: str = Field(..., title="Maternal surname", alias='maternalSurname')
     paternal_surname: str = Field(..., title="Paternal surname", alias='paternalSurname')
-    position: GeoLocationModel = Field(GeoLocationModel(), title="Current position", alias='position')
+    position: GeoPoint = Field(GeoPoint(), title="Current position", alias='position')
 
 
 class DriverUser(CurrentUser):
@@ -39,7 +39,7 @@ class ScheduleTravelFromAddressRequest(BaseModel):
 
     gender_filter: Set[Gender] = Field(["male", "female"], title="Filter of genders", alias='genderFilter')
 
-    waypoints: Set[str] = Field(default={}, title="Ride waypoints", alias='waypoints')
+    waypoints: Set[str] = Field(..., title="Ride waypoints", alias='waypoints')
 
     @classmethod
     @field_validator('gender_filter')
@@ -100,7 +100,7 @@ class ScheduleTravelResponse(BaseModel):
 
     gender_filter: Set[Gender] = Field(..., title="Filter of genders", alias='genderFilter')
 
-    waypoints: List[GeoLocationAddressModel]
+    waypoints: Optional[List[GeoLocationAddressModel]]
 
 
 class ScheduleTravelUpdateRequest(BaseModel):

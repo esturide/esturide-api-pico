@@ -1,6 +1,6 @@
 from geopy.geocoders.base import Geocoder
 
-from app.shared.scheme.location import GeoLocationModel, GeoLocationAddressModel
+from app.shared.scheme.location import GeoPoint, GeoLocationAddressModel
 from app.shared.utils import async_task
 
 
@@ -25,7 +25,7 @@ async def search_from_address(geocoder: Geocoder, address: str) -> list[GeoLocat
     return founds
 
 
-async def reverse_search_from_location(geocoder: Geocoder, location: GeoLocationModel) -> list[GeoLocationAddressModel]:
+async def reverse_search_from_location(geocoder: Geocoder, location: GeoPoint) -> list[GeoLocationAddressModel]:
     coords = (location.latitude, location.longitude)
 
     results = await async_task(

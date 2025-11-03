@@ -2,13 +2,13 @@ from fastapi import APIRouter
 
 from app.shared.dependencies import AuthUserCodeAndRoleCredentials, TrackingDependency
 from app.shared.scheme import StatusMessage
-from app.shared.scheme.location import GeoLocationModel
+from app.shared.scheme.location import GeoPoint
 
 record_route = APIRouter(prefix="/record", tags=["Record tracking route"])
 
 
 @record_route.post('/')
-async def user_location_tracking(tracking: TrackingDependency, location: GeoLocationModel,
+async def user_location_tracking(tracking: TrackingDependency, location: GeoPoint,
                                  user_auth: AuthUserCodeAndRoleCredentials) -> StatusMessage:
     code, role = user_auth
 

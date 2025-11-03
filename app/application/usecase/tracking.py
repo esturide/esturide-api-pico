@@ -9,7 +9,7 @@ from app.domain.service.tracking import TrackingService
 from app.domain.service.user import UserService
 from app.shared.models.tracking import Tracking
 from app.shared.scheme import StatusSuccess, StatusFailure
-from app.shared.scheme.location import GeoLocationModel
+from app.shared.scheme.location import GeoPoint
 from app.shared.types.enum import RoleUser
 
 
@@ -20,7 +20,7 @@ class TrackingUseCase:
         self.schedule_service = get_schedule_service()
         self.tracking_service = TrackingService()
 
-    async def register(self, code: int, role: RoleUser, location: GeoLocationModel):
+    async def register(self, code: int, role: RoleUser, location: GeoPoint):
         user = await self.user_service.get(code)
         status = False
 

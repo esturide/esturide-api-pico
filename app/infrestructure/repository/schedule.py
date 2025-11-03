@@ -2,8 +2,8 @@ from typing import Optional
 
 from app.core.exception import InvalidRequestException
 from app.infrestructure.repository.session import AsyncSessionRepository
-from app.shared.models.ride import RideTravel
-from app.shared.models.schedule import ScheduleTravel
+from app.shared.models.ride import RideTravelModel
+from app.shared.models.schedule import ScheduleTravelModel
 from app.shared.models.user import User
 from app.shared.pattern.singleton import Singleton
 from app.shared.types import UUID, SeatList, GenderList, Seats, Gender
@@ -22,13 +22,13 @@ class ScheduleRepository(AsyncSessionRepository, metaclass=Singleton):
             limit: int = 10,
             seats: Optional[SeatList] = None,
             genders: Optional[GenderList] = None,
-    ) -> list[ScheduleTravel]:
+    ) -> list[ScheduleTravelModel]:
+        """
         if seats is None:
             seats = {Seats.A, Seats.C, Seats.B}
 
         if genders is None:
             genders = {Gender.male, Gender.female}
-
         def filter_schedule():
             min_price, max_price = price_range
 
@@ -57,17 +57,16 @@ class ScheduleRepository(AsyncSessionRepository, metaclass=Singleton):
         genders_filter = set([gender.value for gender in genders])
 
         all_schedules = await async_task(filter_schedule)
+        """
 
-        return all_schedules
+        return []
 
-    async def get_from_uuid(self, uuid: UUID) -> ScheduleTravel:
-        def get_schedule():
-            return ScheduleTravel.collection.get(id=uuid)
+    async def get_from_code(self, code: int) -> ScheduleTravelModel:
+        return await ScheduleTravelModel.find_one(ScheduleTravelModel.code == code)
 
-        return await async_task(get_schedule)
-
-    async def get_current(self, user: User | None = None, ride: RideTravel | None = None,
-                          *args) -> ScheduleTravel | None:
+    async def get_current(self, user: User | None = None, ride: RideTravelModel | None = None,
+                          *args) -> ScheduleTravelModel | None:
+        """
         def filter_schedule_task_driver():
             return list(ScheduleTravel.collection
                         .filter(driver=user)
@@ -90,45 +89,35 @@ class ScheduleRepository(AsyncSessionRepository, metaclass=Singleton):
 
         if len(all_schedule) == 0:
             return None
+        """
 
-        return all_schedule[0]
+        return None
 
-    async def get_by_driver(self, user: User, limit=10) -> list[ScheduleTravel]:
+    async def get_by_driver(self, user: User, limit=10) -> list[ScheduleTravelModel]:
         if limit <= 1:
             raise InvalidRequestException("Limit must be greater than 1.")
 
-        def filter_schedule_task(u):
-            return list(ScheduleTravel.collection
-                        .filter(driver=u)
-                        .order('-created')
-                        .limit(limit)
-                        .fetch())
+        return await (ScheduleTravelModel
+                      .find(ScheduleTravelModel.driver == user)
+                      .sort("-created")
+                      .limit(limit)
+                      .to_list())
 
-        all_schedule = await async_task(filter_schedule_task, user)
-
-        return all_schedule
-
-    async def get_by_passenger(self, user: User, limit=10) -> list[ScheduleTravel]:
+    async def get_by_passenger(self, user: User, limit=10) -> list[ScheduleTravelModel]:
         if limit <= 1:
             raise InvalidRequestException("Limit must be greater than 1.")
 
-        def filter_schedule_task(u):
-            return list(ScheduleTravel.collection
-                        .filter('driver', '==', u)
-                        .order('-created')
-                        .limit(limit)
-                        .fetch())
-
-        return await async_task(filter_schedule_task, user)
+        return await (ScheduleTravelModel
+                      .find({'rides.passenger': user})
+                      .sort("-created")
+                      .to_list())
 
     async def get_all(self, limit=10):
         if limit <= 1:
             raise InvalidRequestException("Limit must be greater than 1.")
 
-        def filter_schedule_task():
-            return list(ScheduleTravel.collection
-                        .order('-created')
-                        .limit(limit)
-                        .fetch())
-
-        return await async_task(filter_schedule_task)
+        return await (ScheduleTravelModel
+                      .find()
+                      .sort("-created")
+                      .limit(limit)
+                      .to_list())

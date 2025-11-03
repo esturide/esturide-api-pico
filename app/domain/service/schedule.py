@@ -2,17 +2,17 @@ import datetime
 import functools
 
 from geopy.geocoders.base import Geocoder
-from google.cloud.firestore import GeoPoint
 
 from app.domain.service.location.geolocation import search_from_address
 from app.infrestructure.repository.ride import RideRepository
 from app.infrestructure.repository.schedule import ScheduleRepository
 from app.shared.models.location import LocationModel
-from app.shared.models.ride import RideTravel
-from app.shared.models.schedule import ScheduleTravel
+from app.shared.models.ride import RideTravelModel
+from app.shared.models.schedule import ScheduleTravelModel
 from app.shared.models.user import User
 from app.shared.pattern.singleton import Singleton
 from app.shared.scheme.filter import FilteringOptionsRequest
+from app.shared.scheme.location import GeoPoint
 from app.shared.scheme.schedule import ScheduleTravelFromAddressRequest
 from app.shared.types import UUID
 
@@ -23,7 +23,7 @@ class ScheduleTravelService(metaclass=Singleton):
         self.schedule_repository = ScheduleRepository()
 
     async def create(self, geocoder: Geocoder, req: ScheduleTravelFromAddressRequest,
-                     user: User) -> ScheduleTravel | None:
+                     user: User) -> ScheduleTravelModel | None:
         origin_address_result = await search_from_address(geocoder, req.origin)
         destination_address_result = await search_from_address(geocoder, req.destination)
 
@@ -50,11 +50,12 @@ class ScheduleTravelService(metaclass=Singleton):
         )
 
         waypoints = []
+
         for waypoint in req.waypoints:
             locations = await search_from_address(geocoder, waypoint)
             location = locations[0]
 
-            waypoints.append(
+            waypoints.insert(
                 LocationModel(
                     location=GeoPoint(
                         latitude=location.latitude,
@@ -64,18 +65,15 @@ class ScheduleTravelService(metaclass=Singleton):
                 )
             )
 
-        schedule = ScheduleTravel(
+        schedule = ScheduleTravelModel(
             driver=user,
             origin=origin,
             destination=destination,
             price=req.price,
-            seats=list(req.seats),
-            gender_filter=[gender.value for gender in req.gender_filter],
-            waypoints=waypoints,
+            # seats=set([s for s in req.seats]),
+            # gender_filter=req.gender_filter,
+            # waypoints=waypoints,
         )
-
-        schedule.rides = []
-        schedule.tracking = []
 
         status = await self.schedule_repository.save(schedule)
 
@@ -84,13 +82,13 @@ class ScheduleTravelService(metaclass=Singleton):
 
         return None
 
-    async def get(self, uuid: UUID) -> ScheduleTravel:
-        return await self.schedule_repository.get_from_uuid(uuid)
+    async def get(self, code: int) -> ScheduleTravelModel:
+        return await self.schedule_repository.get_from_code(code)
 
-    async def get_from_ride(self, ride: RideTravel) -> ScheduleTravel | None:
+    async def get_from_ride(self, ride: RideTravelModel) -> ScheduleTravelModel | None:
         return await self.schedule_repository.get_current(ride=ride)
 
-    async def get_current(self, user: User) -> ScheduleTravel | None:
+    async def get_current(self, user: User) -> ScheduleTravelModel | None:
         schedule = await self.schedule_repository.get_current(user=user)
 
         if schedule is None:
@@ -102,16 +100,16 @@ class ScheduleTravelService(metaclass=Singleton):
 
         return schedule
 
-    async def get_by_driver(self, user: User) -> list[ScheduleTravel]:
+    async def get_by_driver(self, user: User) -> list[ScheduleTravelModel]:
         return await self.schedule_repository.get_by_driver(user)
 
-    async def get_by_passenger(self, user: User) -> list[ScheduleTravel]:
+    async def get_by_passenger(self, user: User) -> list[ScheduleTravelModel]:
         return await self.schedule_repository.get_by_passenger(user)
 
-    async def all(self, limit=10) -> list[ScheduleTravel]:
+    async def all(self, limit=10) -> list[ScheduleTravelModel]:
         return await self.schedule_repository.get_all(limit)
 
-    async def filtering(self, options: FilteringOptionsRequest, limit: int) -> list[ScheduleTravel]:
+    async def filtering(self, options: FilteringOptionsRequest, limit: int) -> list[ScheduleTravelModel]:
         return await self.schedule_repository.filtering(
             terminate=options.terminate,
             cancel=options.cancel,
@@ -123,10 +121,10 @@ class ScheduleTravelService(metaclass=Singleton):
             seats=options.seats
         )
 
-    async def save(self, schedule: ScheduleTravel) -> bool:
+    async def save(self, schedule: ScheduleTravelModel) -> bool:
         return await self.schedule_repository.update(schedule)
 
-    async def finished(self, schedule: ScheduleTravel, cancel=None, terminate=None) -> tuple[bool, ScheduleTravel]:
+    async def finished(self, schedule: ScheduleTravelModel, cancel=None, terminate=None) -> tuple[bool, ScheduleTravelModel]:
         if terminate is not None:
             schedule.terminate = terminate
         elif cancel is not None:

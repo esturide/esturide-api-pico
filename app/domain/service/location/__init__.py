@@ -1,7 +1,7 @@
 from shapely.geometry import Point, Polygon, MultiPolygon
 
 from app.shared.pattern.singleton import Singleton
-from app.shared.scheme.location import GeoLocationModel
+from app.shared.scheme.location import GeoPoint
 
 
 class LocationService(metaclass=Singleton):
@@ -16,12 +16,12 @@ class LocationService(metaclass=Singleton):
     def perimeter_zmg(self):
         return self.__perimeter_zmg
 
-    def is_local(self, location: tuple[float, float] | GeoLocationModel) -> bool:
+    def is_local(self, location: tuple[float, float] | GeoPoint) -> bool:
         if isinstance(location, tuple):
             return self.perimeter_zmg.contains(
                 Point(location[0], location[1])
             )
-        elif isinstance(location, GeoLocationModel):
+        elif isinstance(location, GeoPoint):
             return self.perimeter_zmg.contains(
                 Point(location.longitude, location.latitude)
             )

@@ -8,7 +8,8 @@ class AsyncSessionRepository:
         pass
 
     async def save(self, instance: Document):
-        return await instance.save() is not None
+        status = await instance.save()
+        return status is not None
 
     async def update(self, instance: Document):
         return await instance.save() is not None

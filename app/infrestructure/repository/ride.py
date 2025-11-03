@@ -1,7 +1,7 @@
 import datetime
 
 from app.infrestructure.repository.session import AsyncSessionRepository
-from app.shared.models.ride import RideTravel
+from app.shared.models.ride import RideTravelModel
 from app.shared.models.user import User
 from app.shared.pattern.singleton import Singleton
 from app.shared.types import UUID
@@ -9,9 +9,9 @@ from app.shared.utils import async_task
 
 
 class RideRepository(AsyncSessionRepository, metaclass=Singleton):
-    async def get(self, uuid: UUID) -> RideTravel | None:
+    async def get(self, uuid: UUID) -> RideTravelModel | None:
         def get_ride():
-            return RideTravel.collection.get(id=uuid)
+            return RideTravelModel.collection.get(id=uuid)
 
         return await async_task(get_ride)
 
@@ -23,9 +23,9 @@ class RideRepository(AsyncSessionRepository, metaclass=Singleton):
             seat: str | None = None,
             between: tuple[datetime.datetime, datetime.datetime] | None = None,
             limit: int = 10
-    ) -> list[RideTravel]:
+    ) -> list[RideTravelModel]:
         def filter_rides():
-            rides = RideTravel.collection.filter(passenger=passenger)
+            rides = RideTravelModel.collection.filter(passenger=passenger)
 
             if between is not None:
                 before, after = between

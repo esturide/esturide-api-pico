@@ -1,44 +1,46 @@
 import datetime
-from typing import List
+from typing import List, Annotated, Optional, Set
 
-from beanie import Document, Link
+from beanie import Document, Link, Indexed
 from pydantic import Field
 
 from app.shared.const import DEFAULT_MAX_SCHEDULE_LIFETIME_HRS
 from app.shared.models.location import LocationModel
-from app.shared.models.ride import RideTravel
+from app.shared.models.ride import RideTravelModel
 from app.shared.models.tracking import Tracking
 from app.shared.models.user import User
+from app.shared.types import Seats
 from app.shared.types.enum import Gender
+from app.shared.utils.random import generate_random_code_128
 
 
-class ScheduleTravel(Document):
+class ScheduleTravelModel(Document):
     class Settings:
         name = "schedules"
 
+    code: Annotated[int, Indexed(unique=True)] = Field(default_factory=generate_random_code_128)
     created: datetime.datetime = Field(default_factory=datetime.datetime.now)
 
-    starting: datetime.datetime
-    terminated: datetime.datetime
+    starting: Optional[datetime.datetime] = Field(None)
+    terminated: Optional[datetime.datetime] = Field(None)
 
-    terminate: bool
-    cancel: bool
+    terminate: bool = Field(False)
+    cancel: bool = Field(False)
 
-    drive: Link[User]
-    rides: List[Link[RideTravel]]
-    max_passengers: int
+    driver: Link[User]
+    rides: List[Link[RideTravelModel]] = Field([])
 
-    price: float
-    seats: List[str]
+    price: int
+    seats: List[str] = Field([])
 
     origin: LocationModel
     destination: LocationModel
 
-    gender_filter: List[str]
+    gender_filter: List[str] = Field(['male', 'female'])
 
-    waypoints: List[LocationModel]
+    waypoints: List[LocationModel] = Field([])
 
-    tracking: List[Link[Tracking]]
+    tracking: List[Link[Tracking]] = Field([])
 
     @property
     def is_enabled(self):
@@ -91,3 +93,7 @@ class ScheduleTravel(Document):
             return [Gender(gender) for gender in self.gender_filter]
 
         return []
+
+    @property
+    def max_passengers(self):
+        return len(self.seats)

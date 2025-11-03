@@ -10,7 +10,7 @@ from app.domain.service.auth import AuthenticationCredentialsService
 from app.domain.service.schedule import get_schedule_service, ScheduleTravelService
 from app.domain.service.user import UserService
 from app.shared.const import DEFAULT_MAX_SCHEDULE_LIFETIME_SEC
-from app.shared.models.schedule import ScheduleTravel
+from app.shared.models.schedule import ScheduleTravelModel
 from app.shared.scheme import StatusSuccess, StatusFailure
 from app.shared.scheme.filter import FilteringOptionsRequest
 from app.shared.scheme.respose.schedule import model_schedule_response, schedule_status_response
@@ -28,7 +28,7 @@ class ScheduleTravelUseCase:
 
     async def create(self, req: ScheduleTravelFromAddressRequest, code: int, role: RoleUser, geocoder: Geocoder,
                      background_tasks: BackgroundTasks):
-        def create_task(schedule_service: ScheduleTravelService, schedule: ScheduleTravel):
+        def create_task(schedule_service: ScheduleTravelService, schedule: ScheduleTravelModel):
             async def task():
                 await asyncio.sleep(DEFAULT_MAX_SCHEDULE_LIFETIME_SEC)
 
