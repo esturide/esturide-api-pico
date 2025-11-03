@@ -2,14 +2,13 @@ import contextlib
 import functools
 
 import beanie
-import fireo
-
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.gzip import GZipMiddleware
 
 from app.core.config import get_settings
-from app.shared.dependencies.depends.db import async_client_mongodb
+from app.shared.dependencies.depends.cache import get_async_client_redis
+from app.shared.dependencies.depends.db import get_async_client_mongodb
 from app.shared.models.ride import RideTravelModel
 from app.shared.models.schedule import ScheduleTravelModel
 from app.shared.models.tracking import Tracking
@@ -24,32 +23,48 @@ def get_root_app() -> FastAPI:
 
     @contextlib.asynccontextmanager
     async def lifespan(_app: FastAPI):
-        client_db = async_client_mongodb()
-        await client_db.admin.command("ping")
+        async def init_db():
+            client_db = get_async_client_mongodb()
+            await client_db.admin.command("ping")
 
-        await beanie.init_beanie(
-            database=client_db["Customers"],
-            document_models=[
-                User,
-            ]
-        )
+            await beanie.init_beanie(
+                database=client_db["Customers"],
+                document_models=[
+                    User,
+                ]
+            )
 
-        await beanie.init_beanie(
-            database=client_db["Travels"],
-            document_models=[
-                RideTravelModel,
-                ScheduleTravelModel,
-            ]
-        )
+            await beanie.init_beanie(
+                database=client_db["Travels"],
+                document_models=[
+                    RideTravelModel,
+                    ScheduleTravelModel,
+                ]
+            )
 
-        await beanie.init_beanie(
-            database=client_db["Tracking"],
-            document_models=[
-                Tracking,
-            ]
-        )
+            await beanie.init_beanie(
+                database=client_db["Tracking"],
+                document_models=[
+                    Tracking,
+                ]
+            )
+
+            return client_db
+
+        async def init_cache():
+            client_cache = get_async_client_redis()
+
+            await client_cache.ping()
+
+            return client_cache
+
+        db = await init_db()
+        cache = await init_cache()
 
         yield
+
+        await db.close()
+        await cache.close()
 
     app = FastAPI(
         title=DEFAULT_APP_NAME,

@@ -8,14 +8,12 @@ from app.domain.service.location.geolocation.search import search_location_from_
 from app.infrestructure.repository.ride import RideRepository
 from app.infrestructure.repository.schedule import ScheduleRepository
 from app.infrestructure.repository.tracking import TrackingRepository
-from app.shared.models.location import LocationModel
 from app.shared.models.ride import RideTravelModel
 from app.shared.models.schedule import ScheduleTravelModel
 from app.shared.models.tracking import Tracking
 from app.shared.models.user import User
 from app.shared.pattern.singleton import Singleton
 from app.shared.scheme.filter import FilteringOptionsRequest
-from app.shared.scheme.location import GeoPoint
 from app.shared.scheme.schedule import ScheduleTravelFromAddressRequest
 
 
@@ -42,7 +40,7 @@ class ScheduleTravelService(metaclass=Singleton):
             address, (latitude, longitude) = await search_from_address(geocoder, waypoint)
             waypoints.add(address)
 
-        tracking = Tracking()
+        tracking = Tracking(records=[])
         await self.tracking_repository.save(tracking)
 
         schedule = ScheduleTravelModel(

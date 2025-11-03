@@ -1,9 +1,9 @@
 import functools
 import logging
 
-from googlemaps import Client as GoogleMapsClient
 from geopy.geocoders import GoogleV3, Nominatim
 from geopy.geocoders.base import Geocoder
+from googlemaps import Client as GoogleMapsClient
 
 from app.core import get_settings
 

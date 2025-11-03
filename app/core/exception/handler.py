@@ -1,4 +1,3 @@
-from fastapi import HTTPException
 from fastapi.responses import JSONResponse
 from google.api_core.exceptions import FailedPrecondition
 

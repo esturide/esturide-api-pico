@@ -1,7 +1,6 @@
 import datetime
 import uuid
-
-from typing import List, Annotated, Tuple
+from typing import Annotated
 
 from beanie import Document, Link, Indexed
 from pydantic import Field, UUID4

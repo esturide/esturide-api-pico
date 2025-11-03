@@ -1,8 +1,8 @@
 import datetime
 
 from beanie import Document, Indexed
-from pydantic_extra_types.phone_numbers import PhoneNumber
 from pydantic import Field, EmailStr
+from pydantic_extra_types.phone_numbers import PhoneNumber
 
 from app.shared.encrypt import check_same_password
 from app.shared.types.enum import RoleUser
@@ -26,7 +26,7 @@ class User(Document):
 
     email: EmailStr = Field(..., title="Email")
     curp: str = Field(...)
-    phone_number: PhoneNumber = Field(..., title="Phone number",)
+    phone_number: PhoneNumber = Field(..., title="Phone number", )
     address: str = Field(...)
 
     role: RoleUser = Field(default=RoleUser.not_verified)

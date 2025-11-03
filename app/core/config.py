@@ -17,6 +17,10 @@ class DefaultSettings(BaseSettings):
 
     origin_cors: str
 
+    cache_host: str
+    cache_password: str
+    cache_port: int
+
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding='utf-8', extra='ignore')
 
     @property
