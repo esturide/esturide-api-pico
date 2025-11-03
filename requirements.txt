@@ -52,3 +52,6 @@ shapely>=2.1.1
 numpy~=2.3.4
 pymongo[srv]~=4.15.3
 beanie~=2.0.0
+pydantic-redis~=0.7.0
+googlemaps~=4.10.0
+async-googlemaps~=0.0.10

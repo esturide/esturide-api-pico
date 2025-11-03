@@ -4,7 +4,7 @@ import uuid
 from fastapi import UploadFile
 
 from app.shared.types.enum import Gender
-from app.shared.types.enum.seats import Seats
+from app.shared.types.enum.seats import SeatOption
 
 UserType = typing.TypeVar("UserType")
 M = typing.TypeVar('M')
@@ -15,5 +15,5 @@ Token = typing.TypeVar("Token", str, bytes)
 
 StatusQuery = typing.Tuple[bool, typing.AnyStr]
 
-SeatList = typing.Set[Seats]
+SeatList = typing.Set[SeatOption]
 GenderList = typing.Set[Gender]

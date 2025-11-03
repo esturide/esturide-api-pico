@@ -1,31 +1,33 @@
 import datetime
-from typing import List, Annotated
+import uuid
+
+from typing import List, Annotated, Tuple
 
 from beanie import Document, Link, Indexed
-from pydantic import Field
+from pydantic import Field, UUID4
 
 from app.shared.models.tracking import Tracking
 from app.shared.models.user import User
-from app.shared.utils.random import generate_random_code_128
+from app.shared.types import SeatOption
 
 
 class RideTravelModel(Document):
     class Settings:
         name = "rides"
 
-    code: Annotated[int, Indexed(unique=True)] = Field(default_factory=generate_random_code_128)
+    uuid: Annotated[UUID4, Indexed(unique=True)] = Field(default_factory=uuid.uuid4)
     created: datetime.datetime = Field(default_factory=datetime.datetime.now)
 
     passenger: Link[User]
 
-    seat: str
+    seat: SeatOption
     on_board: bool
     starting: bool
     over: bool
     cancel: bool
     accept: bool
 
-    tracking: List[Link[Tracking]]
+    tracking: Link[Tracking] = Field(default_factory=Tracking)
 
     @property
     def is_finished(self):
@@ -34,7 +36,3 @@ class RideTravelModel(Document):
     @property
     def is_current(self):
         return not self.over and not self.cancel
-
-    @property
-    def uuid(self):
-        return self._id

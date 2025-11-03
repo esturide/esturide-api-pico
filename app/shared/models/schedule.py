@@ -1,24 +1,25 @@
 import datetime
-from typing import List, Annotated, Optional, Set
+
+import uuid
+
+from typing import List, Annotated, Optional, Set, Tuple
 
 from beanie import Document, Link, Indexed
-from pydantic import Field
+from pydantic import Field, UUID4
 
 from app.shared.const import DEFAULT_MAX_SCHEDULE_LIFETIME_HRS
-from app.shared.models.location import LocationModel
 from app.shared.models.ride import RideTravelModel
 from app.shared.models.tracking import Tracking
 from app.shared.models.user import User
-from app.shared.types import Seats
+from app.shared.types import SeatOption
 from app.shared.types.enum import Gender
-from app.shared.utils.random import generate_random_code_128
 
 
 class ScheduleTravelModel(Document):
     class Settings:
         name = "schedules"
 
-    code: Annotated[int, Indexed(unique=True)] = Field(default_factory=generate_random_code_128)
+    uuid: Annotated[UUID4, Indexed(unique=True)] = Field(default_factory=uuid.uuid4)
     created: datetime.datetime = Field(default_factory=datetime.datetime.now)
 
     starting: Optional[datetime.datetime] = Field(None)
@@ -31,16 +32,16 @@ class ScheduleTravelModel(Document):
     rides: List[Link[RideTravelModel]] = Field([])
 
     price: int
-    seats: List[str] = Field([])
+    seats: Set[SeatOption] = Field({SeatOption.A, SeatOption.B, SeatOption.C})
 
-    origin: LocationModel
-    destination: LocationModel
+    origin: str
+    destination: str
 
-    gender_filter: List[str] = Field(['male', 'female'])
+    gender_filter: Set[Gender] = Field({Gender.male, Gender.female})
 
-    waypoints: List[LocationModel] = Field([])
+    waypoints: Set[str] = Field(default_factory=set)
 
-    tracking: List[Link[Tracking]] = Field([])
+    tracking: Link[Tracking] = Field(...)
 
     @property
     def is_enabled(self):

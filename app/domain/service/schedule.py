@@ -4,75 +4,56 @@ import functools
 from geopy.geocoders.base import Geocoder
 
 from app.domain.service.location.geolocation import search_from_address
+from app.domain.service.location.geolocation.search import search_location_from_address
 from app.infrestructure.repository.ride import RideRepository
 from app.infrestructure.repository.schedule import ScheduleRepository
+from app.infrestructure.repository.tracking import TrackingRepository
 from app.shared.models.location import LocationModel
 from app.shared.models.ride import RideTravelModel
 from app.shared.models.schedule import ScheduleTravelModel
+from app.shared.models.tracking import Tracking
 from app.shared.models.user import User
 from app.shared.pattern.singleton import Singleton
 from app.shared.scheme.filter import FilteringOptionsRequest
 from app.shared.scheme.location import GeoPoint
 from app.shared.scheme.schedule import ScheduleTravelFromAddressRequest
-from app.shared.types import UUID
 
 
 class ScheduleTravelService(metaclass=Singleton):
     def __init__(self):
         self.ride_repository = RideRepository()
         self.schedule_repository = ScheduleRepository()
+        self.tracking_repository = TrackingRepository()
 
     async def create(self, geocoder: Geocoder, req: ScheduleTravelFromAddressRequest,
                      user: User) -> ScheduleTravelModel | None:
-        origin_address_result = await search_from_address(geocoder, req.origin)
-        destination_address_result = await search_from_address(geocoder, req.destination)
+        origin_address_result = await search_location_from_address(geocoder, req.origin)
+        destination_address_result = await search_location_from_address(geocoder, req.destination)
 
         if len(origin_address_result) == 0 or len(destination_address_result) == 0:
             return None
 
-        origin_location = origin_address_result[0]
-        destination_location = destination_address_result[0]
+        origin, _ = origin_address_result[0]
+        destination, _ = destination_address_result[0]
 
-        origin = LocationModel(
-            location=GeoPoint(
-                latitude=origin_location.latitude,
-                longitude=origin_location.longitude,
-            ),
-            address=req.origin
-        )
-
-        destination = LocationModel(
-            location=GeoPoint(
-                latitude=destination_location.latitude,
-                longitude=destination_location.longitude,
-            ),
-            address=req.destination
-        )
-
-        waypoints = []
+        waypoints = set()
 
         for waypoint in req.waypoints:
-            locations = await search_from_address(geocoder, waypoint)
-            location = locations[0]
+            address, (latitude, longitude) = await search_from_address(geocoder, waypoint)
+            waypoints.add(address)
 
-            waypoints.insert(
-                LocationModel(
-                    location=GeoPoint(
-                        latitude=location.latitude,
-                        longitude=location.longitude,
-                    ),
-                    address=waypoint
-                )
-            )
+        tracking = Tracking()
+        await self.tracking_repository.save(tracking)
 
         schedule = ScheduleTravelModel(
             driver=user,
             origin=origin,
             destination=destination,
             price=req.price,
-            # seats=set([s for s in req.seats]),
-            # gender_filter=req.gender_filter,
-            # waypoints=waypoints,
+            seats=req.seats,
+            gender_filter=req.gender_filter,
+            waypoints=waypoints,
+            tracking=tracking
         )
 
         status = await self.schedule_repository.save(schedule)

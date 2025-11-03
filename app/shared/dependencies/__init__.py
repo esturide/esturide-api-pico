@@ -3,6 +3,7 @@ from typing import Annotated
 from fastapi import Depends, File
 from fastapi.security import OAuth2PasswordRequestForm
 from geopy.geocoders.base import Geocoder
+from googlemaps import Client as GoogleMapsClient
 from pymongo import AsyncMongoClient, MongoClient
 
 from app.application.usecase.admin import AdminManagerUseCase, get_admin_manager_use_case
@@ -16,7 +17,8 @@ from app.application.usecase.user import UserUseCase, get_user_use_case
 from app.core.oauth2 import oauth2_scheme
 from app.shared.credentials import get_user_code_from_credentials, is_user_authenticated, \
     get_user_code_and_role_code_from_credentials
-from app.shared.dependencies.depends import get_nominatim_locator_agent, get_google_locator_agent
+from app.shared.dependencies.depends import get_nominatim_locator_agent, get_google_locator_agent, \
+    get_google_maps_service_agent
 from app.shared.dependencies.depends.db import async_client_mongodb, client_mongodb
 from app.shared.types import Token
 from app.shared.types.enum import RoleUser
@@ -29,6 +31,7 @@ UserIsAuthenticated = Annotated[bool, Depends(is_user_authenticated)]
 
 FileRequest = Annotated[bytes | None, File()]
 GoogleGeolocationDepend = Annotated[Geocoder, Depends(get_google_locator_agent)]
+GoogleMapsService = Annotated[GoogleMapsClient, Depends(get_google_maps_service_agent)]
 
 UserDependency = Annotated[UserUseCase, Depends(get_user_use_case)]
 ScheduleDependency = Annotated[ScheduleTravelUseCase, Depends(get_schedule_use_case)]

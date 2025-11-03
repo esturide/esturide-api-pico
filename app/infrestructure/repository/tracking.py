@@ -1,5 +1,6 @@
+from app.infrestructure.repository.session import AsyncSessionRepository
 from app.shared.pattern.singleton import Singleton
 
 
-class TrackingRepository(metaclass=Singleton):
+class TrackingRepository(AsyncSessionRepository, metaclass=Singleton):
     pass

@@ -6,7 +6,7 @@ from app.shared.models.ride import RideTravelModel
 from app.shared.models.schedule import ScheduleTravelModel
 from app.shared.models.user import User
 from app.shared.pattern.singleton import Singleton
-from app.shared.types import UUID, SeatList, GenderList, Seats, Gender
+from app.shared.types import UUID, SeatList, GenderList, SeatOption, Gender
 from app.shared.utils import async_task
 
 

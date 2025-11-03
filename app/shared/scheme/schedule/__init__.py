@@ -15,7 +15,7 @@ class CurrentUser(BaseModel):
     first_name: str = Field(..., title="First name", alias="firstName")
     maternal_surname: str = Field(..., title="Maternal surname", alias='maternalSurname')
     paternal_surname: str = Field(..., title="Paternal surname", alias='paternalSurname')
-    position: GeoPoint = Field(GeoPoint(), title="Current position", alias='position')
+    position: GeoPoint = Field(..., title="Current position", alias='position')
 
 
 class DriverUser(CurrentUser):
