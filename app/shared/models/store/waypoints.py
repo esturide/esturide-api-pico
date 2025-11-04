@@ -8,7 +8,7 @@ from app.shared.dependencies.depends.cache import get_async_client_redis
 from app.shared.models.store import GeoLocationEmbedded
 
 
-class ScheduleTravelCache(JsonModel):
+class ScheduleStore(JsonModel):
     travel_uuid: UUID4 = Field(index=True)
     origin: str = Field(index=True)
     destination: str = Field(index=True)

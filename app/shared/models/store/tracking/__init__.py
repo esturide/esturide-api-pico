@@ -8,7 +8,7 @@ from app.shared.dependencies.depends.cache import get_async_client_redis
 from app.shared.models.store import GeoLocationEmbedded
 
 
-class TrackingCache(JsonModel):
+class TrackingStore(JsonModel):
     uuid: UUID4 = Field(default_factory=uuid.uuid4)
 
     position: List[GeoLocationEmbedded]
