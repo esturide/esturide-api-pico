@@ -1,5 +1,5 @@
 from app.shared.models.ride import RideTravelModel
-from app.shared.models.schedule import ScheduleTravelModel
+from app.shared.models.travel import ScheduleTravelModel
 from app.shared.scheme.respose.schedule import model_schedule_response
 from app.shared.scheme.rides.status import RideTravelStatusResponse
 

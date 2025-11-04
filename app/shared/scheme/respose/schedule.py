@@ -1,4 +1,4 @@
-from app.shared.models.schedule import ScheduleTravelModel
+from app.shared.models.travel import ScheduleTravelModel
 from app.shared.scheme.location import GeoPoint, GeoLocationAddressModel
 from app.shared.scheme.rides.status import RidePassengerResponse
 from app.shared.scheme.schedule import ScheduleTravelResponse, DriverUser, PassengerUser

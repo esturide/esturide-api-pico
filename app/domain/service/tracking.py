@@ -1,9 +1,9 @@
 import functools
 
 from app.infrestructure.repository.ride import RideRepository
-from app.infrestructure.repository.schedule import ScheduleRepository
+from app.infrestructure.repository.travel import TravelRepository
 from app.shared.models.ride import RideTravelModel
-from app.shared.models.schedule import ScheduleTravelModel
+from app.shared.models.travel import ScheduleTravelModel
 from app.shared.models.tracking import Tracking
 from app.shared.pattern.singleton import Singleton
 
@@ -11,7 +11,7 @@ from app.shared.pattern.singleton import Singleton
 class TrackingService(metaclass=Singleton):
     def __init__(self):
         self.ride_depository = RideRepository()
-        self.schedule_repository = ScheduleRepository()
+        self.schedule_repository = TravelRepository()
 
     async def register_schedule(self, schedule: ScheduleTravelModel, tracking: Tracking):
         schedule.tracking.append(tracking)

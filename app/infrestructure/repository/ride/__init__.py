@@ -1,6 +1,6 @@
 import datetime
 
-from app.infrestructure.repository.session import AsyncSessionRepository
+from app.infrestructure.repository.client.db import ClientDocumentRepository
 from app.shared.models.ride import RideTravelModel
 from app.shared.models.user import User
 from app.shared.pattern.singleton import Singleton
@@ -8,7 +8,7 @@ from app.shared.types import UUID
 from app.shared.utils import async_task
 
 
-class RideRepository(AsyncSessionRepository, metaclass=Singleton):
+class RideRepository(ClientDocumentRepository, metaclass=Singleton):
     async def get(self, uuid: UUID) -> RideTravelModel | None:
         def get_ride():
             return RideTravelModel.collection.get(id=uuid)

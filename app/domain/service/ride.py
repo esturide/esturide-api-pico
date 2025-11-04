@@ -3,7 +3,7 @@ import functools
 
 from app.core.exception import NotFoundException
 from app.infrestructure.repository.ride import RideRepository
-from app.infrestructure.repository.schedule import ScheduleRepository
+from app.infrestructure.repository.travel import TravelRepository
 from app.shared.models.ride import RideTravelModel
 from app.shared.models.user import User
 from app.shared.pattern.singleton import Singleton
@@ -13,7 +13,7 @@ from app.shared.types import UUID
 class RideService(metaclass=Singleton):
     def __init__(self):
         self.ride_repository = RideRepository()
-        self.schedule_repository = ScheduleRepository()
+        self.schedule_repository = TravelRepository()
 
     async def create(self, passenger: User, seat: str) -> RideTravelModel:
         if seat not in ['A', 'B', 'C']:

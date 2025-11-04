@@ -9,7 +9,7 @@ from app.shared.scheme.schedule import ScheduleTravelResponse, ScheduleTravelUpd
 from app.shared.scheme.schedule.status import ScheduleTravelStatusResponse
 from app.shared.types.enum import Status
 
-schedule_router = APIRouter(prefix="/schedule", tags=["Travel Schedule route"])
+schedule_router = APIRouter(prefix="/travel", tags=["Travel Schedule route"])
 
 
 @schedule_router.post("/", response_model=StatusMessage)

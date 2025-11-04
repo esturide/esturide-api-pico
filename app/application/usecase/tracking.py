@@ -41,7 +41,7 @@ class TrackingUseCase:
             schedule = await self.schedule_service.get_current(user)
 
             if schedule is None:
-                raise ResourceNotFoundException(detail="They don't have any active schedule.")
+                raise ResourceNotFoundException(detail="They don't have any active travel.")
 
             status = await self.tracking_service.register_schedule(schedule, tracking)
         else:

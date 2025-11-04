@@ -1,9 +1,9 @@
-from app.infrestructure.repository.session import AsyncSessionRepository
+from app.infrestructure.repository.client.db import ClientDocumentRepository
 from app.shared.models.user import User
 from app.shared.pattern.singleton import Singleton
 
 
-class UserRepository(AsyncSessionRepository, metaclass=Singleton):
+class UserRepository(ClientDocumentRepository, metaclass=Singleton):
     async def get(self, *args, **kwargs) -> User | None:
         raise NotImplementedError()
 

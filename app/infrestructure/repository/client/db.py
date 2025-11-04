@@ -3,7 +3,7 @@ import contextlib
 from beanie import Document
 
 
-class AsyncSessionRepository:
+class ClientDocumentRepository:
     def __init__(self):
         pass
 

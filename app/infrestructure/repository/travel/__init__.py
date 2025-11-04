@@ -1,16 +1,15 @@
 from typing import Optional
 
 from app.core.exception import InvalidRequestException
-from app.infrestructure.repository.session import AsyncSessionRepository
+from app.infrestructure.repository.client.db import ClientDocumentRepository
 from app.shared.models.ride import RideTravelModel
-from app.shared.models.schedule import ScheduleTravelModel
+from app.shared.models.travel import ScheduleTravelModel
 from app.shared.models.user import User
 from app.shared.pattern.singleton import Singleton
-from app.shared.types import UUID, SeatList, GenderList, SeatOption, Gender
-from app.shared.utils import async_task
+from app.shared.types import SeatList, GenderList
 
 
-class ScheduleRepository(AsyncSessionRepository, metaclass=Singleton):
+class TravelRepository(ClientDocumentRepository, metaclass=Singleton):
     async def filtering(
             self,
             terminate=False,

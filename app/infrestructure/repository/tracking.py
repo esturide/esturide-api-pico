@@ -1,6 +1,6 @@
-from app.infrestructure.repository.session import AsyncSessionRepository
+from app.infrestructure.repository.client.db import ClientDocumentRepository
 from app.shared.pattern.singleton import Singleton
 
 
-class TrackingRepository(AsyncSessionRepository, metaclass=Singleton):
+class TrackingRepository(ClientDocumentRepository, metaclass=Singleton):
     pass

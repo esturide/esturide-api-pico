@@ -11,7 +11,7 @@ from app.domain.service.schedule import ScheduleTravelService
 from app.domain.service.user import UserService
 from app.shared.const import DEFAULT_MAX_RIDE_LIFETIME_SEC
 from app.shared.models.ride import RideTravelModel
-from app.shared.models.schedule import ScheduleTravelModel
+from app.shared.models.travel import ScheduleTravelModel
 from app.shared.models.user import User
 from app.shared.pattern.singleton import Singleton
 from app.shared.scheme import StatusFailure, StatusSuccess

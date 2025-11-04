@@ -10,7 +10,7 @@ from app.domain.service.auth import AuthenticationCredentialsService
 from app.domain.service.schedule import get_schedule_service, ScheduleTravelService
 from app.domain.service.user import UserService
 from app.shared.const import DEFAULT_MAX_SCHEDULE_LIFETIME_SEC
-from app.shared.models.schedule import ScheduleTravelModel
+from app.shared.models.travel import ScheduleTravelModel
 from app.shared.scheme import StatusSuccess, StatusFailure
 from app.shared.scheme.filter import FilteringOptionsRequest
 from app.shared.scheme.respose.schedule import model_schedule_response, schedule_status_response
@@ -61,7 +61,7 @@ class ScheduleTravelUseCase:
         background_tasks.add_task(create_task(self.schedule_service, schedule))
 
         return StatusSuccess(
-            message="New schedule traveled successfully."
+            message="New travel traveled successfully."
         )
 
     async def find_schedule_if_exist(self, code: int) -> Optional[ScheduleTravelStatusResponse]:
