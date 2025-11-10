@@ -1,13 +1,14 @@
 import datetime
 import functools
-from typing import Set
+from typing import Set, List, Tuple
 
+from app.core.exception import InvalidRequestException
 from app.domain.service.location.geolocation import search_from_address
 from app.domain.service.location.geolocation.search import search_location_from_address
 from app.infrestructure.repository.ride import RideRepository
 from app.infrestructure.repository.travel import TravelRepository
 from app.infrestructure.repository.tracking import TrackingRepository
-from app.infrestructure.repository.travel.schedule import ScheduleRepository
+from app.infrestructure.repository.travel.schedule import ScheduleStoreRepository
 from app.shared.models.ride import RideTravelModel
 from app.shared.models.store.schedule import ScheduleStore
 from app.shared.models.travel import ScheduleTravelModel
@@ -22,11 +23,19 @@ from app.shared.types import SeatOption, Gender
 class ScheduleTravelService(metaclass=Singleton):
     def __init__(self):
         self.ride_repository = RideRepository()
-        self.schedule_repository = ScheduleRepository()
+        self.schedule_store_repository = ScheduleStoreRepository()
         self.travel_repository = TravelRepository()
         self.tracking_repository = TrackingRepository()
 
-    async def create(self, user: User, origin: str, destination: str, starting: datetime.datetime, price: float, seats: Set[SeatOption], genders: Set[Gender], waypoints: Set[str]):
+    async def create(self, user: User, origin: str, destination: str, starting: datetime.datetime, price: float, seats: Set[SeatOption], genders: Set[Gender], waypoints: Set[str], route: List[Tuple[float, float]]):
+        previous_schedule_found = await ScheduleStore.find(ScheduleStore.usercode == user.code).first()
+
+        if previous_schedule_found is None:
+            raise InvalidRequestException("A previous schedule was found, it cannot be rescheduled.")
+
+        if not user.is_valid_driver:
+            raise InvalidRequestException('User is not an approved driver.')
+
         schedule = ScheduleStore(
             usercode=user.code,
             origin=origin,
@@ -36,11 +45,12 @@ class ScheduleTravelService(metaclass=Singleton):
             seats=seats,
             genders=genders,
             waypoints=waypoints,
-            route=[(0, 0)]
+            route=route
         )
 
-        await schedule.save()
-        await schedule.expire(120)
+        await self.schedule_store_repository.save(schedule, expire_time_sec=120)
+
+        return schedule
 
     async def old_create(self, geocoder, req: ScheduleTravelFromAddressRequest, user: User) -> ScheduleTravelModel | None:
         origin_address_result = await search_location_from_address(geocoder, req.origin)

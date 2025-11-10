@@ -39,19 +39,17 @@ class ScheduleTravelUseCase:
 
         user = await self.user_service.get(code)
 
-        if not user.is_valid_driver:
-            raise InvalidRequestException('User is not an approved driver.')
-
-        all_schedule = await self.schedule_service.get_by_driver(user)
-
-        if len(all_schedule) != 0 and all([not schedule.is_finished for schedule in all_schedule]):
-            raise InvalidRequestException("You currently have a pending trip.")
+        if user is None:
+            raise NotFoundException('User does not exist.')
 
         origin_result = await search_service.search(req.origin)
         destination_result = await search_service.search(req.destination)
 
         origin_address, origin_position = origin_result[0]
         destination_address, destination_position = destination_result[0]
+
+        route_results = await route_service.routing(origin_address, destination_address, req.waypoints, req.starting)
+        route_steps = route_results[0][1]
 
         schedule = await self.schedule_service.create(
             user=user,
@@ -62,6 +60,7 @@ class ScheduleTravelUseCase:
             seats=req.seats,
             genders=req.genders,
             waypoints=req.waypoints,
+            route=route_steps,
         )
 
         if schedule is None:

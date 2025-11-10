@@ -1,4 +1,5 @@
 import datetime
+from typing import Set, Optional
 
 import numpy as np
 
@@ -10,21 +11,18 @@ from app.shared.utils import async_task
 
 
 class RouteService(GoogleService, metaclass=Singleton):
-    async def routing(self, origin, destination, waypoints, time_start=None):
+    async def routing(self, origin: str, destination: str, waypoints: Set[str], time_start: Optional[datetime.datetime] = None):
         def set_routing(origin, destination, waypoints, time_start):
-            if time_start is None:
-                time_start = datetime.datetime.now()
-
             directions = self.gmaps.directions(
                 origin=origin,
                 destination=destination,
                 waypoints=waypoints,
                 mode="driving",
                 departure_time=time_start,
-                components=self.components
             )
 
             steps = []
+            all_routes_data = []
 
             for direction in directions:
                 for leg in direction['legs']:
@@ -52,7 +50,12 @@ class RouteService(GoogleService, metaclass=Singleton):
 
                 route = polyline.decode(direction['overview_polyline']['points'])
 
-                yield np.array(route), np.array(stoppingpoints), np.array(steps)
+                all_routes_data.append((route, stoppingpoints, steps))
+
+            return all_routes_data
 
 
-        return async_task(set_routing, origin, destination, waypoints, time_start)
+        if time_start is None:
+            time_start = datetime.datetime.now()
+
+        return await async_task(set_routing, origin, destination, waypoints, time_start)

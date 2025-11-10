@@ -4,7 +4,7 @@ from app.shared.utils import async_task
 
 
 class SearchService(GoogleService, metaclass=Singleton):
-    def search(self, address: str):
+    async def search(self, address: str):
         def search_address(address):
             all_results = []
 
@@ -22,4 +22,4 @@ class SearchService(GoogleService, metaclass=Singleton):
             return all_results
 
 
-        return async_task(search_address, address)
+        return await async_task(search_address, address)
