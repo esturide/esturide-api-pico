@@ -4,7 +4,7 @@ from google.cloud.firestore import GeoPoint
 
 from app.core.exception import ResourceNotFoundException, InvalidRequestException
 from app.domain.service.ride import RideService
-from app.domain.service.schedule import get_schedule_service
+from app.domain.service.schedule import ScheduleService
 from app.domain.service.tracking import TrackingService
 from app.domain.service.user import UserService
 from app.shared.models.tracking import Tracking
@@ -17,7 +17,7 @@ class TrackingUseCase:
     def __init__(self):
         self.user_service = UserService()
         self.ride_service = RideService()
-        self.schedule_service = get_schedule_service()
+        self.schedule_service = ScheduleService()
         self.tracking_service = TrackingService()
 
     async def register(self, code: int, role: RoleUser, location: GeoPoint):

@@ -15,7 +15,6 @@ def get_async_client_redis() -> aioredis.Redis:
     cache_port = settings.cache_port
     cache_password = settings.cache_password
 
-
     return aredis_om.get_redis_connection(
         host=cache_host,
         port=cache_port,
@@ -31,7 +30,6 @@ def get_client_redis() -> redis.Redis:
     cache_host = settings.cache_host
     cache_port = settings.cache_port
     cache_password = settings.cache_password
-
 
     return redis_om.get_redis_connection(
         host=cache_host,

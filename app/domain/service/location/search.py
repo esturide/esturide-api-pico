@@ -7,13 +7,13 @@ from app.shared.utils import async_task
 
 
 @dataclasses.dataclass
-class GeoLocationResult:
+class GeoAddress:
     address: str
     position: Tuple[float, float]
 
 
 class SearchService(GoogleService, metaclass=Singleton):
-    async def search(self, address: str) -> List[GeoLocationResult]:
+    async def search(self, address: str) -> List[GeoAddress]:
         def search_address(address):
             all_results = []
 
@@ -23,7 +23,7 @@ class SearchService(GoogleService, metaclass=Singleton):
                     location = result['geometry']['location']
 
                     all_results.append(
-                        GeoLocationResult(
+                        GeoAddress(
                             address=formatted_address,
                             position=decode_gps_from_google(location)
                         )
@@ -32,6 +32,5 @@ class SearchService(GoogleService, metaclass=Singleton):
                 raise ValueError(f"Address {address} not found.")
 
             return all_results
-
 
         return await async_task(search_address, address)

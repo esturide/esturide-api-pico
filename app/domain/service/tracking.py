@@ -3,8 +3,8 @@ import functools
 from app.infrestructure.repository.ride import RideRepository
 from app.infrestructure.repository.travel import TravelRepository
 from app.shared.models.ride import RideTravelModel
-from app.shared.models.travel import ScheduleTravelModel
 from app.shared.models.tracking import Tracking
+from app.shared.models.travel import ScheduleTravelDocument
 from app.shared.pattern.singleton import Singleton
 
 
@@ -13,7 +13,7 @@ class TrackingService(metaclass=Singleton):
         self.ride_depository = RideRepository()
         self.schedule_repository = TravelRepository()
 
-    async def register_schedule(self, schedule: ScheduleTravelModel, tracking: Tracking):
+    async def register_schedule(self, schedule: ScheduleTravelDocument, tracking: Tracking):
         schedule.tracking.append(tracking)
 
         return await self.ride_depository.save(tracking) and await self.schedule_repository.save(schedule)

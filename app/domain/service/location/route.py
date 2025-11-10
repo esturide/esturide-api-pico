@@ -10,14 +10,15 @@ from app.shared.utils import async_task
 
 
 @dataclasses.dataclass
-class RouteResult:
+class Routing:
     route: List[Tuple[float, float]]
     stoppingpoints: List[Tuple[float, float]]
     steps: List[Tuple[float, float]]
 
 
 class RouteService(GoogleService, metaclass=Singleton):
-    async def routing(self, origin: str, destination: str, waypoints: Set[str], time_start: Optional[datetime.datetime] = None) -> List[RouteResult]:
+    async def routing(self, origin: str, destination: str, waypoints: Set[str],
+                      time_start: Optional[datetime.datetime] = None) -> List[Routing]:
         def set_routing(origin, destination, waypoints, time_start):
             directions = self.gmaps.directions(
                 origin=origin,
@@ -57,7 +58,7 @@ class RouteService(GoogleService, metaclass=Singleton):
                 route = polyline.decode(direction['overview_polyline']['points'])
 
                 all_routes_data.append(
-                    RouteResult(
+                    Routing(
                         route=route,
                         stoppingpoints=stoppingpoints,
                         steps=steps
@@ -65,7 +66,6 @@ class RouteService(GoogleService, metaclass=Singleton):
                 )
 
             return all_routes_data
-
 
         if time_start is None:
             time_start = datetime.datetime.now()

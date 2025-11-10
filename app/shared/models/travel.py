@@ -13,7 +13,7 @@ from app.shared.types import SeatOption
 from app.shared.types.enum import Gender
 
 
-class ScheduleTravelModel(Document):
+class ScheduleTravelDocument(Document):
     class Settings:
         name = "schedules"
 

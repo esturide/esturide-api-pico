@@ -3,7 +3,7 @@ from typing import Optional
 from app.core.exception import InvalidRequestException
 from app.infrestructure.repository.client.db import ClientDocumentRepository
 from app.shared.models.ride import RideTravelModel
-from app.shared.models.travel import ScheduleTravelModel
+from app.shared.models.travel import ScheduleTravelDocument
 from app.shared.models.user import User
 from app.shared.pattern.singleton import Singleton
 from app.shared.types import SeatList, GenderList
@@ -21,7 +21,7 @@ class TravelRepository(ClientDocumentRepository, metaclass=Singleton):
             limit: int = 10,
             seats: Optional[SeatList] = None,
             genders: Optional[GenderList] = None,
-    ) -> list[ScheduleTravelModel]:
+    ) -> list[ScheduleTravelDocument]:
         """
         if seats is None:
             seats = {Seats.A, Seats.C, Seats.B}
@@ -60,11 +60,11 @@ class TravelRepository(ClientDocumentRepository, metaclass=Singleton):
 
         return []
 
-    async def get_from_code(self, code: int) -> ScheduleTravelModel:
-        return await ScheduleTravelModel.find_one(ScheduleTravelModel.code == code)
+    async def get_from_code(self, code: int) -> ScheduleTravelDocument:
+        return await ScheduleTravelDocument.find_one(ScheduleTravelDocument.code == code)
 
     async def get_current(self, user: User | None = None, ride: RideTravelModel | None = None,
-                          *args) -> ScheduleTravelModel | None:
+                          *args) -> ScheduleTravelDocument | None:
         """
         def filter_schedule_task_driver():
             return list(ScheduleTravel.collection
@@ -92,21 +92,21 @@ class TravelRepository(ClientDocumentRepository, metaclass=Singleton):
 
         return None
 
-    async def get_by_driver(self, user: User, limit=10) -> list[ScheduleTravelModel]:
+    async def get_by_driver(self, user: User, limit=10) -> list[ScheduleTravelDocument]:
         if limit <= 1:
             raise InvalidRequestException("Limit must be greater than 1.")
 
-        return await (ScheduleTravelModel
-                      .find(ScheduleTravelModel.driver == user)
+        return await (ScheduleTravelDocument
+                      .find(ScheduleTravelDocument.driver == user)
                       .sort("-created")
                       .limit(limit)
                       .to_list())
 
-    async def get_by_passenger(self, user: User, limit=10) -> list[ScheduleTravelModel]:
+    async def get_by_passenger(self, user: User, limit=10) -> list[ScheduleTravelDocument]:
         if limit <= 1:
             raise InvalidRequestException("Limit must be greater than 1.")
 
-        return await (ScheduleTravelModel
+        return await (ScheduleTravelDocument
                       .find({'rides.passenger': user})
                       .sort("-created")
                       .to_list())
@@ -115,7 +115,7 @@ class TravelRepository(ClientDocumentRepository, metaclass=Singleton):
         if limit <= 1:
             raise InvalidRequestException("Limit must be greater than 1.")
 
-        return await (ScheduleTravelModel
+        return await (ScheduleTravelDocument
                       .find()
                       .sort("-created")
                       .limit(limit)

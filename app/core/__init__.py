@@ -11,8 +11,8 @@ from app.core.config import get_settings
 from app.shared.dependencies.depends.cache import get_async_client_redis
 from app.shared.dependencies.depends.db import get_async_client_mongodb
 from app.shared.models.ride import RideTravelModel
-from app.shared.models.travel import ScheduleTravelModel
 from app.shared.models.tracking import Tracking
+from app.shared.models.travel import ScheduleTravelDocument
 from app.shared.models.user import User
 
 DEFAULT_APP_NAME = "Esturide (p) API"
@@ -33,7 +33,7 @@ async def init_core_mongodb():
         database=client_db["Travels"],
         document_models=[
             RideTravelModel,
-            ScheduleTravelModel,
+            ScheduleTravelDocument,
         ]
     )
 

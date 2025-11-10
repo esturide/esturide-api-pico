@@ -1,11 +1,11 @@
-from app.shared.models.travel import ScheduleTravelModel
+from app.shared.models.travel import ScheduleTravelDocument
 from app.shared.scheme.location import GeoPoint, GeoLocationAddressModel
 from app.shared.scheme.rides.status import RidePassengerResponse
 from app.shared.scheme.schedule import ScheduleTravelResponse, DriverUser, PassengerUser
 from app.shared.scheme.schedule.status import ScheduleTravelStatusResponse
 
 
-def model_schedule_response(schedule: ScheduleTravelModel) -> ScheduleTravelResponse:
+def model_schedule_response(schedule: ScheduleTravelDocument) -> ScheduleTravelResponse:
     driver = schedule.driver
     all_passengers = schedule.rides
 
@@ -57,7 +57,7 @@ def model_schedule_response(schedule: ScheduleTravelModel) -> ScheduleTravelResp
     )
 
 
-def schedule_status_response(schedule: ScheduleTravelModel) -> ScheduleTravelStatusResponse:
+def schedule_status_response(schedule: ScheduleTravelDocument) -> ScheduleTravelStatusResponse:
     driver = schedule.driver
     all_passengers = schedule.rides
 

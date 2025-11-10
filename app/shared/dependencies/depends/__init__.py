@@ -9,6 +9,7 @@ from app.core import get_settings
 
 GoogleMapsClient = Client
 
+
 @functools.lru_cache
 def get_nominatim_locator_agent() -> Geocoder:
     return Nominatim(user_agent="esturide")

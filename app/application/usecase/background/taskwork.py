@@ -4,4 +4,3 @@ class TaskWork:
 
     async def start(self):
         pass
-
