@@ -1,7 +1,7 @@
 from fastapi import APIRouter, BackgroundTasks
 
 from app.shared.dependencies import ScheduleDependency, AuthUserCodeCredentials, UserIsAuthenticated, \
-    AuthUserCodeAndRoleCredentials, GoogleGeolocationDepend
+    AuthUserCodeAndRoleCredentials, GoogleMapsService
 from app.shared.scheme import StatusMessage, StatusResponse
 from app.shared.scheme.filter import FilteringOptionsRequest
 from app.shared.scheme.schedule import ScheduleTravelResponse, ScheduleTravelUpdateRequest, \
@@ -14,10 +14,10 @@ schedule_router = APIRouter(prefix="/travel", tags=["Travel Schedule route"])
 
 @schedule_router.post("/", response_model=StatusMessage)
 async def schedule_new_travel(schedule: ScheduleTravelFromAddressRequest, schedule_case: ScheduleDependency,
-                              auth: AuthUserCodeAndRoleCredentials, geocoder: GoogleGeolocationDepend,
+                              auth: AuthUserCodeAndRoleCredentials, gmaps: GoogleMapsService,
                               background_tasks: BackgroundTasks):
     code, role = auth
-    return await schedule_case.create(schedule, code, role, geocoder, background_tasks)
+    return await schedule_case.create(schedule, code, role, gmaps, background_tasks)
 
 
 @schedule_router.get("/", response_model=StatusResponse[list[ScheduleTravelResponse]])

@@ -17,49 +17,50 @@ from app.shared.models.user import User
 DEFAULT_APP_NAME = "Esturide (p) API"
 
 
+async def init_core_mongodb():
+    client_db = get_async_client_mongodb()
+    await client_db.admin.command("ping")
+
+    await beanie.init_beanie(
+        database=client_db["Customers"],
+        document_models=[
+            User,
+        ]
+    )
+
+    await beanie.init_beanie(
+        database=client_db["Travels"],
+        document_models=[
+            RideTravelModel,
+            ScheduleTravelModel,
+        ]
+    )
+
+    await beanie.init_beanie(
+        database=client_db["Tracking"],
+        document_models=[
+            Tracking,
+        ]
+    )
+
+    return client_db
+
+
+async def init_core_redis():
+    client_cache = get_async_client_redis()
+    await client_cache.ping()
+
+    return client_cache
+
+
 @functools.lru_cache()
 def get_root_app() -> FastAPI:
     settings = get_settings()
 
     @contextlib.asynccontextmanager
     async def lifespan(_app: FastAPI):
-        async def init_db():
-            client_db = get_async_client_mongodb()
-            await client_db.admin.command("ping")
-
-            await beanie.init_beanie(
-                database=client_db["Customers"],
-                document_models=[
-                    User,
-                ]
-            )
-
-            await beanie.init_beanie(
-                database=client_db["Travels"],
-                document_models=[
-                    RideTravelModel,
-                    ScheduleTravelModel,
-                ]
-            )
-
-            await beanie.init_beanie(
-                database=client_db["Tracking"],
-                document_models=[
-                    Tracking,
-                ]
-            )
-
-            return client_db
-
-        async def init_cache():
-            client_cache = get_async_client_redis()
-
-            await client_cache.ping()
-
-            return client_cache
-
-        db = await init_db()
-        cache = await init_cache()
+        db = await init_core_mongodb()
+        cache = await init_core_redis()
 
         yield
 

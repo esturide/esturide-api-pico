@@ -7,9 +7,12 @@ from geopy.geocoders.base import Geocoder
 
 from app.core.exception import InvalidRequestException, NotFoundException
 from app.domain.service.auth import AuthenticationCredentialsService
+from app.domain.service.location.route import RouteService
+from app.domain.service.location.search import SearchService
 from app.domain.service.schedule import get_schedule_service, ScheduleTravelService
 from app.domain.service.user import UserService
 from app.shared.const import DEFAULT_MAX_SCHEDULE_LIFETIME_SEC
+from app.shared.dependencies.depends import GoogleMapsClient
 from app.shared.models.travel import ScheduleTravelModel
 from app.shared.scheme import StatusSuccess, StatusFailure
 from app.shared.scheme.filter import FilteringOptionsRequest
@@ -26,17 +29,10 @@ class ScheduleTravelUseCase:
         self.user_service = UserService()
         self.auth_service = AuthenticationCredentialsService()
 
-    async def create(self, req: ScheduleTravelFromAddressRequest, code: int, role: RoleUser, geocoder: Geocoder,
+    async def create(self, req: ScheduleTravelFromAddressRequest, code: int, role: RoleUser, gmaps: GoogleMapsClient,
                      background_tasks: BackgroundTasks):
-        def create_task(schedule_service: ScheduleTravelService, schedule: ScheduleTravelModel):
-            async def task():
-                await asyncio.sleep(DEFAULT_MAX_SCHEDULE_LIFETIME_SEC)
-
-                schedule.cancel = True
-
-                await schedule_service.save(schedule)
-
-            return task
+        search_service = SearchService(gmaps)
+        route_service = RouteService(gmaps)
 
         if role != RoleUser.driver:
             raise InvalidRequestException('Role must be driver.')
@@ -51,14 +47,27 @@ class ScheduleTravelUseCase:
         if len(all_schedule) != 0 and all([not schedule.is_finished for schedule in all_schedule]):
             raise InvalidRequestException("You currently have a pending trip.")
 
-        schedule = await self.schedule_service.create(geocoder, req, user)
+        origin_result = await search_service.search(req.origin)
+        destination_result = await search_service.search(req.destination)
+
+        origin_address, origin_position = origin_result[0]
+        destination_address, destination_position = destination_result[0]
+
+        schedule = await self.schedule_service.create(
+            user=user,
+            origin=origin_address,
+            destination=destination_address,
+            starting=req.starting,
+            price=req.price,
+            seats=req.seats,
+            genders=req.genders,
+            waypoints=req.waypoints,
+        )
 
         if schedule is None:
             return StatusFailure(
                 message="The trip could not be scheduled."
             )
-
-        background_tasks.add_task(create_task(self.schedule_service, schedule))
 
         return StatusSuccess(
             message="New travel traveled successfully."

@@ -3,10 +3,11 @@ import logging
 
 from geopy.geocoders import GoogleV3, Nominatim
 from geopy.geocoders.base import Geocoder
-from googlemaps import Client as GoogleMapsClient
+from googlemaps import Client
 
 from app.core import get_settings
 
+GoogleMapsClient = Client
 
 @functools.lru_cache
 def get_nominatim_locator_agent() -> Geocoder:
@@ -24,7 +25,7 @@ def get_google_locator_agent() -> Geocoder:
 def get_google_maps_service_agent() -> GoogleMapsClient:
     settings = get_settings()
 
-    return GoogleMapsClient(key=settings.google_maps_api_key)
+    return GoogleMapsClient(key=settings.api_google_key)
 
 
 @functools.lru_cache

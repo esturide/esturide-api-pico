@@ -1,7 +1,6 @@
 import datetime
 import functools
-
-from geopy.geocoders.base import Geocoder
+from typing import Set
 
 from app.domain.service.location.geolocation import search_from_address
 from app.domain.service.location.geolocation.search import search_location_from_address
@@ -10,12 +9,14 @@ from app.infrestructure.repository.travel import TravelRepository
 from app.infrestructure.repository.tracking import TrackingRepository
 from app.infrestructure.repository.travel.schedule import ScheduleRepository
 from app.shared.models.ride import RideTravelModel
+from app.shared.models.store.schedule import ScheduleStore
 from app.shared.models.travel import ScheduleTravelModel
 from app.shared.models.tracking import Tracking
 from app.shared.models.user import User
 from app.shared.pattern.singleton import Singleton
 from app.shared.scheme.filter import FilteringOptionsRequest
 from app.shared.scheme.schedule import ScheduleTravelFromAddressRequest
+from app.shared.types import SeatOption, Gender
 
 
 class ScheduleTravelService(metaclass=Singleton):
@@ -25,8 +26,23 @@ class ScheduleTravelService(metaclass=Singleton):
         self.travel_repository = TravelRepository()
         self.tracking_repository = TrackingRepository()
 
-    async def create(self, geocoder: Geocoder, req: ScheduleTravelFromAddressRequest,
-                     user: User) -> ScheduleTravelModel | None:
+    async def create(self, user: User, origin: str, destination: str, starting: datetime.datetime, price: float, seats: Set[SeatOption], genders: Set[Gender], waypoints: Set[str]):
+        schedule = ScheduleStore(
+            usercode=user.code,
+            origin=origin,
+            destination=destination,
+            starting=starting,
+            price=price,
+            seats=seats,
+            genders=genders,
+            waypoints=waypoints,
+            route=[(0, 0)]
+        )
+
+        await schedule.save()
+        await schedule.expire(120)
+
+    async def old_create(self, geocoder, req: ScheduleTravelFromAddressRequest, user: User) -> ScheduleTravelModel | None:
         origin_address_result = await search_location_from_address(geocoder, req.origin)
         destination_address_result = await search_location_from_address(geocoder, req.destination)
 
@@ -51,7 +67,7 @@ class ScheduleTravelService(metaclass=Singleton):
             destination=destination,
             price=req.price,
             seats=req.seats,
-            gender_filter=req.gender_filter,
+            gender_filter=req.genders,
             waypoints=waypoints,
             tracking=tracking
         )
