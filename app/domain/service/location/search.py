@@ -1,10 +1,19 @@
+import dataclasses
+from typing import Tuple, List
+
 from app.domain.service.google import GoogleService, decode_gps_from_google
 from app.shared.pattern.singleton import Singleton
 from app.shared.utils import async_task
 
 
+@dataclasses.dataclass
+class GeoLocationResult:
+    address: str
+    position: Tuple[float, float]
+
+
 class SearchService(GoogleService, metaclass=Singleton):
-    async def search(self, address: str):
+    async def search(self, address: str) -> List[GeoLocationResult]:
         def search_address(address):
             all_results = []
 
@@ -14,7 +23,10 @@ class SearchService(GoogleService, metaclass=Singleton):
                     location = result['geometry']['location']
 
                     all_results.append(
-                        (formatted_address, decode_gps_from_google(location))
+                        GeoLocationResult(
+                            address=formatted_address,
+                            position=decode_gps_from_google(location)
+                        )
                     )
             else:
                 raise ValueError(f"Address {address} not found.")

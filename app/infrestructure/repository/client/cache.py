@@ -10,7 +10,7 @@ class ClientCacheRepository:
 
     async def save(self, instance: JsonModel | HashModel, expire_time_sec=None):
         if expire_time_sec is not None:
-            await instance.expire(self.expire_time_sec)
+            await instance.expire(expire_time_sec)
         elif self.expire_time_sec is not None:
             await instance.expire(self.expire_time_sec)
 

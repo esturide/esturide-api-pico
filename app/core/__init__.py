@@ -2,6 +2,7 @@ import contextlib
 import functools
 
 import beanie
+from aredis_om import Migrator
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.gzip import GZipMiddleware
@@ -49,6 +50,8 @@ async def init_core_mongodb():
 async def init_core_redis():
     client_cache = get_async_client_redis()
     await client_cache.ping()
+
+    await Migrator().run()
 
     return client_cache
 

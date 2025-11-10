@@ -1,7 +1,6 @@
+import dataclasses
 import datetime
-from typing import Set, Optional
-
-import numpy as np
+from typing import Set, Optional, Tuple, List
 
 import polyline
 
@@ -10,8 +9,15 @@ from app.shared.pattern.singleton import Singleton
 from app.shared.utils import async_task
 
 
+@dataclasses.dataclass
+class RouteResult:
+    route: List[Tuple[float, float]]
+    stoppingpoints: List[Tuple[float, float]]
+    steps: List[Tuple[float, float]]
+
+
 class RouteService(GoogleService, metaclass=Singleton):
-    async def routing(self, origin: str, destination: str, waypoints: Set[str], time_start: Optional[datetime.datetime] = None):
+    async def routing(self, origin: str, destination: str, waypoints: Set[str], time_start: Optional[datetime.datetime] = None) -> List[RouteResult]:
         def set_routing(origin, destination, waypoints, time_start):
             directions = self.gmaps.directions(
                 origin=origin,
@@ -50,7 +56,13 @@ class RouteService(GoogleService, metaclass=Singleton):
 
                 route = polyline.decode(direction['overview_polyline']['points'])
 
-                all_routes_data.append((route, stoppingpoints, steps))
+                all_routes_data.append(
+                    RouteResult(
+                        route=route,
+                        stoppingpoints=stoppingpoints,
+                        steps=steps
+                    )
+                )
 
             return all_routes_data
 
@@ -58,4 +70,4 @@ class RouteService(GoogleService, metaclass=Singleton):
         if time_start is None:
             time_start = datetime.datetime.now()
 
-        return await async_task(set_routing, origin, destination, waypoints, time_start)
+        return await async_task(set_routing, origin, destination, list(waypoints), time_start)

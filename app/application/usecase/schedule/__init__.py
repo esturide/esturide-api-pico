@@ -42,19 +42,19 @@ class ScheduleTravelUseCase:
         if user is None:
             raise NotFoundException('User does not exist.')
 
-        origin_result = await search_service.search(req.origin)
-        destination_result = await search_service.search(req.destination)
+        origin_results = await search_service.search(req.origin)
+        destination_results = await search_service.search(req.destination)
 
-        origin_address, origin_position = origin_result[0]
-        destination_address, destination_position = destination_result[0]
+        origin = origin_results[0]
+        destination = destination_results[0]
 
-        route_results = await route_service.routing(origin_address, destination_address, req.waypoints, req.starting)
-        route_steps = route_results[0][1]
+        route_results = await route_service.routing(origin.address, destination.address, req.waypoints, req.starting)
+        route_steps = route_results[0].steps
 
         schedule = await self.schedule_service.create(
             user=user,
-            origin=origin_address,
-            destination=destination_address,
+            origin=origin.address,
+            destination=destination.address,
             starting=req.starting,
             price=req.price,
             seats=req.seats,

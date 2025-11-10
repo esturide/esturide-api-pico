@@ -28,9 +28,9 @@ class ScheduleTravelService(metaclass=Singleton):
         self.tracking_repository = TrackingRepository()
 
     async def create(self, user: User, origin: str, destination: str, starting: datetime.datetime, price: float, seats: Set[SeatOption], genders: Set[Gender], waypoints: Set[str], route: List[Tuple[float, float]]):
-        previous_schedule_found = await ScheduleStore.find(ScheduleStore.usercode == user.code).first()
+        previous_schedule_found = await ScheduleStore.find(ScheduleStore.usercode == user.code).all()
 
-        if previous_schedule_found is None:
+        if len(previous_schedule_found) != 0:
             raise InvalidRequestException("A previous schedule was found, it cannot be rescheduled.")
 
         if not user.is_valid_driver:
@@ -51,43 +51,6 @@ class ScheduleTravelService(metaclass=Singleton):
         await self.schedule_store_repository.save(schedule, expire_time_sec=120)
 
         return schedule
-
-    async def old_create(self, geocoder, req: ScheduleTravelFromAddressRequest, user: User) -> ScheduleTravelModel | None:
-        origin_address_result = await search_location_from_address(geocoder, req.origin)
-        destination_address_result = await search_location_from_address(geocoder, req.destination)
-
-        if len(origin_address_result) == 0 or len(destination_address_result) == 0:
-            return None
-
-        origin, _ = origin_address_result[0]
-        destination, _ = destination_address_result[0]
-
-        waypoints = set()
-
-        for waypoint in req.waypoints:
-            address, (latitude, longitude) = await search_from_address(geocoder, waypoint)
-            waypoints.add(address)
-
-        tracking = Tracking(records=[])
-        await self.tracking_repository.save(tracking)
-
-        schedule = ScheduleTravelModel(
-            driver=user,
-            origin=origin,
-            destination=destination,
-            price=req.price,
-            seats=req.seats,
-            gender_filter=req.genders,
-            waypoints=waypoints,
-            tracking=tracking
-        )
-
-        status = await self.travel_repository.save(schedule)
-
-        if status:
-            return schedule
-
-        return None
 
     async def get(self, code: int) -> ScheduleTravelModel:
         return await self.travel_repository.get_from_code(code)
