@@ -9,7 +9,7 @@ from app.infrestructure.repository.travel.schedule import ScheduleStoreRepositor
 from app.shared.models.ride import RideTravelModel
 from app.shared.models.store.schedule import ScheduleStore
 from app.shared.models.travel import ScheduleTravelDocument
-from app.shared.models.user import User
+from app.shared.models.user import UserDocument
 from app.shared.pattern.singleton import Singleton
 from app.shared.types import Seat, Gender
 
@@ -21,7 +21,7 @@ class ScheduleService(metaclass=Singleton):
         self.travel_repository = TravelRepository()
         self.tracking_repository = TrackingRepository()
 
-    async def create(self, user: User, origin: str, destination: str, starting: datetime.datetime, price: float,
+    async def create(self, user: UserDocument, origin: str, destination: str, starting: datetime.datetime, price: float,
                      seats: Set[Seat], genders: Set[Gender], waypoints: Set[str],
                      route: List[Tuple[float, float]]):
         previous_schedule_found = await ScheduleStore.find(ScheduleStore.usercode == user.code).all()
@@ -57,13 +57,13 @@ class ScheduleService(metaclass=Singleton):
     async def get_from_ride(self, ride: RideTravelModel) -> ScheduleTravelDocument | None:
         return
 
-    async def get_current(self, user: User) -> ScheduleTravelDocument | None:
+    async def get_current(self, user: UserDocument) -> ScheduleTravelDocument | None:
         return
 
-    async def get_by_driver(self, user: User) -> list[ScheduleTravelDocument]:
+    async def get_by_driver(self, user: UserDocument) -> list[ScheduleTravelDocument]:
         return []
 
-    async def get_by_passenger(self, user: User) -> list[ScheduleTravelDocument]:
+    async def get_by_passenger(self, user: UserDocument) -> list[ScheduleTravelDocument]:
         return []
 
     async def all(self, limit=10) -> list[ScheduleTravelDocument]:

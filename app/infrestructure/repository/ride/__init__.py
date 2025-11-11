@@ -2,7 +2,7 @@ import datetime
 
 from app.infrestructure.repository.client.db import ClientDocumentRepository
 from app.shared.models.ride import RideTravelModel
-from app.shared.models.user import User
+from app.shared.models.user import UserDocument
 from app.shared.pattern.singleton import Singleton
 from app.shared.types import UUID
 from app.shared.utils import async_task
@@ -17,7 +17,7 @@ class RideRepository(ClientDocumentRepository, metaclass=Singleton):
 
     async def filter(
             self,
-            passenger: User,
+            passenger: UserDocument,
             over=False,
             order_date=True,
             seat: str | None = None,

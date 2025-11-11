@@ -13,7 +13,7 @@ from app.shared.dependencies.depends.db import get_async_client_mongodb
 from app.shared.models.ride import RideTravelModel
 from app.shared.models.tracking import Tracking
 from app.shared.models.travel import ScheduleTravelDocument
-from app.shared.models.user import User
+from app.shared.models.user import UserDocument
 
 DEFAULT_APP_NAME = "Esturide (p) API"
 
@@ -25,7 +25,7 @@ async def init_core_mongodb():
     await beanie.init_beanie(
         database=client_db["Customers"],
         document_models=[
-            User,
+            UserDocument,
         ]
     )
 

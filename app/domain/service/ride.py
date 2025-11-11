@@ -5,7 +5,7 @@ from app.core.exception import NotFoundException
 from app.infrestructure.repository.ride import RideRepository
 from app.infrestructure.repository.travel import TravelRepository
 from app.shared.models.ride import RideTravelModel
-from app.shared.models.user import User
+from app.shared.models.user import UserDocument
 from app.shared.pattern.singleton import Singleton
 from app.shared.types import UUID
 
@@ -15,7 +15,7 @@ class RideService(metaclass=Singleton):
         self.ride_repository = RideRepository()
         self.schedule_repository = TravelRepository()
 
-    async def create(self, passenger: User, seat: str) -> RideTravelModel:
+    async def create(self, passenger: UserDocument, seat: str) -> RideTravelModel:
         if seat not in ['A', 'B', 'C']:
             raise ""
 
@@ -29,7 +29,7 @@ class RideService(metaclass=Singleton):
 
         return ride
 
-    async def get_current_ride_from_user(self, passenger: User) -> RideTravelModel | None:
+    async def get_current_ride_from_user(self, passenger: UserDocument) -> RideTravelModel | None:
         all_rides = await self.get_all_rides_from_user(passenger)
 
         if len(all_rides) != 0 and all([rides.is_finished for rides in all_rides]):
@@ -37,7 +37,7 @@ class RideService(metaclass=Singleton):
 
         return all_rides[0]
 
-    async def get_all_rides_from_user(self, passenger: User) -> list[RideTravelModel]:
+    async def get_all_rides_from_user(self, passenger: UserDocument) -> list[RideTravelModel]:
         return await self.ride_repository.filter(passenger=passenger)
 
     async def get(self, uuid: UUID) -> RideTravelModel:

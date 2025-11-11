@@ -2,7 +2,7 @@ from app.core import get_settings
 from app.core.exception import UnauthorizedAccessException
 from app.core.oauth2 import encode, decode
 from app.infrestructure.repository.user import UserRepository
-from app.shared.models.user import User
+from app.shared.models.user import UserDocument
 from app.shared.pattern.singleton import Singleton
 from app.shared.types import Token
 from app.shared.types.enum import RoleUser
@@ -13,7 +13,7 @@ class AuthenticationCredentialsService(metaclass=Singleton):
         self.settings = get_settings()
         self.user_repository = UserRepository()
 
-    async def get_user_if_authorized(self, code: int, password: str) -> User:
+    async def get_user_if_authorized(self, code: int, password: str) -> UserDocument:
         user = await self.user_repository.get_user_by_code(code)
 
         if user is None:
@@ -28,7 +28,7 @@ class AuthenticationCredentialsService(metaclass=Singleton):
 
         return user
 
-    async def get_user_credentials_from_token(self, token: str) -> tuple[User, RoleUser]:
+    async def get_user_credentials_from_token(self, token: str) -> tuple[UserDocument, RoleUser]:
         decode_data = decode(token, self.settings.secret_key, self.settings.algorithm)
         code = decode_data.get("code")
         role = decode_data.get("role")
@@ -65,7 +65,7 @@ class AuthenticationCredentialsService(metaclass=Singleton):
 
         return True
 
-    async def refresh(self, user: User, role: RoleUser) -> Token:
+    async def refresh(self, user: UserDocument, role: RoleUser) -> Token:
         data = {
             "code": user.code,
             "role": role.value,

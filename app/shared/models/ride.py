@@ -6,7 +6,7 @@ from beanie import Document, Link, Indexed
 from pydantic import Field, UUID4
 
 from app.shared.models.tracking import Tracking
-from app.shared.models.user import User
+from app.shared.models.user import UserDocument
 from app.shared.types import Seat
 
 
@@ -17,7 +17,7 @@ class RideTravelModel(Document):
     uuid: Annotated[UUID4, Indexed(unique=True)] = Field(default_factory=uuid.uuid4)
     created: datetime.datetime = Field(default_factory=datetime.datetime.now)
 
-    passenger: Link[User]
+    passenger: Link[UserDocument]
 
     seat: Seat
     on_board: bool

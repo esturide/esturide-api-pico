@@ -8,7 +8,7 @@ from app.domain.service.schedule import ScheduleService
 from app.domain.service.user import UserService
 from app.shared.models.ride import RideTravelModel
 from app.shared.models.travel import ScheduleTravelDocument
-from app.shared.models.user import User
+from app.shared.models.user import UserDocument
 from app.shared.pattern.singleton import Singleton
 from app.shared.scheme.rides import RideTravelUpdateRequest, RideTravelRequest
 from app.shared.scheme.rides.status import RideTravelStatusResponse
@@ -25,7 +25,7 @@ class RideUseCase(metaclass=Singleton):
     async def create(self, code: int, role: RoleUser, req: RideTravelRequest, background_tasks: BackgroundTasks):
         raise NotImplementedError()
 
-    async def get_current_from_user(self, user: User) -> tuple[ScheduleTravelDocument | None, RideTravelModel | None]:
+    async def get_current_from_user(self, user: UserDocument) -> tuple[ScheduleTravelDocument | None, RideTravelModel | None]:
         raise NotImplementedError()
 
     async def find_ride_if_exist(self, code: int) -> Optional[RideTravelStatusResponse]:
@@ -34,10 +34,10 @@ class RideUseCase(metaclass=Singleton):
     async def current(self, code: int) -> RideTravelStatusResponse:
         raise NotImplementedError()
 
-    async def cancel(self, passenger: User, role: RoleUser, schedule: ScheduleTravelDocument, ride: RideTravelModel):
+    async def cancel(self, passenger: UserDocument, role: RoleUser, schedule: ScheduleTravelDocument, ride: RideTravelModel):
         raise NotImplementedError()
 
-    async def over(self, passenger: User, role: RoleUser, schedule: ScheduleTravelDocument, ride: RideTravelModel):
+    async def over(self, passenger: UserDocument, role: RoleUser, schedule: ScheduleTravelDocument, ride: RideTravelModel):
         raise NotImplementedError()
 
     async def update(self, req: RideTravelUpdateRequest, code: int, role: RoleUser):

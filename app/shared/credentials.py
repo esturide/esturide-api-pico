@@ -4,7 +4,7 @@ from fastapi import Depends, HTTPException
 
 from app.core import get_settings
 from app.core.oauth2 import oauth2_scheme, secure_decode, decode, decode_no_exception
-from app.shared.models.user import User
+from app.shared.models.user import UserDocument
 from app.shared.types import Token
 from app.shared.types.enum import RoleUser
 
@@ -59,7 +59,7 @@ async def is_user_authenticated(token: Annotated[Token, Depends(oauth2_scheme)])
     return False
 
 
-async def get_user_credentials_header(headers) -> User | None:
+async def get_user_credentials_header(headers) -> UserDocument | None:
     if access_token := headers.get("access_token"):
         return await user_credentials(access_token)
 

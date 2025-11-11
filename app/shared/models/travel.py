@@ -8,7 +8,7 @@ from pydantic import Field, UUID4
 from app.shared.const import DEFAULT_MAX_SCHEDULE_LIFETIME_HRS
 from app.shared.models.ride import RideTravelModel
 from app.shared.models.tracking import Tracking
-from app.shared.models.user import User
+from app.shared.models.user import UserDocument
 from app.shared.types import Seat
 from app.shared.types.enum import Gender
 
@@ -26,7 +26,7 @@ class ScheduleTravelDocument(Document):
     terminate: bool = Field(False)
     cancel: bool = Field(False)
 
-    driver: Link[User]
+    driver: Link[UserDocument]
     rides: List[Link[RideTravelModel]] = Field([])
 
     price: int

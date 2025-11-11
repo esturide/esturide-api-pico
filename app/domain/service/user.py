@@ -2,7 +2,7 @@ from datetime import datetime
 
 from app.infrestructure.repository.user import UserRepository
 from app.shared.encrypt import salty_password
-from app.shared.models.user import User
+from app.shared.models.user import UserDocument
 from app.shared.pattern.singleton import Singleton
 from app.shared.scheme.user import UserRequest, ProfileUpdateRequest
 
@@ -18,7 +18,7 @@ class UserService(metaclass=Singleton):
         salt, hashed_password = salty_password(req.password.get_secret_value())
         birth_date = datetime.combine(req.birth_date, datetime.min.time())
 
-        user = User(
+        user = UserDocument(
             code=req.code,
             first_name=req.first_name,
             paternal_surname=req.paternal_surname,
@@ -34,7 +34,7 @@ class UserService(metaclass=Singleton):
 
         return await self.user_repository.save(user)
 
-    async def update(self, req: ProfileUpdateRequest, user: User):
+    async def update(self, req: ProfileUpdateRequest, user: UserDocument):
         if req.password:
             user.salt, user.hashed_password = salty_password(req.password.get_secret_value())
 
@@ -55,11 +55,11 @@ class UserService(metaclass=Singleton):
 
         return await self.user_repository.update(user)
 
-    async def delete(self, user: User):
+    async def delete(self, user: UserDocument):
         user.deleted = True
         return await self.user_repository.update(user)
 
-    async def banned(self, user: User):
+    async def banned(self, user: UserDocument):
         if not user.deleted:
             user.banned = True
         else:

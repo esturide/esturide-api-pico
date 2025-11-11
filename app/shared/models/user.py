@@ -8,7 +8,7 @@ from app.shared.encrypt import check_same_password
 from app.shared.types.enum import RoleUser
 
 
-class User(Document):
+class UserDocument(Document):
     class Settings:
         collection = "Users"
 
