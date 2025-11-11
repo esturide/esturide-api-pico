@@ -8,7 +8,7 @@ from aredis_om import JsonModel, Field
 from pydantic import BeforeValidator, AfterValidator, ValidationError
 
 from app.shared.dependencies.depends.cache import get_async_client_redis
-from app.shared.types import SeatOption, Gender
+from app.shared.types import Seat, Gender
 
 
 def encode_route(route: List[Tuple[float, float]] | Any) -> str:
@@ -52,13 +52,13 @@ class ScheduleStore(JsonModel):
     usercode: int = Field(..., index=True, const=True)
     created: datetime.datetime = Field(default_factory=datetime.datetime.now, index=True, const=True)
 
-    origin: str = Field(..., index=True, const=True)
-    destination: str = Field(..., index=True, const=True)
+    origin: str = Field(..., index=True, const=True, full_text_search=True)
+    destination: str = Field(..., index=True, const=True, full_text_search=True)
 
     starting: datetime.datetime = Field(..., index=True, const=True)
 
     price: float = Field(index=True, const=True)
-    seats: Set[SeatOption] = Field(default_factory=set)
+    seats: Set[Seat] = Field(default_factory=set)
     genders: Set[Gender] = Field(default_factory=set)
 
     waypoints: Set[str] = Field(..., default_factory=set, const=True)

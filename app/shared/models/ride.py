@@ -7,7 +7,7 @@ from pydantic import Field, UUID4
 
 from app.shared.models.tracking import Tracking
 from app.shared.models.user import User
-from app.shared.types import SeatOption
+from app.shared.types import Seat
 
 
 class RideTravelModel(Document):
@@ -19,7 +19,7 @@ class RideTravelModel(Document):
 
     passenger: Link[User]
 
-    seat: SeatOption
+    seat: Seat
     on_board: bool
     starting: bool
     over: bool

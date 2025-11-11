@@ -9,7 +9,7 @@ from app.shared.const import DEFAULT_MAX_SCHEDULE_LIFETIME_HRS
 from app.shared.models.ride import RideTravelModel
 from app.shared.models.tracking import Tracking
 from app.shared.models.user import User
-from app.shared.types import SeatOption
+from app.shared.types import Seat
 from app.shared.types.enum import Gender
 
 
@@ -30,7 +30,7 @@ class ScheduleTravelDocument(Document):
     rides: List[Link[RideTravelModel]] = Field([])
 
     price: int
-    seats: Set[SeatOption] = Field({SeatOption.A, SeatOption.B, SeatOption.C})
+    seats: Set[Seat] = Field({Seat.A, Seat.B, Seat.C})
 
     origin: str
     destination: str

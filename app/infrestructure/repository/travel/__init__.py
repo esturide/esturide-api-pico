@@ -6,7 +6,7 @@ from app.shared.models.ride import RideTravelModel
 from app.shared.models.travel import ScheduleTravelDocument
 from app.shared.models.user import User
 from app.shared.pattern.singleton import Singleton
-from app.shared.types import SeatList, GenderList
+from app.shared.types import SeatOption, GenderOption
 
 
 class TravelRepository(ClientDocumentRepository, metaclass=Singleton):
@@ -19,8 +19,8 @@ class TravelRepository(ClientDocumentRepository, metaclass=Singleton):
             price_range: tuple[float, float | None] = (1, None),
             order_date: bool = False,
             limit: int = 10,
-            seats: Optional[SeatList] = None,
-            genders: Optional[GenderList] = None,
+            seats: Optional[SeatOption] = None,
+            genders: Optional[GenderOption] = None,
     ) -> list[ScheduleTravelDocument]:
         """
         if seats is None:

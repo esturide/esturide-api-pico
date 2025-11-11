@@ -3,7 +3,7 @@ import datetime
 from aredis_om import JsonModel, Field, EmbeddedJsonModel
 
 from app.shared.dependencies.depends.cache import get_async_client_redis
-from app.shared.types import SeatOption, Gender
+from app.shared.types import Seat, Gender
 
 
 class DesignatedDriver(EmbeddedJsonModel):
@@ -19,7 +19,7 @@ class RideStore(JsonModel):
     destination: str = Field(..., index=True, const=True)
 
     gender: Gender = Field(..., const=True)
-    set: SeatOption = Field(..., const=True)
+    set: Seat = Field(..., const=True)
 
     drivers: DesignatedDriver = Field(...)
 

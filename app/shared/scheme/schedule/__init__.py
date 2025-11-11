@@ -1,11 +1,11 @@
 import datetime
-from typing import Optional, Set, List
+from typing import Optional, Set
 
 from pydantic import BaseModel, Field, field_validator, model_validator, FutureDatetime
 
 from app.shared.const import DEFAULT_MIN_PRICE
-from app.shared.scheme.location import GeoPoint, GeoLocationAddressModel
-from app.shared.types import UUID, SeatOption
+from app.shared.scheme.location import GeoPoint
+from app.shared.types import UUID, Seat
 from app.shared.types.enum import Gender
 from app.shared.types.enum.default_location import DefaultLocation, get_gps_from_location
 
@@ -35,7 +35,7 @@ class ScheduleTravelFromAddressRequest(BaseModel):
     starting: FutureDatetime = Field(..., title="Date and time when the trip begins", alias='starting')
 
     price: int = Field(DEFAULT_MIN_PRICE, title="Price of the travel", alias='price')
-    seats: Set[SeatOption] = Field(['A', 'B', 'C'], title="All seats", alias='seats')
+    seats: Set[Seat] = Field(['A', 'B', 'C'], title="All seats", alias='seats')
     genders: Set[Gender] = Field(["male", "female"], title="Filter of genders", alias='genders')
 
     waypoints: Set[str] = Field(..., title="Ride waypoints", alias='waypoints')
@@ -91,15 +91,14 @@ class ScheduleTravelResponse(BaseModel):
     starting: Optional[datetime.datetime] = Field(..., title="Time starting", alias='starting')
     terminated: Optional[datetime.datetime] = Field(..., title="Time finished", alias='terminated')
 
-    max_passengers: int = Field(4, alias='maxPassengers')
-    seats: Set[str] = Field(['A', 'B', 'C'], title="All seats", alias='seats')
+    seats: Set[Seat] = Field(['A', 'B', 'C'], title="All seats", alias='seats')
 
-    origin: GeoLocationAddressModel
-    destination: GeoLocationAddressModel
+    origin: str
+    destination: str
 
-    gender_filter: Set[Gender] = Field(..., title="Filter of genders", alias='genderFilter')
+    genders: Set[Gender] = Field(..., title="Filter of genders", alias='genders')
 
-    waypoints: Optional[List[GeoLocationAddressModel]]
+    waypoints: Set[str]
 
 
 class ScheduleTravelUpdateRequest(BaseModel):

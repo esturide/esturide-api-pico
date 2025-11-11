@@ -1,29 +1,23 @@
 import datetime
-from typing import Optional
+from typing import Optional, Tuple
 
 from pydantic import BaseModel, Field, model_validator
 
-from app.shared.types import SeatList, GenderList
+from app.shared.types import SeatOption, GenderOption
 
 
 class FilteringOptionsRequest(BaseModel):
+    order_by_date: bool = Field(default=False, title="Order by date", alias='orderByDate')
+
     origin: Optional[str] = Field(default=None, alias='origin')
     destination: Optional[str] = Field(default=None, alias='destination')
 
-    terminate: bool = Field(False)
-    cancel: bool = Field(False)
+    terminate: bool = Field(default=False)
+    cancel: bool = Field(default=False)
 
-    starting: Optional[datetime.datetime] = Field(default=None, alias='starting', description='Start date and time')
-    terminated: Optional[datetime.datetime] = Field(default=None, alias='terminated', description='End date and time')
-
-    min_price: float = Field(1, ge=1, alias='minPrice')
-    max_price: Optional[float] = Field(default=None, alias='maxPrice')
-
-    order_by_date: bool = Field(default=None, title="Order by date", alias='orderByDate')
-
-    seats: SeatList = Field({'A', 'B', 'C'}, alias='seats')
-
-    gender: GenderList = Field({'male', 'female'}, alias='gender')
+    range_date: Tuple[datetime.datetime, datetime.datetime] = Field(default=None, alias='rangeDate')
+    price_range: Tuple[float, float] = Field(default=None, alias='priceRange')
+    gender: GenderOption = Field({'male', 'female'}, alias='gender')
 
     @model_validator(mode='after')
     def validate_dates(self):

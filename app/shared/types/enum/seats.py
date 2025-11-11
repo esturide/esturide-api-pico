@@ -1,7 +1,7 @@
 import enum
 
 
-class SeatOption(enum.StrEnum):
+class Seat(enum.StrEnum):
     A = 'A'
     B = 'B'
     C = 'C'

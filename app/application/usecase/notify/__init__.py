@@ -1,12 +1,9 @@
-import asyncio
 import functools
 
 from app.domain.service.ride import RideService
 from app.domain.service.schedule import ScheduleService
 from app.domain.service.user import UserService
 from app.shared.const import DEFAULT_DELAY_TIME_NOTIFY
-from app.shared.scheme.respose.ride import create_ride_response
-from app.shared.scheme.respose.schedule import schedule_status_response
 from app.shared.types.enum import RoleUser
 
 
@@ -18,25 +15,10 @@ class NotifyUseCase:
         self.time_sleep = DEFAULT_DELAY_TIME_NOTIFY
 
     async def notify_ride(self, code: int, role: RoleUser):
-        user = await self.user_service.get(code)
-
-        while True:
-            ride = await self.ride_service.get_current_ride_from_user(user)
-            schedule = await self.schedule_service.get_from_ride(ride)
-
-            yield create_ride_response(schedule, ride)
-
-            await asyncio.sleep(self.time_sleep)
+        pass
 
     async def notify_schedule(self, code: int, role: RoleUser):
-        user = await self.user_service.get(code)
-
-        while True:
-            schedule = await self.schedule_service.get_current(user)
-
-            yield schedule_status_response(schedule)
-
-            await asyncio.sleep(self.time_sleep)
+        pass
 
 
 @functools.lru_cache

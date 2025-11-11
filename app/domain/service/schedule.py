@@ -1,6 +1,5 @@
 import datetime
-import functools
-from typing import Set, List, Tuple
+from typing import Set, List, Tuple, Optional
 
 from app.core.exception import InvalidRequestException
 from app.infrestructure.repository.ride import RideRepository
@@ -13,7 +12,7 @@ from app.shared.models.travel import ScheduleTravelDocument
 from app.shared.models.user import User
 from app.shared.pattern.singleton import Singleton
 from app.shared.scheme.filter import FilteringOptionsRequest
-from app.shared.types import SeatOption, Gender
+from app.shared.types import Seat, Gender
 
 
 class ScheduleService(metaclass=Singleton):
@@ -24,7 +23,7 @@ class ScheduleService(metaclass=Singleton):
         self.tracking_repository = TrackingRepository()
 
     async def create(self, user: User, origin: str, destination: str, starting: datetime.datetime, price: float,
-                     seats: Set[SeatOption], genders: Set[Gender], waypoints: Set[str],
+                     seats: Set[Seat], genders: Set[Gender], waypoints: Set[str],
                      route: List[Tuple[float, float]]):
         previous_schedule_found = await ScheduleStore.find(ScheduleStore.usercode == user.code).all()
 
@@ -50,6 +49,9 @@ class ScheduleService(metaclass=Singleton):
 
         return schedule
 
+    async def save(self, schedule: ScheduleStore) -> ScheduleTravelDocument | None:
+        return
+
     async def get(self, code: int) -> List[ScheduleStore]:
         return await ScheduleStore.find(ScheduleStore.usercode == code).all()
 
@@ -68,11 +70,21 @@ class ScheduleService(metaclass=Singleton):
     async def all(self, limit=10) -> list[ScheduleTravelDocument]:
         return []
 
-    async def filtering(self, options: FilteringOptionsRequest, limit: int) -> list[ScheduleTravelDocument]:
-        return []
+    async def filtering(self, origin: str, destination: str, date: Tuple[datetime.datetime, Optional[datetime.datetime]], price: Tuple[float, Optional[float]], limit: int) -> list[ScheduleTravelDocument]:
+        min_price, max_price = price
+        starting, finished = date
 
-    async def save(self, schedule: ScheduleTravelDocument) -> bool:
-        return False
+        if finished is None:
+            finished = starting + datetime.timedelta(days=1)
+
+        return await ScheduleStore.find(
+            (
+                    (ScheduleStore.origin % origin) | (ScheduleStore.destination % destination)
+            ),
+            (
+                    (ScheduleStore.starting >= starting) & (ScheduleStore.terminated <= finished)
+            )
+        ).all()
 
     async def finished(self, schedule: ScheduleTravelDocument, cancel=None, terminate=None) -> tuple[bool, ScheduleTravelDocument] | None:
         return None

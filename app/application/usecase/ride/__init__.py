@@ -1,21 +1,15 @@
-import asyncio
-import contextlib
 import functools
 from typing import Optional
 
 from fastapi import BackgroundTasks
 
-from app.core.exception import NotFoundException, InvalidRequestException, ResourceNotFoundException
 from app.domain.service.ride import RideService
 from app.domain.service.schedule import ScheduleService
 from app.domain.service.user import UserService
-from app.shared.const import DEFAULT_MAX_RIDE_LIFETIME_SEC
 from app.shared.models.ride import RideTravelModel
 from app.shared.models.travel import ScheduleTravelDocument
 from app.shared.models.user import User
 from app.shared.pattern.singleton import Singleton
-from app.shared.scheme import StatusFailure, StatusSuccess
-from app.shared.scheme.respose.ride import create_ride_response
 from app.shared.scheme.rides import RideTravelUpdateRequest, RideTravelRequest
 from app.shared.scheme.rides.status import RideTravelStatusResponse
 from app.shared.types import UUID
