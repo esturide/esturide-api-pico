@@ -4,7 +4,7 @@ from app.infrestructure.repository.user import UserRepository
 from app.shared.encrypt import salty_password
 from app.shared.models.user import User
 from app.shared.pattern.singleton import Singleton
-from app.shared.scheme.user import UserRequest
+from app.shared.scheme.user import UserRequest, ProfileUpdateRequest
 
 
 class UserService(metaclass=Singleton):
@@ -34,5 +34,35 @@ class UserService(metaclass=Singleton):
 
         return await self.user_repository.save(user)
 
-    async def delete(self, code: int):
-        pass
+    async def update(self, req: ProfileUpdateRequest, user: User):
+        if req.password:
+            user.salt, user.hashed_password = salty_password(req.password.get_secret_value())
+
+        if req.birth_date:
+            user.birth_date = datetime.combine(req.birth_date, datetime.min.time())
+
+        if req.first_name:
+            user.first_name = req.first_name
+
+        if req.maternal_surname:
+            user.maternal_surname = req.maternal_surname
+
+        if req.paternal_surname:
+            user.paternal_surname = req.paternal_surname
+
+        if req.curp:
+            user.curp = req.curp
+
+        return await self.user_repository.update(user)
+
+    async def delete(self, user: User):
+        user.deleted = True
+        return await self.user_repository.update(user)
+
+    async def banned(self, user: User):
+        if not user.deleted:
+            user.banned = True
+        else:
+            return False
+
+        return await self.user_repository.update(user)

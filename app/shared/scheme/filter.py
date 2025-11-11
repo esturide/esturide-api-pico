@@ -3,7 +3,7 @@ from typing import Optional, Tuple
 
 from pydantic import BaseModel, Field, model_validator
 
-from app.shared.types import SeatOption, GenderOption
+from app.shared.types import GenderOption
 
 
 class FilteringOptionsRequest(BaseModel):

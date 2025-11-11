@@ -6,7 +6,7 @@ async def async_task(task, *args, **kwargs):
 
 
 def define_async_task(task):
-    async def wrapper(*args, **kwargs):
+    def wrapper(*args, **kwargs):
         return anyio.to_thread.run_sync(task, *args, **kwargs)
 
     return wrapper

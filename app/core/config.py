@@ -5,8 +5,6 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class DefaultSettings(BaseSettings):
-    db_credential: str
-
     secret_key: str
     algorithm: str
     access_token_expire_minutes: int

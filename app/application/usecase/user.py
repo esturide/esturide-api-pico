@@ -15,11 +15,15 @@ class UserUseCase:
 
         return StatusSuccess() if status else StatusFailure()
 
-    async def update(self, code: int, req: ProfileUpdateRequest, auth_user: int) -> StatusMessage:
-        if not code == auth_user:
-            raise UnauthorizedAccessException("Invalid code.")
+    async def update(self, code: int, req: ProfileUpdateRequest) -> StatusMessage:
+        user = await self.user_service.get(code)
 
-        return StatusFailure()
+        if not user:
+            raise NotFoundException("User not found.")
+
+        await self.user_service.update(req, user)
+
+        return StatusSuccess()
 
     async def delete(self, code: int, auth_user: int) -> StatusMessage:
         if not code == auth_user:
@@ -34,11 +38,9 @@ class UserUseCase:
             raise NotFoundException("User not found.")
 
         return UserResponse(
-            code=code,
             firstName=user.first_name,
             maternalSurname=user.maternal_surname,
             paternalSurname=user.paternal_surname,
-            email=user.email,
             role=user.role,
         )
 

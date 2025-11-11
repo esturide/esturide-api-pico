@@ -41,26 +41,20 @@ class UserRequest(UserProfile):
 
 
 class UserResponse(BaseModel):
-    code: int
-
     first_name: str = Field(..., title="firstName", alias="firstName")
     maternal_surname: str = Field(..., title="Maternal surname", alias='maternalSurname')
     paternal_surname: str = Field(..., title="Paternal surname", alias='paternalSurname')
-
-    email: EmailStr = Field(..., title="Email", alias='email')
-
-    role: RoleUser = RoleUser.not_verified
 
 
 class ProfileUpdateRequest(BaseModel):
-    first_name: str = Field(..., title="firstName", alias="firstName")
-    maternal_surname: str = Field(..., title="Maternal surname", alias='maternalSurname')
-    paternal_surname: str = Field(..., title="Paternal surname", alias='paternalSurname')
-    curp: str
-    birth_date: datetime.date = Field(..., title="Birth date", alias='birthDate')
+    first_name: str | None = Field(..., title="firstName", alias="firstName")
+    maternal_surname: str | None = Field(..., title="Maternal surname", alias='maternalSurname')
+    paternal_surname: str | None = Field(..., title="Paternal surname", alias='paternalSurname')
+    curp: str | None
+    birth_date: datetime.date | None = Field(..., title="Birth date", alias='birthDate')
 
-    email: EmailStr = Field(..., title="Email", alias='email')
-    password: SecretStr
+    email: EmailStr | None = Field(..., title="Email", alias='email')
+    password: SecretStr | None
 
 
 class AutomobileProfile(BaseModel):

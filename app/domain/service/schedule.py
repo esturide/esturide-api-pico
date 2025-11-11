@@ -11,7 +11,6 @@ from app.shared.models.store.schedule import ScheduleStore
 from app.shared.models.travel import ScheduleTravelDocument
 from app.shared.models.user import User
 from app.shared.pattern.singleton import Singleton
-from app.shared.scheme.filter import FilteringOptionsRequest
 from app.shared.types import Seat, Gender
 
 
@@ -70,7 +69,9 @@ class ScheduleService(metaclass=Singleton):
     async def all(self, limit=10) -> list[ScheduleTravelDocument]:
         return []
 
-    async def filtering(self, origin: str, destination: str, date: Tuple[datetime.datetime, Optional[datetime.datetime]], price: Tuple[float, Optional[float]], limit: int) -> list[ScheduleTravelDocument]:
+    async def filtering(self, origin: str, destination: str,
+                        date: Tuple[datetime.datetime, Optional[datetime.datetime]],
+                        price: Tuple[float, Optional[float]], limit: int) -> list[ScheduleTravelDocument]:
         min_price, max_price = price
         starting, finished = date
 
@@ -86,5 +87,6 @@ class ScheduleService(metaclass=Singleton):
             )
         ).all()
 
-    async def finished(self, schedule: ScheduleTravelDocument, cancel=None, terminate=None) -> tuple[bool, ScheduleTravelDocument] | None:
+    async def finished(self, schedule: ScheduleTravelDocument, cancel=None, terminate=None) -> tuple[
+                                                                                                   bool, ScheduleTravelDocument] | None:
         return None
