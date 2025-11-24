@@ -58,6 +58,11 @@ class ScheduleTravelUseCase:
             route=route_steps,
         )
 
+        """
+        schedules_task = ScheduleTaskService(cache)
+        schedules_task.create_task(background_tasks, schedule)
+        """
+
         if schedule is None:
             return StatusFailure(
                 message="The trip could not be scheduled."

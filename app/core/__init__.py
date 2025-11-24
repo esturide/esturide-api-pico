@@ -65,6 +65,13 @@ def get_root_app() -> FastAPI:
         db = await init_core_mongodb()
         cache = await init_core_redis()
 
+        """
+        schedules_task = ScheduleTaskService(cache)
+        
+        async for schedule in schedules_task.all():
+            schedules_task.create_task(background_tasks, schedule)
+        """
+
         yield
 
         await db.close()
