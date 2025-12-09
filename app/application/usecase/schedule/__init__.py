@@ -5,17 +5,27 @@ from fastapi import BackgroundTasks
 
 from app.core.exception import InvalidRequestException, NotFoundException
 from app.domain.service.auth import AuthenticationCredentialsService
+from app.domain.service.background.listener import ListenerService
 from app.domain.service.location.route import RouteService
 from app.domain.service.location.search import SearchService
 from app.domain.service.schedule import ScheduleService
 from app.domain.service.user import UserService
 from app.shared.dependencies.depends import GoogleMapsClient
+from app.shared.models.store.schedule import ScheduleStore
 from app.shared.scheme import StatusSuccess, StatusFailure
 from app.shared.scheme.filter import FilteringOptionsRequest
 from app.shared.scheme.schedule import ScheduleTravelResponse, ScheduleTravelUpdateRequest, \
     ScheduleTravelFromAddressRequest
 from app.shared.scheme.schedule.status import ScheduleTravelStatusResponse
 from app.shared.types.enum import RoleUser
+
+
+class ScheduleListenerService(ListenerService):
+    def __init__(self, schedule: ScheduleStore) -> None:
+        self.__schedule = schedule
+
+    async def task(self):
+        pass
 
 
 class ScheduleTravelUseCase:
