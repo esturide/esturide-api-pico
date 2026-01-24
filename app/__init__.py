@@ -2,7 +2,6 @@ import functools
 
 from fastapi import HTTPException
 from fastapi.exceptions import RequestValidationError
-from google.api_core.exceptions import FailedPrecondition
 from jwt import InvalidSignatureError
 
 from app.core import get_root_app
@@ -32,11 +31,9 @@ def get_app():
     app.add_exception_handler(InvalidSignatureError, invalid_credentials_handler)
     app.add_exception_handler(RequestValidationError, validation_exception_handler)
     app.add_exception_handler(Exception, global_exception_handler)
-    app.add_exception_handler(FailedPrecondition, database_exception_handler)
 
     app.include_router(root_router)
     app.include_router(auth_route)
-    app.include_router(admin_route)
     app.include_router(user_router)
     app.include_router(match_router)
     app.include_router(schedule_router)
