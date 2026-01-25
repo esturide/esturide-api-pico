@@ -10,7 +10,6 @@ from app.core.exception.handler import (custom_http_exception_handler, http_exce
                                         invalid_credentials_handler, global_exception_handler,
                                         validation_exception_handler, database_exception_handler)
 from app.presentation.routes import root_router
-from app.presentation.routes.admin import admin_route
 from app.presentation.routes.auth import auth_route
 from app.presentation.routes.check import check_router
 from app.presentation.routes.location import location_route

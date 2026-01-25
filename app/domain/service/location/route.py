@@ -3,6 +3,7 @@ import datetime
 from typing import Set, Optional, Tuple, List
 
 import polyline
+from pydantic import FutureDatetime
 
 from app.domain.service.google import GoogleService, decode_gps_from_google
 from app.shared.pattern.singleton import Singleton
@@ -18,7 +19,7 @@ class Routing:
 
 class RouteService(GoogleService, metaclass=Singleton):
     async def routing(self, origin: str, destination: str, waypoints: Set[str],
-                      time_start: Optional[datetime.datetime] = None) -> List[Routing]:
+                      time_start: Optional[FutureDatetime] = None) -> List[Routing]:
         def set_routing(origin, destination, waypoints, time_start):
             directions = self.gmaps.directions(
                 origin=origin,

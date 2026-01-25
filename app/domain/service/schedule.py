@@ -1,6 +1,8 @@
 import datetime
 from typing import Set, List, Tuple, Optional
 
+from pydantic import FutureDatetime
+
 from app.core.exception import InvalidRequestException
 from app.infrestructure.repository.ride import RideRepository
 from app.infrestructure.repository.tracking import TrackingRepository
@@ -21,7 +23,7 @@ class ScheduleService(metaclass=Singleton):
         self.travel_repository = TravelRepository()
         self.tracking_repository = TrackingRepository()
 
-    async def create(self, user: UserDocument, origin: str, destination: str, starting: datetime.datetime, price: float,
+    async def create(self, user: UserDocument, origin: str, destination: str, starting: FutureDatetime, price: float,
                      seats: Set[Seat], genders: Set[Gender], waypoints: Set[str],
                      route: List[Tuple[float, float]]):
         previous_schedule_found = await ScheduleStore.find(ScheduleStore.usercode == user.code).all()
@@ -87,6 +89,5 @@ class ScheduleService(metaclass=Singleton):
             )
         ).all()
 
-    async def finished(self, schedule: ScheduleTravelDocument, cancel=None, terminate=None) -> tuple[
-                                                                                                   bool, ScheduleTravelDocument] | None:
+    async def finished(self, schedule: ScheduleTravelDocument, cancel=None, terminate=None) -> tuple[bool, ScheduleTravelDocument] | None:
         return None

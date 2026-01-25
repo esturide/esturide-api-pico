@@ -52,15 +52,17 @@ class ScheduleTravelUseCase:
 
         origin = origin_results[0]
         destination = destination_results[0]
+        starting = req.starting
 
-        route_results = await route_service.routing(origin.address, destination.address, req.waypoints, req.starting)
+        route_results = await route_service.routing(origin.address, destination.address, req.waypoints, starting)
         route_steps = route_results[0].steps
+
 
         schedule = await self.schedule_service.create(
             user=user,
             origin=origin.address,
             destination=destination.address,
-            starting=req.starting,
+            starting=starting,
             price=req.price,
             seats=req.seats,
             genders=req.genders,
