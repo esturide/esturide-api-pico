@@ -74,20 +74,7 @@ class ScheduleService(metaclass=Singleton):
     async def filtering(self, origin: str, destination: str,
                         date: Tuple[datetime.datetime, Optional[datetime.datetime]],
                         price: Tuple[float, Optional[float]], limit: int) -> list[ScheduleTravelDocument]:
-        min_price, max_price = price
-        starting, finished = date
-
-        if finished is None:
-            finished = starting + datetime.timedelta(days=1)
-
-        return await ScheduleStore.find(
-            (
-                    (ScheduleStore.origin % origin) | (ScheduleStore.destination % destination)
-            ),
-            (
-                    (ScheduleStore.starting >= starting) & (ScheduleStore.terminated <= finished)
-            )
-        ).all()
+        return []
 
     async def finished(self, schedule: ScheduleTravelDocument, cancel=None, terminate=None) -> tuple[bool, ScheduleTravelDocument] | None:
         return None

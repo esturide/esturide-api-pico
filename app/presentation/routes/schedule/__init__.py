@@ -20,35 +20,6 @@ async def schedule_new_travel(schedule: ScheduleTravelFromAddressRequest, schedu
     return await schedule_case.create(schedule, code, role, gmaps, background_tasks)
 
 
-@schedule_router.get("/", response_model=StatusResponse[list[ScheduleTravelResponse]])
-async def get_all_schedule(limit: int, schedule_case: ScheduleDependency, is_auth: UserIsAuthenticated):
-    if is_auth:
-        all_schedule = await schedule_case.get_all(limit)
-
-        return {
-            "status": Status.success,
-            "data": all_schedule,
-        }
-
-    return {
-        "status": Status.failure,
-        "data": [],
-    }
-
-
-@schedule_router.post("/filtering", response_model=StatusResponse[list[ScheduleTravelResponse]])
-async def filtering_schedule(options: FilteringOptionsRequest, limit: int, schedule_case: ScheduleDependency,
-                             user_auth: AuthUserCodeAndRoleCredentials):
-    code, role = user_auth
-
-    results = await schedule_case.search(code, role, options, limit)
-
-    return {
-        "status": Status.success,
-        "data": results,
-    }
-
-
 @schedule_router.get("/current", response_model=StatusResponse[ScheduleTravelStatusResponse])
 async def get_current_schedule(schedule_case: ScheduleDependency, code: AuthUserCodeCredentials):
     schedule = await schedule_case.get_current(code)
