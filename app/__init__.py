@@ -1,5 +1,6 @@
 import functools
 
+from fastsio import AsyncServer, ASGIApp
 from fastapi import HTTPException
 from fastapi.exceptions import RequestValidationError
 from jwt import InvalidSignatureError
@@ -19,6 +20,7 @@ from app.presentation.routes.rides import rides_router
 from app.presentation.routes.rides.match import match_router
 from app.presentation.routes.schedule import schedule_router
 from app.presentation.routes.user import user_router
+from app.shared.dependencies.depends.socketio import init_socketio_async_server
 
 
 @functools.lru_cache
@@ -41,5 +43,8 @@ def get_app():
     app.include_router(location_route)
     app.include_router(record_route)
     app.include_router(check_router)
+
+    sio = init_socketio_async_server()
+    app = ASGIApp(sio, app)
 
     return app

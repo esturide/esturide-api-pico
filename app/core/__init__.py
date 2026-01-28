@@ -4,10 +4,12 @@ import functools
 import beanie
 from aredis_om import Migrator
 from fastapi import FastAPI
+from fastsio import AsyncServer, ASGIApp
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.gzip import GZipMiddleware
 
 from app.core.config import get_settings
+from app.shared.dependencies.depends.socketio import init_socketio_async_server
 from app.shared.dependencies.depends.cache import get_async_client_redis
 from app.shared.dependencies.depends.db import get_async_client_mongodb
 from app.shared.models.ride import RideTravelModel
@@ -57,7 +59,7 @@ async def init_core_redis():
 
 
 @functools.lru_cache()
-def get_root_app() -> FastAPI:
+def get_root_app():
     settings = get_settings()
 
     @contextlib.asynccontextmanager
@@ -81,6 +83,7 @@ def get_root_app() -> FastAPI:
         title=DEFAULT_APP_NAME,
         lifespan=lifespan,
     )
+
 
     origins = settings.allowed_origins
 
