@@ -18,9 +18,10 @@ from app.presentation.routes.notify import notify_route
 from app.presentation.routes.record import record_route
 from app.presentation.routes.rides import rides_router
 from app.presentation.routes.rides.match import match_router
+from app.presentation.routes.rides.sio import sio_ride
 from app.presentation.routes.schedule import schedule_router
 from app.presentation.routes.user import user_router
-from app.shared.dependencies.depends.socketio import init_socketio_async_server
+from app.shared.dependencies.depends.socketio import get_root_socketio_server
 
 
 @functools.lru_cache
@@ -44,7 +45,9 @@ def get_app():
     app.include_router(record_route)
     app.include_router(check_router)
 
-    sio = init_socketio_async_server()
+    sio = get_root_socketio_server()
     app = ASGIApp(sio, app)
+
+    sio.add_router(sio_ride)
 
     return app
