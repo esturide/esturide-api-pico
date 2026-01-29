@@ -1,6 +1,6 @@
 import functools
 
-from fastsio import AsyncServer, ASGIApp
+from fastsio import ASGIApp
 from fastapi import HTTPException
 from fastapi.exceptions import RequestValidationError
 from jwt import InvalidSignatureError
@@ -27,6 +27,7 @@ from app.shared.dependencies.depends.socketio import get_root_socketio_server
 @functools.lru_cache
 def get_app():
     app = get_root_app()
+    sio = get_root_socketio_server()
 
     app.add_exception_handler(ResponseException, custom_http_exception_handler)
     app.add_exception_handler(HTTPException, http_exception_handler)
@@ -45,9 +46,7 @@ def get_app():
     app.include_router(record_route)
     app.include_router(check_router)
 
-    sio = get_root_socketio_server()
     app = ASGIApp(sio, app)
-
     sio.add_router(sio_ride)
 
     return app

@@ -57,7 +57,7 @@ async def init_core_redis():
 
 
 @functools.lru_cache()
-def get_root_app():
+def get_root_app() -> FastAPI:
     settings = get_settings()
 
     @contextlib.asynccontextmanager
