@@ -1,3 +1,4 @@
+from fastsio import AsyncServer
 from fastapi import APIRouter, BackgroundTasks
 
 from app.shared.dependencies import AuthUserCodeAndRoleCredentials, RideDependency
