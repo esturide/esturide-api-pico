@@ -60,6 +60,7 @@ class UserUseCase:
             phoneNumber=user.phone_number,
             email=user.email,
             role=user.role,
+            address=""
         )
 
 

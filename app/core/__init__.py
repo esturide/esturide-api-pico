@@ -77,9 +77,14 @@ def get_root_app() -> FastAPI:
         await db.close()
         await cache.close()
 
+    is_production = settings.is_production
+
     app = FastAPI(
         title=DEFAULT_APP_NAME,
         lifespan=lifespan,
+        docs_url=None if is_production else "/docs",
+        redoc_url=None if is_production else "/redoc",
+        openapi_url=None if is_production else "/openapi.json"
     )
 
     origins = settings.allowed_cors
