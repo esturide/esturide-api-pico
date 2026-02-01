@@ -1,11 +1,23 @@
-from fireo.fields import IDField, DateTime, GeoPoint
-from fireo.models import Model
+import datetime
+import uuid
+from typing import List, Annotated
+
+from beanie import Document, Indexed
+from pydantic import Field, UUID4, BaseModel
 
 
-class TrackingRecord(Model):
-    class Meta:
-        collection_name = "tracking_record"
+class RecordPosition(BaseModel):
+    created: datetime.datetime = Field(default_factory=datetime.datetime.now)
 
-    id = IDField()
-    created = DateTime(auto=True)
-    location = GeoPoint()
+    latitude: float
+    longitude: float
+
+
+class Tracking(Document):
+    class Settings:
+        name = "tracking"
+
+    uuid: Annotated[UUID4, Indexed(unique=True)] = Field(default_factory=uuid.uuid4)
+    created: datetime.datetime = Field(default_factory=datetime.datetime.now)
+
+    records: List[RecordPosition] = Field(default_factory=list)

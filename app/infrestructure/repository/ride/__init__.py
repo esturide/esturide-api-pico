@@ -1,30 +1,31 @@
 import datetime
 
-from app.shared.models.ride import RideTravel
-from app.shared.models.user import User
+from app.infrestructure.repository.client.db import ClientDocumentRepository
+from app.shared.models.ride import RideTravelModel
+from app.shared.models.user import UserDocument
+from app.shared.pattern.singleton import Singleton
 from app.shared.types import UUID
 from app.shared.utils import async_task
 
 
-class RideRepository:
-    @staticmethod
-    async def get(uuid: UUID) -> RideTravel | None:
+class RideRepository(ClientDocumentRepository, metaclass=Singleton):
+    async def get(self, uuid: UUID) -> RideTravelModel | None:
         def get_ride():
-            return RideTravel.collection.get(id=uuid)
+            return RideTravelModel.collection.get(id=uuid)
 
         return await async_task(get_ride)
 
-    @staticmethod
     async def filter(
-            passenger: User,
+            self,
+            passenger: UserDocument,
             over=False,
             order_date=True,
             seat: str | None = None,
             between: tuple[datetime.datetime, datetime.datetime] | None = None,
             limit: int = 10
-    ) -> list[RideTravel]:
+    ) -> list[RideTravelModel]:
         def filter_rides():
-            rides = RideTravel.collection.filter(passenger=passenger)
+            rides = RideTravelModel.collection.filter(passenger=passenger)
 
             if between is not None:
                 before, after = between
@@ -44,15 +45,3 @@ class RideRepository:
             return list(rides.fetch(limit))
 
         return await async_task(filter_rides)
-
-    @staticmethod
-    async def save(ride: RideTravel):
-        await async_task(lambda s: s.save(), ride)
-
-        return True
-
-    @staticmethod
-    async def update(ride: RideTravel):
-        await async_task(lambda s: s.update(), ride)
-
-        return True

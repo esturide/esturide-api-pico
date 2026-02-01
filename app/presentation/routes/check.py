@@ -5,7 +5,7 @@ from app.shared.scheme import StatusMessage, StatusFailure, StatusSuccess
 
 check_router = APIRouter(
     prefix="/check",
-    tags=["Check router"]
+    tags=["Check status route"]
 )
 
 
@@ -26,4 +26,4 @@ async def current_schedule_found(schedule: ScheduleDependency, code: AuthUserCod
     if is_found:
         return StatusSuccess(message='Schedule is found.')
     else:
-        return StatusFailure(message="You don't have a current schedule.")
+        return StatusFailure(message="You don't have a current travel.")

@@ -7,7 +7,7 @@ from fastapi import APIRouter
 from app.core.exception import NotFoundException
 from app.shared.dependencies import UserIsAuthenticated, GoogleGeolocationDepend
 from app.shared.scheme import StatusResponse
-from app.shared.scheme.location import GeoLocationModel, GeoLocationAddressModel, LocationAddressModel
+from app.shared.scheme.location import GeoPoint, GeoLocationAddressModel, LocationAddressModel
 from app.shared.types.enum import Status
 from app.shared.utils import async_task
 
@@ -53,7 +53,7 @@ async def search_address(search: LocationAddressModel, geolocator: GoogleGeoloca
 
 
 @location_route.post("/reverse", response_model=StatusResponse[LocationAddressModel])
-async def search_address(location: GeoLocationModel, geolocator: GoogleGeolocationDepend, is_auth: UserIsAuthenticated):
+async def search_address(location: GeoPoint, geolocator: GoogleGeolocationDepend, is_auth: UserIsAuthenticated):
     if not is_auth:
         return {
             "status": Status.failure,

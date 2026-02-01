@@ -1,9 +1,9 @@
 from pydantic import BaseModel, Field, field_validator
 
 
-class GeoLocationModel(BaseModel):
-    longitude: float = Field(0, title="Longitude", alias='longitude')
-    latitude: float = Field(0, title="Latitude", alias='latitude')
+class GeoPoint(BaseModel):
+    longitude: float = Field(..., title="Longitude", alias='longitude')
+    latitude: float = Field(..., title="Latitude", alias='latitude')
 
     def __iter__(self):
         return iter([self.longitude, self.latitude])
@@ -27,5 +27,5 @@ class LocationAddressModel(BaseModel):
     address: str = Field("", alias='address')
 
 
-class GeoLocationAddressModel(GeoLocationModel):
+class GeoLocationAddressModel(GeoPoint):
     address: str = Field("", alias='address')

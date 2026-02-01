@@ -16,6 +16,7 @@ class UserProfile(BaseModel):
     birth_date: datetime.date = Field(..., title="Birth date", alias="birthDate", description="The user's birth date")
     phone_number: PhoneNumber = Field(..., title="Phone number", alias="phoneNumber")
     email: EmailStr = Field(..., title="Email", alias='email')
+    address: str = Field(...)
 
     @field_validator('birth_date')
     def check_age(cls, birth_date):
@@ -27,32 +28,33 @@ class UserProfile(BaseModel):
 
         return birth_date
 
+    @field_validator('code')
+    def check_age(cls, code):
+        if code <= 0:
+            raise ValueError('Invalid user code.')
+
+        return code
+
 
 class UserRequest(UserProfile):
     password: SecretStr
 
 
 class UserResponse(BaseModel):
-    code: int
-
     first_name: str = Field(..., title="firstName", alias="firstName")
     maternal_surname: str = Field(..., title="Maternal surname", alias='maternalSurname')
     paternal_surname: str = Field(..., title="Paternal surname", alias='paternalSurname')
 
-    email: EmailStr = Field(..., title="Email", alias='email')
-
-    role: RoleUser = RoleUser.not_verified
-
 
 class ProfileUpdateRequest(BaseModel):
-    first_name: str
-    maternal_surname: str = Field(..., title="Maternal surname", alias='maternalSurname')
-    paternal_surname: str = Field(..., title="Paternal surname", alias='paternalSurname')
-    curp: str
-    birth_date: datetime.date = Field(..., title="Birth date", alias='birthDate')
+    first_name: str | None = Field(..., title="firstName", alias="firstName")
+    maternal_surname: str | None = Field(..., title="Maternal surname", alias='maternalSurname')
+    paternal_surname: str | None = Field(..., title="Paternal surname", alias='paternalSurname')
+    curp: str | None
+    birth_date: datetime.date | None = Field(..., title="Birth date", alias='birthDate')
 
-    email: EmailStr = Field(..., title="Email", alias='email')
-    password: SecretStr
+    email: EmailStr | None = Field(..., title="Email", alias='email')
+    password: SecretStr | None
 
 
 class AutomobileProfile(BaseModel):

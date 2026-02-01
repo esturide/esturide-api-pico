@@ -1,16 +1,6 @@
-from app.shared.models.tracking import TrackingRecord
-from app.shared.utils import async_task
+from app.infrestructure.repository.client.db import ClientDocumentRepository
+from app.shared.pattern.singleton import Singleton
 
 
-class TrackingRepository:
-    @staticmethod
-    async def save(tracking: TrackingRecord) -> bool:
-        def save_tracking(s):
-            try:
-                s.save()
-            except TypeError:
-                return False
-            else:
-                return True
-
-        return await async_task(save_tracking, tracking)
+class TrackingRepository(ClientDocumentRepository, metaclass=Singleton):
+    pass

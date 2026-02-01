@@ -1,9 +1,13 @@
 import functools
+import logging
 
 from geopy.geocoders import GoogleV3, Nominatim
 from geopy.geocoders.base import Geocoder
+from googlemaps import Client
 
 from app.core import get_settings
+
+GoogleMapsClient = Client
 
 
 @functools.lru_cache
@@ -16,3 +20,18 @@ def get_google_locator_agent() -> Geocoder:
     settings = get_settings()
 
     return GoogleV3(api_key=settings.api_google_key)
+
+
+@functools.lru_cache
+def get_google_maps_service_agent() -> GoogleMapsClient:
+    settings = get_settings()
+
+    return GoogleMapsClient(key=settings.api_google_key)
+
+
+@functools.lru_cache
+def get_logger() -> logging.Logger:
+    logger = logging.getLogger('uvicorn.error')
+    logger.setLevel(logging.DEBUG)
+
+    return logger

@@ -1,44 +1,45 @@
 import datetime
-from typing import List
+import uuid
+from typing import List, Annotated, Optional, Set
 
-from fireo.fields import TextField, IDField, DateTime, NumberField, ReferenceField, ListField, BooleanField, \
-    NestedModel
-from fireo.models import Model
+from beanie import Document, Link, Indexed
+from pydantic import Field, UUID4
 
 from app.shared.const import DEFAULT_MAX_SCHEDULE_LIFETIME_HRS
-from app.shared.models.location import LocationModel
-from app.shared.models.ride import RideTravel
-from app.shared.models.tracking import TrackingRecord
-from app.shared.models.user import User
+from app.shared.models.ride import RideTravelModel
+from app.shared.models.tracking import Tracking
+from app.shared.models.user import UserDocument
+from app.shared.types import Seat
 from app.shared.types.enum import Gender
 
 
-class ScheduleTravel(Model):
-    class Meta:
-        collection_name = "schedule_travels"
+class ScheduleTravelDocument(Document):
+    class Settings:
+        name = "schedules"
 
-    id = IDField()
-    created = DateTime(auto=True)
+    uuid: Annotated[UUID4, Indexed(unique=True)] = Field(default_factory=uuid.uuid4)
+    created: datetime.datetime = Field(default_factory=datetime.datetime.now)
 
-    starting = DateTime(required=False)
-    terminated = DateTime(required=False)
+    starting: Optional[datetime.datetime] = Field(None)
+    terminated: Optional[datetime.datetime] = Field(None)
 
-    terminate = BooleanField(default=False)
-    cancel = BooleanField(default=False)
+    terminate: bool = Field(False)
+    cancel: bool = Field(False)
 
-    driver = ReferenceField(User, required=True)
-    rides = ListField(ReferenceField(RideTravel), required=False)
-    max_passengers = NumberField(default=3)
+    driver: Link[UserDocument]
+    rides: List[Link[RideTravelModel]] = Field([])
 
-    price = NumberField(required=True)
-    seats = ListField(TextField(), required=True)
+    price: int
+    seats: Set[Seat] = Field({Seat.A, Seat.B, Seat.C})
 
-    origin = NestedModel(LocationModel, required=True)
-    destination = NestedModel(LocationModel, required=True)
+    origin: str
+    destination: str
 
-    gender_filter = ListField(TextField(), required=True)
+    gender_filter: Set[Gender] = Field({Gender.male, Gender.female})
 
-    tracking = ListField(NestedModel(TrackingRecord), required=False)
+    waypoints: Set[str] = Field(default_factory=set)
+
+    tracking: Link[Tracking] = Field(...)
 
     @property
     def is_enabled(self):
@@ -91,3 +92,7 @@ class ScheduleTravel(Model):
             return [Gender(gender) for gender in self.gender_filter]
 
         return []
+
+    @property
+    def max_passengers(self):
+        return len(self.seats)

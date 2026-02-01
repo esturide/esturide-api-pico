@@ -1,3 +1,4 @@
+from fastsio import AsyncServer
 from fastapi import APIRouter, BackgroundTasks
 
 from app.shared.dependencies import AuthUserCodeAndRoleCredentials, RideDependency
@@ -6,7 +7,7 @@ from app.shared.scheme.rides import RideTravelUpdateRequest, RideTravelRequest
 from app.shared.scheme.rides.status import RideTravelStatusResponse
 from app.shared.types.enum import Status
 
-rides_router = APIRouter(prefix="/rides", tags=["Rides"])
+rides_router = APIRouter(prefix="/rides", tags=["Rides route"])
 
 
 @rides_router.post('/')

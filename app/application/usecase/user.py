@@ -1,25 +1,29 @@
 import functools
 
 from app.core.exception import NotFoundException, UnauthorizedAccessException
-from app.domain.service.user import get_user_service
+from app.domain.service.user import UserService
 from app.shared.scheme import StatusMessage, StatusSuccess, StatusFailure
 from app.shared.scheme.user import UserRequest, ProfileUpdateRequest, UserResponse, UserProfile
 
 
 class UserUseCase:
     def __init__(self):
-        self.user_service = get_user_service()
+        self.user_service = UserService()
 
     async def create(self, user: UserRequest) -> StatusMessage:
         status = await self.user_service.create(user)
 
         return StatusSuccess() if status else StatusFailure()
 
-    async def update(self, code: int, req: ProfileUpdateRequest, auth_user: int) -> StatusMessage:
-        if not code == auth_user:
-            raise UnauthorizedAccessException("Invalid code.")
+    async def update(self, code: int, req: ProfileUpdateRequest) -> StatusMessage:
+        user = await self.user_service.get(code)
 
-        return StatusFailure()
+        if not user:
+            raise NotFoundException("User not found.")
+
+        await self.user_service.update(req, user)
+
+        return StatusSuccess()
 
     async def delete(self, code: int, auth_user: int) -> StatusMessage:
         if not code == auth_user:
@@ -34,11 +38,9 @@ class UserUseCase:
             raise NotFoundException("User not found.")
 
         return UserResponse(
-            code=code,
             firstName=user.first_name,
             maternalSurname=user.maternal_surname,
             paternalSurname=user.paternal_surname,
-            email=user.email,
             role=user.role,
         )
 
