@@ -82,7 +82,7 @@ def get_root_app() -> FastAPI:
         lifespan=lifespan,
     )
 
-    origins = settings.allowed_origins
+    origins = settings.allowed_cors
 
     app.add_middleware(
         CORSMiddleware,
