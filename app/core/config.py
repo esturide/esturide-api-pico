@@ -5,6 +5,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class DefaultSettings(BaseSettings):
+    env: str | None
+
     secret_key: str
     algorithm: str
     access_token_expire_minutes: int
@@ -24,6 +26,15 @@ class DefaultSettings(BaseSettings):
     @property
     def allowed_cors(self) -> typing.List[str]:
         return [o.strip() for o in self.allowed_origin_cors.split(',') if o.strip()]
+
+    @property
+    def is_production(self) -> bool:
+        if self.env is None:
+            return True
+
+        w_env = self.env.upper()
+
+        return not w_env in ('DEV', 'DEVELOPMENT')
 
 
 @lru_cache
