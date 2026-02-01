@@ -2,7 +2,7 @@ from fastsio import SocketID, Environ, Auth, Data, AsyncServer, RouterSIO
 from pydantic import BaseModel
 
 
-sio_ride = RouterSIO(namespace="/ride-socket")
+sio_ride = RouterSIO(namespace="/ride")
 
 class Message(BaseModel):
     text: str
@@ -33,5 +33,5 @@ async def on_send_message(
     await server.emit(
         "new_message",
         data.model_dump(),
-        namespace="/ride-socket"
+        namespace="/ride"
     )
