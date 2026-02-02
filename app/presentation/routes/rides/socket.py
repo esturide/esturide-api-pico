@@ -2,7 +2,7 @@ from fastsio import SocketID, Environ, Auth, Data, AsyncServer, RouterSIO
 from pydantic import BaseModel
 
 
-sio_ride = RouterSIO(namespace="/ride")
+ride_sio = RouterSIO(namespace="/ride")
 
 class Message(BaseModel):
     text: str
@@ -13,7 +13,7 @@ class JoinRoom(BaseModel):
     room: str
 
 
-@sio_ride.on("connect")
+@ride_sio.on("connect")
 async def on_connect(
     sid: SocketID,
     environ: Environ,
@@ -24,7 +24,7 @@ async def on_connect(
     return True
 
 
-@sio_ride.on("send_message")
+@ride_sio.on("send_message")
 async def on_send_message(
     sid: SocketID,
     server: AsyncServer,
