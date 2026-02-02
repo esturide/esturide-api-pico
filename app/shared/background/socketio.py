@@ -1,6 +1,8 @@
 import asyncio
 import functools
 
+from fastsio import SocketID
+
 from app.shared.pattern.singleton import Singleton
 
 class AsyncClientConnectionManager(metaclass=Singleton):
@@ -10,7 +12,7 @@ class AsyncClientConnectionManager(metaclass=Singleton):
     def __del__(self):
         asyncio.run(self.detach_all_task())
 
-    def attach(self, sid: str):
+    def attach(self, sid: SocketID):
         def inner(func):
             @functools.wraps(func)
             async def wrapper(*args, **kwargs):
@@ -23,7 +25,7 @@ class AsyncClientConnectionManager(metaclass=Singleton):
 
         return inner
 
-    async def detach(self, sid: str):
+    async def detach(self, sid: SocketID):
         if sid in self.__sid and not self.__sid[sid].done():
             self.__sid[sid].cancel()
 
