@@ -17,6 +17,7 @@ async def connect(
         commons: AsyncClientConnectionManager = Depends(get_async_client_manager)
 ):
     print(f"Connection: {sid}, auth: {auth}")
+    print(environ)
 
     @commons.attach(sid)
     async def ping_message():

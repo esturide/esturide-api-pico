@@ -19,5 +19,5 @@ def get_root_socketio_server() -> AsyncServer:
 
 
 @functools.lru_cache
-async def get_async_client_manager() -> AsyncClientConnectionManager:
+def get_async_client_manager() -> AsyncClientConnectionManager:
     return AsyncClientConnectionManager()
