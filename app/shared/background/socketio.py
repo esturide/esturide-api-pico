@@ -7,6 +7,9 @@ class AsyncClientConnectionManager(metaclass=Singleton):
     def __init__(self):
         self.__sid = {}
 
+    def __del__(self):
+        asyncio.run(self.detach_all_task())
+
     def attach(self, sid: str):
         def inner(func):
             @functools.wraps(func)
@@ -27,3 +30,11 @@ class AsyncClientConnectionManager(metaclass=Singleton):
             await self.__sid[sid]
 
         return None
+
+    async def detach_all_task(self):
+        all_tasks = self.__sid.values()
+
+        for task in all_tasks:
+            task.cancel()
+
+        await asyncio.gather(*all_tasks)

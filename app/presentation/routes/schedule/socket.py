@@ -1,6 +1,6 @@
 import asyncio
 
-from fastsio import SocketID, Environ, Auth, AsyncServer, RouterSIO, Depends
+from fastsio import SocketID, Auth, AsyncServer, RouterSIO, Depends
 
 from app.shared.background.socketio import AsyncClientConnectionManager
 from app.shared.dependencies.depends.socketio import get_async_client_manager
@@ -11,13 +11,11 @@ travel_sio = RouterSIO(namespace="/travel")
 @travel_sio.event
 async def connect(
         sid: SocketID,
-        environ: Environ,
         auth: Auth,
         server: AsyncServer,
         commons: AsyncClientConnectionManager = Depends(get_async_client_manager)
 ):
     print(f"Connection: {sid}, auth: {auth}")
-    print(environ)
 
     @commons.attach(sid)
     async def ping_message():
@@ -31,7 +29,6 @@ async def connect(
 @travel_sio.event
 async def disconnect(
         sid: SocketID,
-        environ: Environ,
         server: AsyncServer,
         commons: AsyncClientConnectionManager = Depends(get_async_client_manager)
 ):
@@ -41,5 +38,5 @@ async def disconnect(
 
 
 @travel_sio.on("hello-world")
-async def on_schedule(sid: SocketID, environ: Environ, server: AsyncServer):
+async def on_schedule(sid: SocketID, server: AsyncServer):
     await server.emit("greetings", "Hello world", namespace="/travel", to=sid)
