@@ -45,3 +45,4 @@ googlemaps~=4.10.0
 async-googlemaps~=0.0.10
 polyline~=2.0.4
 numpy~=2.4.1
+pytz~=2025.2
