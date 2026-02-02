@@ -50,7 +50,7 @@ def decode_compress_route(route: str) -> List[Tuple[float, float]]:
 EncodeRoute = Annotated[str, BeforeValidator(encode_compress_route), AfterValidator(decode_compress_route)]
 
 
-class ScheduleStore(JsonModel):
+class ScheduleStore(JsonModel, index=True):
     usercode: int = Field(..., index=True, const=True)
     created: datetime.datetime = Field(default_factory=datetime.datetime.now, index=True, const=True)
 
