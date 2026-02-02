@@ -5,11 +5,27 @@ from app.shared.scheme import StatusMessage
 from app.shared.types.enum import Status
 
 
+async def not_implemented_handler(request, exc):
+    logger = get_logger()
+
+    error_response = StatusMessage(
+        status=Status.failure,
+        message="The requested method is not currently available on this server."
+    )
+
+    logger.warning(f"Method not implemented in {request.url.path}: {str(exc)}")
+
+    return JSONResponse(status_code=501, content=error_response.model_dump())
+
 async def custom_http_exception_handler(request, exc):
+    logger = get_logger()
+
     error_response = StatusMessage(
         status=Status.failure,
         message=str(exc.detail)
     )
+
+    logger.error(f"Exception details: {exc.detail}")
 
     return JSONResponse(status_code=exc.status_code, content=error_response.model_dump())
 
@@ -52,7 +68,11 @@ async def validation_exception_handler(request, exc):
     for error in errors:
         error_messages.append(error.get('msg', 'Error message not available.'))
 
+    body = await request.body()
+
     logger.error(exc.errors())
+    logger.error(f"Validation error: {exc}")
+    logger.error(f"JSON received that failed: {body.decode('utf-8')}")
 
     return JSONResponse(
         status_code=422,
