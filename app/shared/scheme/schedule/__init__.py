@@ -1,6 +1,7 @@
 import datetime
 from typing import Optional, Set
 
+import pytz
 from pydantic import BaseModel, Field, field_validator, model_validator, FutureDatetime
 
 from app.shared.const import DEFAULT_MIN_PRICE
@@ -32,13 +33,31 @@ class ScheduleTravelFromAddressRequest(BaseModel):
     return_home: Optional[bool] = Field(default=None, title="Indicates whether the trip is a return home",
                                         alias='returnHome')
 
-    starting: FutureDatetime = Field(..., title="Date and time when the trip begins", alias='starting')
+    starting: datetime.datetime = Field(..., title="Date and time when the trip begins", alias='starting')
 
     price: int = Field(DEFAULT_MIN_PRICE, title="Price of the travel", alias='price')
     seats: Set[Seat] = Field(['A', 'B', 'C'], title="All seats", alias='seats')
     genders: Set[Gender] = Field(["male", "female"], title="Filter of genders", alias='genders')
 
     waypoints: Set[str] = Field(..., title="Ride waypoints", alias='waypoints')
+
+    @classmethod
+    @field_validator('starting')
+    def validate_starting_schedule_time(cls, v: datetime.datetime) -> datetime.datetime:
+        local_time = pytz.timezone('America/Mexico_City')
+
+        if v.tzinfo is None:
+            v = local_time.localize(v)
+        else:
+            v = v.astimezone(local_time)
+
+        now = datetime.datetime.now(datetime.timezone.utc)
+        minimum_value = now + datetime.timedelta(hours=1)
+
+        if v < minimum_value:
+            raise ValueError('The date must be at least one hour later than the current one.')
+
+        return v
 
     @classmethod
     @field_validator('gender_filter')
