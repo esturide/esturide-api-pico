@@ -48,6 +48,10 @@ async def disconnect(
     return True
 
 
-@travel_sio.on("update")
-async def on_schedule(sid: SocketID, server: AsyncServer):
+@travel_sio.on("schedule")
+async def on_schedule(
+        sid: SocketID,
+        server: AsyncServer,
+        commons: AsyncClientConnectionManager = Depends(get_async_client_manager)
+):
     pass

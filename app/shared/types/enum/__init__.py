@@ -29,3 +29,9 @@ class RoleUser(enum.StrEnum):
     driver = 'driver'
     staff = 'staff'
     admin = 'admin'
+
+
+class CurrentSession(enum.StrEnum):
+    travel = 'travel'
+    ride = 'ride'
+    free = 'free'

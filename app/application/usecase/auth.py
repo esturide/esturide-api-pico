@@ -50,6 +50,11 @@ class AuthSessionUseCase:
 
         return await self.auth_service.refresh(user, role)
 
+    async def get_current_status(self, token: Token):
+        user, role = await self.auth_service.get_user_credentials_from_token(token)
+
+        return user, role
+
 
 @functools.lru_cache
 def get_auth_session_case() -> AuthSessionUseCase:

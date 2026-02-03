@@ -54,7 +54,7 @@ class ScheduleService(metaclass=Singleton):
         return
 
     async def get(self, code: int) -> List[ScheduleStore]:
-        return await ScheduleStore.find(ScheduleStore.usercode == code).all()
+        return await ScheduleStore.find(ScheduleStore.usercode == code).sort_by("-created").all()
 
     async def get_from_ride(self, ride: RideTravelModel) -> ScheduleTravelDocument | None:
         return

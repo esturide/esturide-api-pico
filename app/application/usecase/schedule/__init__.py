@@ -14,8 +14,9 @@ from app.shared.dependencies.depends import GoogleMapsClient
 from app.shared.models.store.schedule import ScheduleStore
 from app.shared.scheme import StatusSuccess, StatusFailure
 from app.shared.scheme.filter import FilteringOptionsRequest
+from app.shared.scheme.location import GeoPoint
 from app.shared.scheme.schedule import ScheduleTravelResponse, ScheduleTravelUpdateRequest, \
-    ScheduleTravelFromAddressRequest
+    ScheduleTravelFromAddressRequest, DriverUser
 from app.shared.scheme.schedule.status import ScheduleTravelStatusResponse
 from app.shared.types.enum import RoleUser
 
@@ -87,8 +88,39 @@ class ScheduleTravelUseCase:
     async def find_schedule_if_exist(self, code: int) -> Optional[ScheduleTravelStatusResponse]:
         ...
 
-    async def get_current(self, code: int) -> ScheduleTravelStatusResponse:
-        ...
+    async def get_current(self, code: int) -> Optional[ScheduleTravelResponse]:
+        schedules = await self.schedule_service.get(code)
+
+        if len(schedules) == 0:
+            return None
+
+        user = await self.user_service.get(code)
+
+        schedule = schedules[0]
+
+        return ScheduleTravelResponse(
+            uuid=schedule.pk,
+            driver=DriverUser(
+                code=user.code,
+                firstName=user.first_name,
+                maternalSurname=user.maternal_surname,
+                paternalSurname=user.paternal_surname,
+                position=GeoPoint(
+                    longitude=0,
+                    latitude=0,
+                )
+            ),
+            price=schedule.price,
+            terminate=False,
+            cancel=False,
+            starting=schedule.starting,
+            terminated=None,
+            seats=schedule.seats,
+            origin=schedule.origin,
+            destination=schedule.destination,
+            genders=schedule.genders,
+            waypoints=set()
+        )
 
     async def get_all(self, limit=10) -> list[ScheduleTravelResponse]:
         ...

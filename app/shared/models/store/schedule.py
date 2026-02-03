@@ -59,7 +59,7 @@ class ScheduleStore(JsonModel, index=True):
 
     starting: datetime.datetime = Field(..., index=True, const=True)
 
-    price: float = Field(index=True, const=True)
+    price: int = Field(index=True, const=True)
     seats: Set[Seat] = Field(default_factory=set)
     genders: Set[Gender] = Field(default_factory=set)
 
