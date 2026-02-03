@@ -1,4 +1,4 @@
-decode_gps_from_google = lambda direction: (direction.get('lat'), direction.get('lng'))
+decode_gps_from_google = lambda direction: (direction.get_from_user('lat'), direction.get_from_user('lng'))
 
 
 class GoogleService:

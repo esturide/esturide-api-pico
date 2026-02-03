@@ -66,7 +66,7 @@ async def validation_exception_handler(request, exc):
     error_messages = []
 
     for error in errors:
-        error_messages.append(error.get('msg', 'Error message not available.'))
+        error_messages.append(error.get_from_user('msg', 'Error message not available.'))
 
     body = await request.body()
 

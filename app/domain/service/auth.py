@@ -1,3 +1,5 @@
+from jwt import ExpiredSignatureError
+
 from app.core import get_settings
 from app.core.exception import UnauthorizedAccessException
 from app.core.oauth2 import encode, decode
@@ -58,12 +60,15 @@ class AuthenticationCredentialsService(metaclass=Singleton):
         )
 
     async def validate(self, token: Token):
-        user, role = await self.get_user_credentials_from_token(token)
+        try:
+            user, role = await self.get_user_credentials_from_token(token)
 
-        if user is None:
+            if user is None:
+                return False
+
+            return True
+        except ExpiredSignatureError:
             return False
-
-        return True
 
     async def refresh(self, user: UserDocument, role: RoleUser) -> Token:
         data = {

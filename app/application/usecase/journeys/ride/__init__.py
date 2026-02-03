@@ -1,10 +1,11 @@
 import functools
 from typing import Optional
+from uuid import UUID
 
 from fastapi import BackgroundTasks
 
-from app.domain.service.ride import RideService
-from app.domain.service.schedule import ScheduleService
+from app.domain.service.journeys.ride import RideService
+from app.domain.service.journeys.schedule import ScheduleTravelService
 from app.domain.service.user import UserService
 from app.shared.models.ride import RideTravelModel
 from app.shared.models.travel import ScheduleTravelDocument
@@ -12,14 +13,13 @@ from app.shared.models.user import UserDocument
 from app.shared.pattern.singleton import Singleton
 from app.shared.scheme.rides import RideTravelUpdateRequest, RideTravelRequest
 from app.shared.scheme.rides.status import RideTravelStatusResponse
-from app.shared.types import UUID
 from app.shared.types.enum import RoleUser
 
 
 class RideUseCase(metaclass=Singleton):
     def __init__(self):
         self.ride_service = RideService()
-        self.schedule_service = ScheduleService()
+        self.schedule_service = ScheduleTravelService()
         self.user_service = UserService()
 
     async def create(self, code: int, role: RoleUser, req: RideTravelRequest, background_tasks: BackgroundTasks):
@@ -29,10 +29,10 @@ class RideUseCase(metaclass=Singleton):
         ScheduleTravelDocument | None, RideTravelModel | None]:
         raise NotImplementedError()
 
-    async def find_ride_if_exist(self, code: int) -> Optional[RideTravelStatusResponse]:
-        raise NotImplementedError()
+    async def exist(self, usercode: int) -> bool:
+        return False
 
-    async def current(self, code: int) -> RideTravelStatusResponse:
+    async def current(self, usercode: int) -> Optional[RideTravelStatusResponse]:
         raise NotImplementedError()
 
     async def cancel(self, passenger: UserDocument, role: RoleUser, schedule: ScheduleTravelDocument,

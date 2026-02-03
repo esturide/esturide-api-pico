@@ -1,17 +1,17 @@
+import uuid
+
 from typing import Optional
 
 from pydantic import BaseModel, Field
 
-from app.shared.types import UUID
-
 
 class RideTravelRequest(BaseModel):
-    uuid: UUID
+    uuid: uuid.UUID
     seat: str
 
 
 class RideTravelResponse(BaseModel):
-    uuid: UUID
+    uuid: uuid.UUID
 
     seat: str
     cancel: bool

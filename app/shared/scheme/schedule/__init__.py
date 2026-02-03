@@ -1,4 +1,6 @@
 import datetime
+import uuid
+
 from typing import Optional, Set
 
 import pytz
@@ -6,7 +8,7 @@ from pydantic import BaseModel, Field, field_validator, model_validator, FutureD
 
 from app.shared.const import DEFAULT_MIN_PRICE
 from app.shared.scheme.location import GeoPoint
-from app.shared.types import UUID, Seat
+from app.shared.types import Seat
 from app.shared.types.enum import Gender
 from app.shared.types.enum.default_location import DefaultLocation, get_gps_from_location
 
@@ -16,7 +18,7 @@ class CurrentUser(BaseModel):
     first_name: str = Field(..., title="First name", alias="firstName")
     maternal_surname: str = Field(..., title="Maternal surname", alias='maternalSurname')
     paternal_surname: str = Field(..., title="Paternal surname", alias='paternalSurname')
-    position: GeoPoint = Field(..., title="Current position", alias='position')
+    position: Optional[GeoPoint] = Field(..., title="Current position", alias='position')
 
 
 class DriverUser(CurrentUser):
@@ -99,16 +101,12 @@ class ScheduleTravelFromAddressRequest(BaseModel):
 
 
 class ScheduleTravelResponse(BaseModel):
-    uuid: UUID
+    uuid: uuid.UUID
     driver: DriverUser
 
     price: int
 
-    terminate: bool = False
-    cancel: bool = False
-
-    starting: Optional[datetime.datetime] = Field(..., title="Time starting", alias='starting')
-    terminated: Optional[datetime.datetime] = Field(..., title="Time finished", alias='terminated')
+    created: datetime.datetime
 
     seats: Set[Seat] = Field(['A', 'B', 'C'], title="All seats", alias='seats')
 
@@ -118,6 +116,14 @@ class ScheduleTravelResponse(BaseModel):
     genders: Set[Gender] = Field(..., title="Filter of genders", alias='genders')
 
     waypoints: Set[str]
+
+
+class CurrentTravelResponse(ScheduleTravelResponse):
+    terminate: bool = False
+    cancel: bool = False
+
+    starting: Optional[datetime.datetime] = Field(..., title="Time starting", alias='starting')
+    terminated: Optional[datetime.datetime] = Field(..., title="Time finished", alias='terminated')
 
 
 class ScheduleTravelUpdateRequest(BaseModel):

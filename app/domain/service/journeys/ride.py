@@ -1,5 +1,6 @@
 import contextlib
 import functools
+import uuid
 
 from app.core.exception import NotFoundException
 from app.infrestructure.repository.ride import RideRepository
@@ -7,7 +8,6 @@ from app.infrestructure.repository.travel import TravelRepository
 from app.shared.models.ride import RideTravelModel
 from app.shared.models.user import UserDocument
 from app.shared.pattern.singleton import Singleton
-from app.shared.types import UUID
 
 
 class RideService(metaclass=Singleton):
@@ -40,7 +40,7 @@ class RideService(metaclass=Singleton):
     async def get_all_rides_from_user(self, passenger: UserDocument) -> list[RideTravelModel]:
         return await self.ride_repository.filter(passenger=passenger)
 
-    async def get(self, uuid: UUID) -> RideTravelModel:
+    async def get(self, uuid: uuid.UUID) -> RideTravelModel:
         ride = await self.ride_repository.get(uuid)
 
         if ride is None:

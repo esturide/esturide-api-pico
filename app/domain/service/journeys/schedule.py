@@ -1,5 +1,6 @@
 import datetime
 from typing import Set, List, Tuple, Optional
+from uuid import UUID
 
 from pydantic import FutureDatetime
 
@@ -16,7 +17,7 @@ from app.shared.pattern.singleton import Singleton
 from app.shared.types import Seat, Gender
 
 
-class ScheduleService(metaclass=Singleton):
+class ScheduleTravelService(metaclass=Singleton):
     def __init__(self):
         self.ride_repository = RideRepository()
         self.schedule_store_repository = ScheduleStoreRepository()
@@ -53,11 +54,11 @@ class ScheduleService(metaclass=Singleton):
     async def save(self, schedule: ScheduleStore) -> ScheduleTravelDocument | None:
         return
 
-    async def get(self, code: int) -> List[ScheduleStore]:
-        return await ScheduleStore.find(ScheduleStore.usercode == code).sort_by("-created").all()
+    async def get(self, uuid: UUID):
+        return await ScheduleStore.find(ScheduleStore.uuid == uuid).first()
 
-    async def get_from_ride(self, ride: RideTravelModel) -> ScheduleTravelDocument | None:
-        return
+    async def get_from_user(self, usercode: int) -> ScheduleStore | None:
+        return await ScheduleStore.find(ScheduleStore.usercode == usercode).first()
 
     async def get_current(self, user: UserDocument) -> ScheduleTravelDocument | None:
         return

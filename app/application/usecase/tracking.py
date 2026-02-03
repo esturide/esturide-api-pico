@@ -1,8 +1,8 @@
 import functools
 
 from app.core.exception import ResourceNotFoundException, InvalidRequestException
-from app.domain.service.ride import RideService
-from app.domain.service.schedule import ScheduleService
+from app.domain.service.journeys.ride import RideService
+from app.domain.service.journeys.schedule import ScheduleTravelService
 from app.domain.service.tracking import TrackingService
 from app.domain.service.user import UserService
 from app.shared.models.tracking import Tracking
@@ -15,7 +15,7 @@ class TrackingUseCase:
     def __init__(self):
         self.user_service = UserService()
         self.ride_service = RideService()
-        self.schedule_service = ScheduleService()
+        self.schedule_service = ScheduleTravelService()
         self.tracking_service = TrackingService()
 
     async def register(self, code: int, role: RoleUser, location: GeoPoint):

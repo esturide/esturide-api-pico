@@ -7,10 +7,10 @@ from pymongo import AsyncMongoClient, MongoClient
 
 from app.application.usecase.admin import AdminManagerUseCase, get_admin_manager_use_case
 from app.application.usecase.auth import AuthSessionUseCase, get_auth_session_case
+from app.application.usecase.journeys.ride.match import MatchUseCase, get_match_use_case
 from app.application.usecase.notify import NotifyUseCase, get_notify_user_case
-from app.application.usecase.ride import get_ride_use_case, RideUseCase
-from app.application.usecase.ride.match import MatchUseCase, get_match_use_case
-from app.application.usecase.schedule import ScheduleTravelUseCase, get_schedule_use_case
+from app.application.usecase.journeys.ride import get_ride_use_case, RideUseCase
+from app.application.usecase.journeys.schedule import ScheduleTravelUseCase, get_schedule_use_case
 from app.application.usecase.tracking import TrackingUseCase, get_tracking_use_case
 from app.application.usecase.user import UserUseCase, get_user_use_case
 from app.core.oauth2 import oauth2_scheme

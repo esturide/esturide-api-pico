@@ -16,7 +16,7 @@ async def user_credentials(token: Annotated[Token, Depends(oauth2_scheme)]) -> i
         return None
 
     with secure_decode(token, settings.secret_key, settings.algorithm) as decoded:
-        if code := decoded.get("code"):
+        if code := decoded.get_from_user("code"):
             return code
         else:
             raise None
@@ -60,10 +60,10 @@ async def is_user_authenticated(token: Annotated[Token, Depends(oauth2_scheme)])
 
 
 async def get_user_credentials_header(headers) -> UserDocument | None:
-    if access_token := headers.get("access_token"):
+    if access_token := headers.get_from_user("access_token"):
         return await user_credentials(access_token)
 
-    if access_token := headers.get("accessToken"):
+    if access_token := headers.get_from_user("accessToken"):
         return await user_credentials(access_token)
 
     return None
