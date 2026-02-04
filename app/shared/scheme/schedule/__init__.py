@@ -32,8 +32,6 @@ class PassengerUser(CurrentUser):
 class ScheduleTravelFromAddressRequest(BaseModel):
     origin: str | DefaultLocation = Field(..., title="Location where the travel begins", alias='origin')
     destination: str | DefaultLocation = Field(..., title="Location where the travel ends", alias='destination')
-    return_home: Optional[bool] = Field(default=None, title="Indicates whether the trip is a return home",
-                                        alias='returnHome')
 
     starting: datetime.datetime = Field(..., title="Date and time when the trip begins", alias='starting')
 
