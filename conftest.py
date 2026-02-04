@@ -1,15 +1,18 @@
 import pytest
 
 from faker import Faker
-from fastapi.testclient import TestClient
+from httpx import ASGITransport, AsyncClient
 
 from app import get_app
 
 
-@pytest.fixture(scope="module")
-def client():
-    with TestClient(get_app()) as client:
-        yield client
+@pytest.fixture
+async def client():
+    async with AsyncClient(
+            transport=ASGITransport(app=get_app()),
+            base_url="http://localhost:8000"
+    ) as ac:
+        yield ac
 
 
 @pytest.fixture(scope="session")

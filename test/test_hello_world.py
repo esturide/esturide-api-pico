@@ -1,6 +1,10 @@
-from fastapi.testclient import TestClient
+import pytest
+
+from httpx import AsyncClient
 
 
-def test_main_again(client: TestClient):
-    response = client.get("/")
+@pytest.mark.asyncio
+async def test_main(client: AsyncClient):
+    response = await client.get("/")
+
     assert response.status_code == 200
