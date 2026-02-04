@@ -5,6 +5,7 @@ from pydantic import Field, EmailStr
 from pydantic_extra_types.phone_numbers import PhoneNumber
 
 from app.shared.encrypt import check_same_password
+from app.shared.types import Gender
 from app.shared.types.enum import RoleUser
 
 
@@ -12,7 +13,7 @@ class UserDocument(Document):
     class Settings:
         collection = "Users"
 
-    created: datetime.datetime = Field(default_factory=datetime.datetime.now)
+    created: datetime.datetime = Field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc))
 
     hashed_password: str
     salt: str
@@ -23,6 +24,7 @@ class UserDocument(Document):
     paternal_surname: str
     maternal_surname: str
     birth_date: datetime.datetime
+    gender: Gender = Field(..., title="Gender")
 
     email: EmailStr = Field(..., title="Email")
     curp: str = Field(...)

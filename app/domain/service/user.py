@@ -30,6 +30,7 @@ class UserService(metaclass=Singleton):
             phone_number=req.phone_number,
             hashed_password=hashed_password,
             salt=salt,
+            gender=req.gender
         )
 
         return await self.user_repository.save(user)

@@ -1,33 +1,38 @@
 import contextlib
 import functools
 import uuid
+from datetime import datetime
+from typing import Optional
+
+from fastapi import BackgroundTasks
 
 from app.core.exception import NotFoundException
-from app.infrestructure.repository.ride import RideRepository
+from app.infrestructure.repository.client.cache import ClientCacheRepository
+from app.infrestructure.repository.ride import RideRepository, RideCacheRepository
 from app.infrestructure.repository.travel import TravelRepository
 from app.shared.models.ride import RideTravelModel
+from app.shared.models.store.ride import RideStore
 from app.shared.models.user import UserDocument
 from app.shared.pattern.singleton import Singleton
+from app.shared.scheme.rides import RideTravelRequest
 
 
 class RideService(metaclass=Singleton):
     def __init__(self):
         self.ride_repository = RideRepository()
+        self.ride_cache_repository = RideCacheRepository()
         self.schedule_repository = TravelRepository()
 
-    async def create(self, passenger: UserDocument, seat: str) -> RideTravelModel:
-        if seat not in ['A', 'B', 'C']:
-            raise ""
+    async def create(self, user: UserDocument, req: RideTravelRequest, background_tasks: BackgroundTasks) -> bool:
+        ride = RideStore(
+            usercode=user.code,
+            origin=req.origin,
+            destination=req.destination,
+            exiting=req.exiting,
+            gender=user.gender
+        )
 
-        ride = RideTravelModel()
-
-        ride.passenger = passenger
-        ride.seat = seat
-        ride.tracking = []
-
-        await self.ride_repository.save(ride)
-
-        return ride
+        return await self.ride_cache_repository.save(ride)
 
     async def get_current_ride_from_user(self, passenger: UserDocument) -> RideTravelModel | None:
         all_rides = await self.get_all_rides_from_user(passenger)

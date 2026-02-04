@@ -3,6 +3,7 @@ import datetime
 from pydantic import BaseModel, Field, field_validator, SecretStr, EmailStr
 from pydantic_extra_types.phone_numbers import PhoneNumber
 
+from app.shared.types import Gender
 from app.shared.types.enum import RoleUser
 
 
@@ -17,6 +18,7 @@ class UserProfile(BaseModel):
     phone_number: PhoneNumber = Field(..., title="Phone number", alias="phoneNumber")
     email: EmailStr = Field(..., title="Email", alias='email')
     address: str = Field(...)
+    gender: Gender = Field(...)
 
     @field_validator('birth_date')
     def check_age(cls, birth_date):

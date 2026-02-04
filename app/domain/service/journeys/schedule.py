@@ -9,7 +9,6 @@ from app.infrestructure.repository.ride import RideRepository
 from app.infrestructure.repository.tracking import TrackingRepository
 from app.infrestructure.repository.travel import TravelRepository
 from app.infrestructure.repository.travel.schedule import ScheduleStoreRepository
-from app.shared.models.ride import RideTravelModel
 from app.shared.models.store.schedule import ScheduleStore
 from app.shared.models.travel import ScheduleTravelDocument
 from app.shared.models.user import UserDocument
@@ -26,7 +25,7 @@ class ScheduleTravelService(metaclass=Singleton):
 
     async def create(self, user: UserDocument, origin: str, destination: str, starting: FutureDatetime, price: float,
                      seats: Set[Seat], genders: Set[Gender], waypoints: Set[str],
-                     route: List[Tuple[float, float]]):
+                     route: List[Tuple[float, float]]) -> Optional[ScheduleStore]:
         previous_schedule_found = await ScheduleStore.find(ScheduleStore.usercode == user.code).all()
 
         if len(previous_schedule_found) != 0:
@@ -55,10 +54,16 @@ class ScheduleTravelService(metaclass=Singleton):
         return
 
     async def get(self, uuid: UUID):
-        return await ScheduleStore.find(ScheduleStore.uuid == uuid).first()
+        if query := await ScheduleStore.find(ScheduleStore.uuid == uuid).all():
+            return query[0]
+
+        return None
 
     async def get_from_user(self, usercode: int) -> ScheduleStore | None:
-        return await ScheduleStore.find(ScheduleStore.usercode == usercode).first()
+        if query := await ScheduleStore.find(ScheduleStore.usercode == usercode).all():
+            return query[0]
+
+        return None
 
     async def get_current(self, user: UserDocument) -> ScheduleTravelDocument | None:
         return

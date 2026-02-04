@@ -1,6 +1,7 @@
 import datetime
 import uuid
 
+from app.infrestructure.repository.client.cache import ClientCacheRepository
 from app.infrestructure.repository.client.db import ClientDocumentRepository
 from app.shared.models.ride import RideTravelModel
 from app.shared.models.user import UserDocument
@@ -45,3 +46,7 @@ class RideRepository(ClientDocumentRepository, metaclass=Singleton):
             return list(rides.fetch(limit))
 
         return await async_task(filter_rides)
+
+
+class RideCacheRepository(ClientCacheRepository):
+    pass

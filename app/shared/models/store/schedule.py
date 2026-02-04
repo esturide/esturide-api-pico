@@ -55,9 +55,9 @@ EncodeRoute = Annotated[str, BeforeValidator(encode_compress_route), AfterValida
 
 class ScheduleStore(JsonModel, index=True):
     uuid: UUID = Field(default_factory=uuid.uuid4, index=True, const=True)
+    created: datetime.datetime = Field(default_factory=datetime.datetime.now, index=True, const=True)
 
     usercode: int = Field(..., index=True, const=True)
-    created: datetime.datetime = Field(default_factory=datetime.datetime.now, index=True, const=True)
 
     origin: str = Field(..., index=True, const=True, full_text_search=True)
     destination: str = Field(..., index=True, const=True, full_text_search=True)

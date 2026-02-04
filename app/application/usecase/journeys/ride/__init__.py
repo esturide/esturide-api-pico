@@ -14,6 +14,7 @@ from app.shared.pattern.singleton import Singleton
 from app.shared.scheme.rides import RideTravelUpdateRequest, RideTravelRequest
 from app.shared.scheme.rides.status import RideTravelStatusResponse
 from app.shared.types.enum import RoleUser
+from app.shared.scheme import StatusSuccess, StatusFailure, StatusMessage
 
 
 class RideUseCase(metaclass=Singleton):
@@ -22,8 +23,23 @@ class RideUseCase(metaclass=Singleton):
         self.schedule_service = ScheduleTravelService()
         self.user_service = UserService()
 
-    async def create(self, code: int, role: RoleUser, req: RideTravelRequest, background_tasks: BackgroundTasks):
-        raise NotImplementedError()
+    async def create(self, usercode: int, role: RoleUser, req: RideTravelRequest, background_tasks: BackgroundTasks) -> StatusMessage:
+        if not role == RoleUser.passenger:
+            return StatusFailure(
+                    message="You can not request a ride."
+            )
+
+        user = await self.user_service.get(usercode)
+        status = await self.ride_service.create(user, req, background_tasks)
+
+        if status:
+            return StatusSuccess(
+                message="Ride is created."
+            )
+        else:
+            return StatusFailure(
+                    message="Failure creating Ride."
+            )
 
     async def get_current_from_user(self, user: UserDocument) -> tuple[
         ScheduleTravelDocument | None, RideTravelModel | None]:
