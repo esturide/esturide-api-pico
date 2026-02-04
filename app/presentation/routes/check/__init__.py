@@ -12,7 +12,7 @@ async def find_current_status(token: OAuth2Scheme, auth: AuthDependency, schedul
     schedule = await schedule_case.exist(user.code)
     ride = await ride_case.exist(user.code)
 
-    if not (schedule and ride):
+    if not (schedule or ride):
         return {
             "status": Status.success,
             "data": CurrentSession.free
