@@ -81,9 +81,9 @@ class ScheduleTravelUseCase:
         )
 
     async def exist(self, usercode: int) -> bool:
-        schedule = await self.schedule_service.get_from_user(usercode)
+         schedule = await self.schedule_service.get_from_user(usercode)
 
-        return schedule is not None
+         return schedule is not None
 
     async def current(self, usercode: int) -> Optional[ScheduleTravelResponse]:
         schedule = await self.schedule_service.get_from_user(usercode)
