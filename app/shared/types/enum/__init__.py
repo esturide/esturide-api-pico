@@ -25,6 +25,7 @@ class TypeRole(enum.StrEnum):
 
 class RoleUser(enum.StrEnum):
     not_verified = 'not-verified'
+    standard = 'standard'
     passenger = 'passenger'
     driver = 'driver'
     staff = 'staff'

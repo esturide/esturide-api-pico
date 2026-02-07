@@ -36,17 +36,13 @@ class RideUseCase(metaclass=Singleton):
             return StatusSuccess(
                 message="Ride is created."
             )
-        else:
-            return StatusFailure(
-                    message="Failure creating Ride."
-            )
 
-    async def get_current_from_user(self, user: UserDocument) -> tuple[
-        ScheduleTravelDocument | None, RideTravelModel | None]:
-        raise NotImplementedError()
+        return StatusFailure(
+                message="Failure creating Ride."
+        )
 
     async def exist(self, usercode: int) -> bool:
-        return False
+        return await self.ride_service.get_from_usercode(usercode) is not None
 
     async def current(self, usercode: int) -> Optional[RideTravelStatusResponse]:
         raise NotImplementedError()

@@ -20,7 +20,7 @@ from app.presentation.routes.journeys.schedule.socket import travel_sio
 from app.presentation.routes.location import location_route
 from app.presentation.routes.notify import notify_route
 from app.presentation.routes.record import record_route
-from app.presentation.routes.journeys.rides import rides_router
+from app.presentation.routes.journeys.rides import ride_router
 from app.presentation.routes.journeys.schedule import schedule_router
 from app.presentation.routes.user import user_router
 from app.shared.dependencies.depends.socketio import get_root_socketio_server
@@ -43,7 +43,7 @@ def get_app():
     app.include_router(user_router)
     app.include_router(match_router)
     app.include_router(schedule_router)
-    app.include_router(rides_router)
+    app.include_router(ride_router)
     app.include_router(notify_route)
     app.include_router(location_route)
     app.include_router(record_route)

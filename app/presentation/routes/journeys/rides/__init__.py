@@ -4,10 +4,10 @@ from app.shared.dependencies import AuthUserCodeAndRoleCredentials, RideDependen
 from app.shared.scheme import StatusMessage, StatusFailure, StatusSuccess
 from app.shared.scheme.rides import RideTravelRequest
 
-rides_router = APIRouter(prefix="/rides", tags=["Rides route"])
+ride_router = APIRouter(prefix="/ride", tags=["Rides route"])
 
 
-@rides_router.post('/')
+@ride_router.post('/')
 async def request_new_ride(req: RideTravelRequest, user_auth: AuthUserCodeAndRoleCredentials,
                            ride: RideDependency, background_tasks: BackgroundTasks) -> StatusMessage:
     code, role = user_auth

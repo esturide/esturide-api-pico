@@ -4,6 +4,7 @@ from app.core.exception import NotFoundException, UnauthorizedAccessException
 from app.domain.service.user import UserService
 from app.shared.scheme import StatusMessage, StatusSuccess, StatusFailure
 from app.shared.scheme.user import UserRequest, ProfileUpdateRequest, UserResponse, UserProfile
+from app.shared.types import Gender
 
 
 class UserUseCase:
@@ -41,7 +42,6 @@ class UserUseCase:
             firstName=user.first_name,
             maternalSurname=user.maternal_surname,
             paternalSurname=user.paternal_surname,
-            role=user.role,
         )
 
     async def get_profile(self, code: int) -> UserProfile:
@@ -59,7 +59,7 @@ class UserUseCase:
             birthDate=user.birth_date,
             phoneNumber=user.phone_number,
             email=user.email,
-            role=user.role,
+            gender=user.gender,
             address=""
         )
 
