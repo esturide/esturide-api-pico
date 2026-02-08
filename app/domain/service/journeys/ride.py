@@ -3,9 +3,7 @@ import uuid
 
 from fastapi import BackgroundTasks
 
-from app.core.exception import NotFoundException
-from app.infrestructure.repository.ride import RideRepository, RideCacheRepository
-from app.infrestructure.repository.travel import TravelRepository
+from app.infrestructure.repository.ride import RideCacheRepository
 from app.shared.models.store.ride import RideStore
 from app.shared.models.user import UserDocument
 from app.shared.pattern.singleton import Singleton

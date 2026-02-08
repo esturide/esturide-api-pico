@@ -15,6 +15,9 @@ class MatchUseCase(metaclass=Singleton):
     async def search(self, usercode: int):
         ride = await self.ride_service.get_from_usercode(usercode)
 
+    async def create(self):
+        pass
+
     async def accept(self):
         pass
 

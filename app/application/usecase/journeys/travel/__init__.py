@@ -2,6 +2,7 @@ from app.infrestructure.repository.ride import RideRepository
 from app.infrestructure.repository.tracking import TrackingRepository
 from app.infrestructure.repository.travel import TravelRepository
 from app.infrestructure.repository.travel.schedule import ScheduleStoreRepository
+from app.shared.models.travel import TravelDocument
 from app.shared.pattern.singleton import Singleton
 
 
@@ -12,6 +13,9 @@ class TravelService(metaclass=Singleton):
         self.travel_repository = TravelRepository()
         self.tracking_repository = TrackingRepository()
 
-    def create(self):
+    def create(self) -> TravelDocument:
+        pass
+
+    def exist(self):
         pass
 
