@@ -43,13 +43,16 @@ class RideService(metaclass=Singleton):
 
         return None
 
-    async def get(self, uuid: uuid.UUID) -> RideStore:
-        ride = await RideStore.find(RideStore.uuid == uuid).first()
+    async def get(self, uuid: uuid.UUID) -> RideStore | None:
+        rides = await RideStore.find(RideStore.uuid == uuid).sort_by("-created").all()
 
-        if ride is None:
-            raise NotFoundException("Ride not found.")
+        if len(rides) >= 1:
+            return rides[0]
 
-        return ride
+        return None
+
+    async def delete(self, uuid: uuid.UUID):
+        ride = await self.get(uuid)
 
 
 @functools.lru_cache

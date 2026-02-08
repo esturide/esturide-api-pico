@@ -24,8 +24,8 @@ class TrackingUseCase:
 
         tracking = Tracking()
         tracking.location = GeoPoint(
-            location.latitude,
-            location.longitude,
+            longitude=location.latitude,
+            latitude=location.longitude,
         )
 
         if role == RoleUser.passenger:

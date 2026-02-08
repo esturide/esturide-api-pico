@@ -3,14 +3,14 @@ import functools
 from fastsio import ASGIApp
 from fastapi import HTTPException
 from fastapi.exceptions import RequestValidationError
-from jwt import InvalidSignatureError
+from jwt import InvalidSignatureError, ExpiredSignatureError
 
 from app.core import get_root_app
 from app.core.exception import ResponseException
 from app.core.exception.handler import (custom_http_exception_handler, http_exception_handler, \
                                         invalid_credentials_handler, global_exception_handler,
                                         validation_exception_handler, database_exception_handler,
-                                        not_implemented_handler)
+                                        not_implemented_handler, expire_signature_handler)
 from app.presentation.routes import root_router
 from app.presentation.routes.auth import auth_route
 from app.presentation.routes.check import check_router
@@ -36,6 +36,7 @@ def get_app():
     app.add_exception_handler(HTTPException, http_exception_handler)
     app.add_exception_handler(InvalidSignatureError, invalid_credentials_handler)
     app.add_exception_handler(RequestValidationError, validation_exception_handler)
+    app.add_exception_handler(ExpiredSignatureError, expire_signature_handler)
     app.add_exception_handler(Exception, global_exception_handler)
 
     app.include_router(root_router)

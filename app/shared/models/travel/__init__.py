@@ -6,16 +6,16 @@ from beanie import Document, Link, Indexed
 from pydantic import Field, UUID4
 
 from app.shared.const import DEFAULT_MAX_SCHEDULE_LIFETIME_HRS
-from app.shared.models.ride import RideTravelModel
 from app.shared.models.tracking import Tracking
+from app.shared.models.travel.passenger import PassengerRideModel
 from app.shared.models.user import UserDocument
 from app.shared.types import Seat
 from app.shared.types.enum import Gender
 
 
-class ScheduleTravelDocument(Document):
+class TravelDocument(Document):
     class Settings:
-        name = "schedules"
+        name = "travels"
 
     uuid: Annotated[UUID4, Indexed(unique=True)] = Field(default_factory=uuid.uuid4)
     created: datetime.datetime = Field(default_factory=datetime.datetime.now)
@@ -27,7 +27,7 @@ class ScheduleTravelDocument(Document):
     cancel: bool = Field(False)
 
     driver: Link[UserDocument]
-    rides: List[Link[RideTravelModel]] = Field([])
+    passengers: List[List[PassengerRideModel]] = Field([])
 
     price: int
     seats: Set[Seat] = Field({Seat.A, Seat.B, Seat.C})

@@ -80,6 +80,15 @@ async def validation_exception_handler(request, exc):
     )
 
 
+async def expire_signature_handler(req, exc):
+    error_response = StatusMessage(
+        status=Status.failure,
+        message="Expired signature error."
+    )
+
+    return JSONResponse(status_code=401, content=error_response.model_dump())
+
+
 async def database_exception_handler(request, exc):
     logger = get_logger()
     error_response = StatusMessage(

@@ -1,4 +1,5 @@
 import datetime
+
 from typing import Set, List, Tuple, Optional
 from uuid import UUID
 
@@ -10,7 +11,7 @@ from app.infrestructure.repository.tracking import TrackingRepository
 from app.infrestructure.repository.travel import TravelRepository
 from app.infrestructure.repository.travel.schedule import ScheduleStoreRepository
 from app.shared.models.store.schedule import ScheduleStore
-from app.shared.models.travel import ScheduleTravelDocument
+from app.shared.models.travel import TravelDocument
 from app.shared.models.user import UserDocument
 from app.shared.pattern.singleton import Singleton
 from app.shared.types import Seat, Gender
@@ -50,8 +51,8 @@ class ScheduleTravelService(metaclass=Singleton):
 
         return schedule
 
-    async def save(self, schedule: ScheduleStore) -> ScheduleTravelDocument | None:
-        return
+    async def save(self, schedule: ScheduleStore) -> TravelDocument | None:
+        return None
 
     async def get(self, uuid: UUID):
         if query := await ScheduleStore.find(ScheduleStore.uuid == uuid).all():
@@ -65,22 +66,22 @@ class ScheduleTravelService(metaclass=Singleton):
 
         return None
 
-    async def get_current(self, user: UserDocument) -> ScheduleTravelDocument | None:
-        return
+    async def get_current(self, user: UserDocument) -> TravelDocument | None:
+        return None
 
-    async def get_by_driver(self, user: UserDocument) -> list[ScheduleTravelDocument]:
+    async def get_by_driver(self, user: UserDocument) -> list[TravelDocument]:
         return []
 
-    async def get_by_passenger(self, user: UserDocument) -> list[ScheduleTravelDocument]:
+    async def get_by_passenger(self, user: UserDocument) -> list[TravelDocument]:
         return []
 
-    async def all(self, limit=10) -> list[ScheduleTravelDocument]:
+    async def all(self, limit=10) -> list[TravelDocument]:
         return []
 
     async def filtering(self, origin: str, destination: str,
                         date: Tuple[datetime.datetime, Optional[datetime.datetime]],
-                        price: Tuple[float, Optional[float]], limit: int) -> list[ScheduleTravelDocument]:
+                        price: Tuple[float, Optional[float]], limit: int) -> list[TravelDocument]:
         return []
 
-    async def finished(self, schedule: ScheduleTravelDocument, cancel=None, terminate=None) -> tuple[bool, ScheduleTravelDocument] | None:
+    async def finished(self, schedule: TravelDocument, cancel=None, terminate=None) -> tuple[bool, TravelDocument] | None:
         return None

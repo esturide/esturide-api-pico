@@ -8,7 +8,7 @@ from app.domain.service.journeys.ride import RideService
 from app.domain.service.journeys.schedule import ScheduleTravelService
 from app.domain.service.user import UserService
 from app.shared.models.ride import RideTravelModel
-from app.shared.models.travel import ScheduleTravelDocument
+from app.shared.models.travel import TravelDocument
 from app.shared.models.user import UserDocument
 from app.shared.pattern.singleton import Singleton
 from app.shared.scheme.rides import RideTravelUpdateRequest, RideTravelRequest
@@ -47,11 +47,11 @@ class RideUseCase(metaclass=Singleton):
     async def current(self, usercode: int) -> Optional[RideTravelStatusResponse]:
         raise NotImplementedError()
 
-    async def cancel(self, passenger: UserDocument, role: RoleUser, schedule: ScheduleTravelDocument,
+    async def cancel(self, passenger: UserDocument, role: RoleUser, schedule: TravelDocument,
                      ride: RideTravelModel):
         raise NotImplementedError()
 
-    async def over(self, passenger: UserDocument, role: RoleUser, schedule: ScheduleTravelDocument,
+    async def over(self, passenger: UserDocument, role: RoleUser, schedule: TravelDocument,
                    ride: RideTravelModel):
         raise NotImplementedError()
 
