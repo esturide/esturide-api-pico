@@ -5,9 +5,9 @@ from app.shared.scheme import StatusResponse
 from app.shared.scheme.status import UserStatus
 from app.shared.types.enum import Status, CurrentSession, RoleUser
 
-find_router = APIRouter(prefix="/find", tags=["Find route"])
+check_router = APIRouter(prefix="/find", tags=["Find route"])
 
-@find_router.get('/status', response_model=StatusResponse[UserStatus])
+@check_router.get('/status', response_model=StatusResponse[UserStatus])
 async def find_current_status(token: OAuth2Scheme, auth: AuthDependency, schedule_case: ScheduleDependency, ride_case: RideDependency):
     sessions = {
         RoleUser.driver: CurrentSession.travel,

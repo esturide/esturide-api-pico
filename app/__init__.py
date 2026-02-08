@@ -13,8 +13,8 @@ from app.core.exception.handler import (custom_http_exception_handler, http_exce
                                         not_implemented_handler)
 from app.presentation.routes import root_router
 from app.presentation.routes.auth import auth_route
-from app.presentation.routes.check import find_router
-from app.presentation.routes.journeys.rides.match import match_router
+from app.presentation.routes.check import check_router
+from app.presentation.routes.journeys.match import match_router
 from app.presentation.routes.journeys.rides.socket import ride_sio
 from app.presentation.routes.journeys.schedule.socket import travel_sio
 from app.presentation.routes.location import location_route
@@ -41,13 +41,13 @@ def get_app():
     app.include_router(root_router)
     app.include_router(auth_route)
     app.include_router(user_router)
-    app.include_router(match_router)
-    app.include_router(schedule_router)
-    app.include_router(ride_router)
     app.include_router(notify_route)
     app.include_router(location_route)
     app.include_router(record_route)
-    app.include_router(find_router)
+    app.include_router(check_router)
+    app.include_router(match_router)
+    app.include_router(schedule_router)
+    app.include_router(ride_router)
 
     app = ASGIApp(sio, app)
     sio.add_router(ride_sio)

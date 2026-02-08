@@ -35,3 +35,12 @@ async def on_send_message(
         data.model_dump(),
         namespace="/ride"
     )
+
+
+@ride_sio.on("status")
+async def on_change_status(
+    sid: SocketID,
+    server: AsyncServer,
+    data: Message
+):
+    pass
