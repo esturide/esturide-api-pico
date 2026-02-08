@@ -20,7 +20,7 @@ class RideService(metaclass=Singleton):
         usercode = user.code
         ride = await self.get_from_usercode(usercode)
 
-        if not ride:
+        if ride:
             return False
 
         ride = RideStore(
@@ -36,7 +36,12 @@ class RideService(metaclass=Singleton):
         return status
 
     async def get_from_usercode(self, usercode: int) -> RideStore | None:
-        return await RideStore.find(RideStore.usercode == usercode).first()
+        rides = await RideStore.find(RideStore.usercode == usercode).sort_by("-created").all()
+
+        if len(rides) >= 1:
+            return rides[0]
+
+        return None
 
     async def get(self, uuid: uuid.UUID) -> RideStore:
         ride = await RideStore.find(RideStore.uuid == uuid).first()

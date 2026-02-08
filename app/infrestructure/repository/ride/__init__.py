@@ -12,7 +12,7 @@ from app.shared.utils import async_task
 class RideRepository(ClientDocumentRepository, metaclass=Singleton):
     async def get(self, uuid: uuid.UUID) -> RideTravelModel | None:
         def get_ride():
-            return RideTravelModel.collection.get_from_usercode(id=uuid)
+            return RideTravelModel.collection.get(id=uuid)
 
         return await async_task(get_ride)
 

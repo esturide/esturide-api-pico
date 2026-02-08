@@ -18,16 +18,16 @@ async def find_current_status(token: OAuth2Scheme, auth: AuthDependency, schedul
     schedule = await schedule_case.exist(user.code)
     ride = await ride_case.exist(user.code)
 
+    current_session = CurrentSession.free
+
     if not (schedule or ride):
         return {
             "status": Status.success,
             "data": {
-                sessions: CurrentSession.free,
-                role: role
+                "session": current_session,
+                "role": role
             }
         }
-
-    current_session = CurrentSession.free
 
     if schedule:
         current_session = CurrentSession.travel
