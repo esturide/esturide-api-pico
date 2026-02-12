@@ -31,7 +31,7 @@ class UserProfile(BaseModel):
         return birth_date
 
     @field_validator('code')
-    def check_age(cls, code):
+    def check_code(cls, code):
         if code <= 0:
             raise ValueError('Invalid user code.')
 
