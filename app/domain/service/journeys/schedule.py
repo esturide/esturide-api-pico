@@ -32,7 +32,7 @@ class ScheduleTravelService(metaclass=Singleton):
             raise InvalidRequestException('User is not an approved driver.')
 
         schedule = ScheduleStore(
-            code=user.code,
+            usercode=user.usercode,
             origin=origin,
             destination=destination,
             starting=starting,
