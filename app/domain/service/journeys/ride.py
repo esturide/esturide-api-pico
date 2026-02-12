@@ -1,5 +1,4 @@
 import functools
-import uuid
 
 from fastapi import BackgroundTasks
 
@@ -15,14 +14,13 @@ class RideService(metaclass=Singleton):
         self.ride_cache_repository = RideCacheRepository()
 
     async def create(self, user: UserDocument, req: RideTravelRequest, background_tasks: BackgroundTasks) -> bool:
-        usercode = user.code
-        ride = await self.get_from_usercode(usercode)
+        ride = await self.get_from_usercode(user.usercode)
 
         if ride:
             return False
 
         ride = RideStore(
-            usercode=user.code,
+            usercode=user.usercode,
             origin=req.origin,
             destination=req.destination,
             exiting=req.exiting,
@@ -33,24 +31,11 @@ class RideService(metaclass=Singleton):
 
         return status
 
-    async def get_from_usercode(self, usercode: int) -> RideStore | None:
-        rides = await RideStore.find(RideStore.usercode == usercode).sort_by("-created").all()
+    async def get_from_usercode(self, usercode: str) -> RideStore | None:
+        return await self.ride_cache_repository.get(usercode)
 
-        if len(rides) >= 1:
-            return rides[0]
-
-        return None
-
-    async def get(self, uuid: uuid.UUID) -> RideStore | None:
-        rides = await RideStore.find(RideStore.uuid == uuid).sort_by("-created").all()
-
-        if len(rides) >= 1:
-            return rides[0]
-
-        return None
-
-    async def delete(self, uuid: uuid.UUID):
-        ride = await self.get(uuid)
+    async def get(self, code: str) -> RideStore | None:
+        return await self.ride_cache_repository.get(code)
 
 
 @functools.lru_cache

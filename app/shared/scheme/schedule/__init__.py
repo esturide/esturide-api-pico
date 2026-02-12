@@ -99,19 +99,14 @@ class ScheduleTravelFromAddressRequest(BaseModel):
 
 
 class ScheduleTravelResponse(BaseModel):
-    uuid: uuid.UUID
-    driver: DriverUser
+    code: str
+    genders: Set[Gender] = Field(..., title="Filter of genders", alias='genders')
+    starting: datetime.datetime
 
     price: int
 
-    created: datetime.datetime
-
-    seats: Set[Seat] = Field(['A', 'B', 'C'], title="All seats", alias='seats')
-
     origin: str
     destination: str
-
-    genders: Set[Gender] = Field(..., title="Filter of genders", alias='genders')
 
     waypoints: Set[str]
 

@@ -58,7 +58,6 @@ class ScheduleTravelUseCase:
         route_results = await route_service.routing(origin.address, destination.address, req.waypoints, starting)
         route_steps = route_results[0].steps
 
-
         schedule = await self.schedule_service.create(
             user=user,
             origin=origin.address,
@@ -80,48 +79,26 @@ class ScheduleTravelUseCase:
             message="New travel traveled successfully."
         )
 
-    async def exist(self, usercode: int) -> bool:
+    async def exist(self, usercode: str) -> bool:
          schedule = await self.schedule_service.get_from_user(usercode)
 
          return schedule is not None
 
-    async def current(self, usercode: int) -> Optional[ScheduleTravelResponse]:
+    async def current(self, usercode: int) -> ScheduleTravelResponse | None:
         schedule = await self.schedule_service.get_from_user(usercode)
 
         if schedule is None:
             return None
 
-        user = await self.user_service.get(usercode)
-
         return ScheduleTravelResponse(
-            uuid=schedule.uuid,
-            created=schedule.created,
-            driver=DriverUser(
-                code=user.code,
-                firstName=user.first_name,
-                maternalSurname=user.maternal_surname,
-                paternalSurname=user.paternal_surname,
-                position=None
-            ),
+            code=schedule.usercode,
+            starting=schedule.starting,
             price=schedule.price,
-            seats=schedule.seats,
             origin=schedule.origin,
             destination=schedule.destination,
             genders=schedule.genders,
             waypoints=schedule.waypoints
         )
-
-    async def get(self, uuid: UUID):
-        return await self.schedule_service.get(uuid)
-
-    async def all(self, limit=10) -> list[ScheduleTravelResponse]:
-        raise NotImplementedError()
-
-    async def search(self, code: int, role: RoleUser, options: FilteringOptionsRequest, limit: int):
-        raise NotImplementedError()
-
-    async def update(self, code: int, role: RoleUser, req: ScheduleTravelUpdateRequest):
-        raise NotImplementedError()
 
 
 @functools.lru_cache

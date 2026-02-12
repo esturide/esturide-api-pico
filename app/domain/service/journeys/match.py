@@ -13,8 +13,14 @@ class MatchService(metaclass=Singleton):
     async def create(self, passenger: UserDocument, ride: RideStore, schedule: ScheduleStore) -> None:
         match = MatchStore(
             usercode=passenger.code,
-            ride_id=ride.uuid,
-            travel_schedule_id=schedule.uuid
+            ride_id=ride.code,
+            travel_schedule_id=schedule.usercode
         )
 
         return await self.match_repository.save(match)
+
+    async def get_all_from_schedule(self, schedule: ScheduleStore) -> list[MatchStore]:
+        code = schedule.usercode
+        match_schedule = await MatchStore.find(MatchStore.travel_schedule_code == code).all()
+
+        return match_schedule

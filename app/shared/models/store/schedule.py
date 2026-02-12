@@ -1,15 +1,12 @@
 import base64
 import datetime
-import uuid
-
-from uuid import UUID
 
 from typing import Annotated, Any, Tuple, List, Set
 
 import numpy as np
 import zlib
 
-from aredis_om import JsonModel, Field
+from aredis_om import JsonModel, Field, HashModel
 from pydantic import BeforeValidator, AfterValidator, ValidationError
 
 from app.shared.dependencies.depends.cache import get_async_client_redis
@@ -54,10 +51,8 @@ EncodeRoute = Annotated[str, BeforeValidator(encode_compress_route), AfterValida
 
 
 class ScheduleStore(JsonModel, index=True):
-    uuid: UUID = Field(default_factory=uuid.uuid4, index=True, const=True)
+    usercode: str = Field(primary_key=True, const=True)
     created: datetime.datetime = Field(default_factory=datetime.datetime.now, index=True, const=True)
-
-    usercode: int = Field(..., index=True, const=True)
 
     origin: str = Field(..., index=True, const=True, full_text_search=True)
     destination: str = Field(..., index=True, const=True, full_text_search=True)
@@ -65,8 +60,8 @@ class ScheduleStore(JsonModel, index=True):
     starting: datetime.datetime = Field(..., index=True, const=True)
 
     price: int = Field(index=True, const=True)
-    seats: Set[Seat] = Field(default_factory=set)
-    genders: Set[Gender] = Field(default_factory=set)
+    seats: Set[Seat] = Field(default_factory=set, index=True)
+    genders: Set[Gender] = Field(default_factory=set, index=True)
 
     waypoints: Set[str] = Field(..., default_factory=set, const=True)
     route: EncodeRoute = Field(..., index=False, const=True)

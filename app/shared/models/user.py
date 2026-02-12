@@ -63,3 +63,7 @@ class UserDocument(Document):
     @property
     def is_valid_staff(self):
         return RoleUser(self.role) == RoleUser.staff
+
+    @property
+    def usercode(self):
+        return str(self.code)

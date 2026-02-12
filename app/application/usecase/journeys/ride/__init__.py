@@ -41,7 +41,7 @@ class RideUseCase(metaclass=Singleton):
                 message="Failure creating Ride."
         )
 
-    async def exist(self, usercode: int) -> bool:
+    async def exist(self, usercode: str) -> bool:
         return await self.ride_service.get_from_usercode(usercode) is not None
 
     async def current(self, usercode: int) -> Optional[RideTravelStatusResponse]:

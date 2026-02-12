@@ -17,7 +17,7 @@ async def search_match(user_auth: AuthUserCodeAndRoleCredentials, match: MatchDe
 
     results = await match.search(usercode)
 
-    if len(results) <= 1:
+    if len(results) <= 0:
         return {
             "status": "failure",
             "data": []
@@ -25,15 +25,15 @@ async def search_match(user_auth: AuthUserCodeAndRoleCredentials, match: MatchDe
 
     return {
         "status": "success",
-        "results": results
+        "data": results
     }
 
 
-@match_router.post("/create", response_model=StatusMessage)
-async def create_match(user_auth: AuthUserCodeAndRoleCredentials, travel_schedule_id: UUID, match: MatchDependency):
+@match_router.post("/", response_model=StatusMessage)
+async def create_match(user_auth: AuthUserCodeAndRoleCredentials, travel: int, match: MatchDependency):
     usercode, role = user_auth
 
-    return await match.create(usercode, travel_schedule_id)
+    return await match.create(usercode, travel)
 
 
 @match_router.get("/status", response_model=StatusResponse)
@@ -45,3 +45,21 @@ async def status_match(user_auth: AuthUserCodeAndRoleCredentials, match: MatchDe
         yield status
 
         await asyncio.sleep(1)
+
+
+@match_router.get('/', response_model=StatusResponse)
+async def review_match(user_auth: AuthUserCodeAndRoleCredentials, match: MatchDependency):
+    usercode, role = user_auth
+
+    results = await match.review(usercode, role)
+
+    if len(results) <= 0:
+        return {
+            "status": "failure",
+            "data": []
+        }
+
+    return {
+        "status": "success",
+        "data": results
+    }

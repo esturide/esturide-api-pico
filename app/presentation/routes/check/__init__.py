@@ -9,14 +9,9 @@ check_router = APIRouter(prefix="/find", tags=["Find route"])
 
 @check_router.get('/status', response_model=StatusResponse[UserStatus])
 async def find_current_status(token: OAuth2Scheme, auth: AuthDependency, schedule_case: ScheduleDependency, ride_case: RideDependency):
-    sessions = {
-        RoleUser.driver: CurrentSession.travel,
-        RoleUser.passenger: CurrentSession.ride,
-    }
-
     user, role = await auth.get_current_status(token)
-    schedule = await schedule_case.exist(user.code)
-    ride = await ride_case.exist(user.code)
+    schedule = await schedule_case.exist(user.usercode)
+    ride = await ride_case.exist(user.usercode)
 
     current_session = CurrentSession.free
 

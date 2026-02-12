@@ -1,7 +1,4 @@
-import datetime
-
-from typing import Set, List, Tuple, Optional
-from uuid import UUID
+from typing import Set, List, Tuple
 
 from pydantic import FutureDatetime
 
@@ -11,7 +8,6 @@ from app.infrestructure.repository.tracking import TrackingRepository
 from app.infrestructure.repository.travel import TravelRepository
 from app.infrestructure.repository.travel.schedule import ScheduleStoreRepository
 from app.shared.models.store.schedule import ScheduleStore
-from app.shared.models.travel import TravelDocument
 from app.shared.models.user import UserDocument
 from app.shared.pattern.singleton import Singleton
 from app.shared.types import Seat, Gender
@@ -26,17 +22,17 @@ class ScheduleTravelService(metaclass=Singleton):
 
     async def create(self, user: UserDocument, origin: str, destination: str, starting: FutureDatetime, price: float,
                      seats: Set[Seat], genders: Set[Gender], waypoints: Set[str],
-                     route: List[Tuple[float, float]]) -> Optional[ScheduleStore]:
-        previous_schedule_found = await ScheduleStore.find(ScheduleStore.usercode == user.code).all()
+                     route: List[Tuple[float, float]]) -> ScheduleStore | None:
+        previous_schedule_found = await self.schedule_store_repository.get(user.code)
 
-        if len(previous_schedule_found) != 0:
+        if previous_schedule_found is not None:
             raise InvalidRequestException("A previous schedule was found, it cannot be rescheduled.")
 
         if not user.is_valid_driver:
             raise InvalidRequestException('User is not an approved driver.')
 
         schedule = ScheduleStore(
-            usercode=user.code,
+            code=user.code,
             origin=origin,
             destination=destination,
             starting=starting,
@@ -47,41 +43,20 @@ class ScheduleTravelService(metaclass=Singleton):
             route=route
         )
 
-        await self.schedule_store_repository.save(schedule, expire_time_sec=120)
+        await self.schedule_store_repository.save(schedule)
 
         return schedule
 
-    async def save(self, schedule: ScheduleStore) -> TravelDocument | None:
-        return None
+    async def get_from_user(self, usercode: str) -> ScheduleStore | None:
+        return await self.schedule_store_repository.get(usercode)
 
-    async def get(self, uuid: UUID):
-        if query := await ScheduleStore.find(ScheduleStore.uuid == uuid).all():
-            return query[0]
+    async def get(self, code: str) -> ScheduleStore | None:
+        return await self.schedule_store_repository.get(code)
 
-        return None
+    async def get_from_destination(self, destination: str) -> list[ScheduleStore]:
+        return await ScheduleStore.find(ScheduleStore.destination == destination).all()
 
-    async def get_from_user(self, usercode: int) -> ScheduleStore | None:
-        if query := await ScheduleStore.find(ScheduleStore.usercode == usercode).all():
-            return query[0]
-
-        return None
-
-    async def get_current(self, user: UserDocument) -> TravelDocument | None:
-        return None
-
-    async def get_by_driver(self, user: UserDocument) -> list[TravelDocument]:
-        return []
-
-    async def get_by_passenger(self, user: UserDocument) -> list[TravelDocument]:
-        return []
-
-    async def all(self, limit=10) -> list[TravelDocument]:
-        return []
-
-    async def filtering(self, origin: str, destination: str,
-                        date: Tuple[datetime.datetime, Optional[datetime.datetime]],
-                        price: Tuple[float, Optional[float]], limit: int) -> list[TravelDocument]:
-        return []
-
-    async def finished(self, schedule: TravelDocument, cancel=None, terminate=None) -> tuple[bool, TravelDocument] | None:
-        return None
+    async def filter(self, destination: str, gender: Gender) -> list[ScheduleStore]:
+        return await ScheduleStore.find(
+            (ScheduleStore.destination == destination) | (ScheduleStore.genders >> gender)
+        ).all()

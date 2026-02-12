@@ -4,6 +4,7 @@ import uuid
 from app.infrestructure.repository.client.cache import ClientCacheRepository
 from app.infrestructure.repository.client.db import ClientDocumentRepository
 from app.shared.models.ride import RideTravelModel
+from app.shared.models.store.ride import RideStore
 from app.shared.models.user import UserDocument
 from app.shared.pattern.singleton import Singleton
 from app.shared.utils import async_task
@@ -49,4 +50,10 @@ class RideRepository(ClientDocumentRepository, metaclass=Singleton):
 
 
 class RideCacheRepository(ClientCacheRepository):
-    pass
+    async def get(self, code: str) -> RideStore | None:
+        ride = await RideStore.find(RideStore.usercode == code).sort_by("-created").all()
+
+        if len(ride) != 0:
+            return ride[0]
+
+        return None

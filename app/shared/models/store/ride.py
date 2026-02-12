@@ -1,7 +1,4 @@
 import datetime
-import uuid
-
-from uuid import UUID
 
 from aredis_om import JsonModel, Field
 
@@ -10,10 +7,9 @@ from app.shared.types import Seat, Gender
 
 
 class RideStore(JsonModel, index=True):
-    uuid: UUID = Field(default_factory=uuid.uuid4, index=True, const=True)
-    created: datetime.datetime = Field(default_factory=datetime.datetime.now, index=True, const=True)
+    usercode: str = Field(primary_key=True, index=True, const=True)
 
-    usercode: int = Field(..., index=True, const=True)
+    created: datetime.datetime = Field(default_factory=datetime.datetime.now, index=True, const=True)
 
     origin: str = Field(..., index=True, const=True)
     destination: str = Field(..., index=True, const=True)
@@ -23,3 +19,15 @@ class RideStore(JsonModel, index=True):
 
     class Meta:
         database = get_async_client_redis()
+
+    @property
+    def code(self) -> int:
+        return int(self.usercode)
+
+    @property
+    def address(self):
+        return self.origin
+
+    @property
+    def starting(self):
+        return self.exiting
