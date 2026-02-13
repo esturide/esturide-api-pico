@@ -1,5 +1,6 @@
 import contextlib
 from datetime import timedelta, datetime
+from typing import Generator, Any
 
 import jwt
 from fastapi import HTTPException
@@ -30,7 +31,7 @@ def encode(data: dict, expires_minutes: int, secret_key: str, algorithm: str) ->
     return jwt.encode(payload, secret_key, algorithm=algorithm)
 
 
-def decode(token: Token, secret_key: str, algorithm: str) -> dict:
+def decode(token: Token, secret_key: str, algorithm: str) -> dict[str, str]:
     return jwt.decode(token, secret_key, algorithms=[algorithm])
 
 
@@ -75,10 +76,12 @@ def secure_decode(token: Token, secret_key: str, algorithm: str):
         )
 
 
-def get_code_from_token(token: Token) -> int:
+def get_code_from_token(token: Token) -> int | None:
     with secure_decode(token) as decoded:
         if code := decoded.get("code"):
             return code
+
+        return None
 
 
 oauth2_scheme = get_oauth2_token()
