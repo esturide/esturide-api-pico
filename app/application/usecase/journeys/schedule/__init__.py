@@ -79,7 +79,7 @@ class ScheduleTravelUseCase:
             message="New travel traveled successfully."
         )
 
-    async def exist(self, usercode: str) -> bool:
+    async def exist(self, usercode: int) -> bool:
          schedule = await self.schedule_service.get_from_user(usercode)
 
          return schedule is not None

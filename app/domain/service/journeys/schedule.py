@@ -47,10 +47,10 @@ class ScheduleTravelService(metaclass=Singleton):
 
         return schedule
 
-    async def get_from_user(self, usercode: str) -> ScheduleStore | None:
+    async def get_from_user(self, usercode: int) -> ScheduleStore | None:
         return await self.schedule_store_repository.get(usercode)
 
-    async def get(self, code: str) -> ScheduleStore | None:
+    async def get(self, code: int) -> ScheduleStore | None:
         return await self.schedule_store_repository.get(code)
 
     async def get_from_destination(self, destination: str) -> list[ScheduleStore]:

@@ -7,7 +7,7 @@ from app.shared.types import Seat, Gender
 
 
 class RideStore(JsonModel, index=True):
-    usercode: str = Field(primary_key=True, index=True, const=True)
+    usercode: int = Field(index=True, const=True)
 
     created: datetime.datetime = Field(default_factory=datetime.datetime.now, index=True, const=True)
 

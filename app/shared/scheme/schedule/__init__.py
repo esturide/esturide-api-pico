@@ -99,7 +99,7 @@ class ScheduleTravelFromAddressRequest(BaseModel):
 
 
 class ScheduleTravelResponse(BaseModel):
-    code: str
+    code: int
     genders: Set[Gender] = Field(..., title="Filter of genders", alias='genders')
     starting: datetime.datetime
 

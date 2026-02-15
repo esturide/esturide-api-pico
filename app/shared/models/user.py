@@ -66,4 +66,4 @@ class UserDocument(Document):
 
     @property
     def usercode(self):
-        return str(self.code)
+        return int(self.code)

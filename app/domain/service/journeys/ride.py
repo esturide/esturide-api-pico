@@ -31,11 +31,8 @@ class RideService(metaclass=Singleton):
 
         return status
 
-    async def get_from_usercode(self, usercode: str) -> RideStore | None:
+    async def get_from_usercode(self, usercode: int) -> RideStore | None:
         return await self.ride_cache_repository.get(usercode)
-
-    async def get(self, code: str) -> RideStore | None:
-        return await self.ride_cache_repository.get(code)
 
 
 @functools.lru_cache

@@ -4,7 +4,7 @@ from app.shared.dependencies.depends.cache import get_async_client_redis
 
 
 class MatchStore(HashModel, index=True):
-    usercode: str = Field(primary_key=True, const=True)
+    usercode: int = Field(primary_key=True, const=True)
 
     ride_code: str = Field(index=True, const=True)
     travel_schedule_code: str = Field(index=True, const=True)

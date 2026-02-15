@@ -50,8 +50,8 @@ class RideRepository(ClientDocumentRepository, metaclass=Singleton):
 
 
 class RideCacheRepository(ClientCacheRepository):
-    async def get(self, code: str) -> RideStore | None:
-        ride = await RideStore.find(RideStore.usercode == code).sort_by("-created").all()
+    async def get(self, code: int) -> RideStore | None:
+        ride = await RideStore.find(RideStore.usercode == code).all()
 
         if len(ride) != 0:
             return ride[0]
