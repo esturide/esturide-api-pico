@@ -49,9 +49,10 @@ class RideRepository(ClientDocumentRepository, metaclass=Singleton):
         return await async_task(filter_rides)
 
 
-class RideCacheRepository(ClientCacheRepository):
+class RideCacheRepository(ClientCacheRepository, metaclass=Singleton):
     async def get(self, code: int) -> RideStore | None:
-        ride = await RideStore.find(RideStore.usercode == code).all()
+        ride = await RideStore.find(RideStore.usercode == code).sort_by("-created").all()
+        ride = list(filter(lambda s: s.usercode == code, ride))
 
         if len(ride) != 0:
             return ride[0]

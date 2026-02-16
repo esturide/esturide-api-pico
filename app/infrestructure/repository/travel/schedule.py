@@ -5,9 +5,10 @@ from app.shared.pattern.singleton import Singleton
 
 class ScheduleStoreRepository(ClientCacheRepository, metaclass=Singleton):
     async def get(self, code: int) -> ScheduleStore | None:
-        query = await ScheduleStore.find(ScheduleStore.usercode == code).sort_by("-created").all()
+        schedules = await ScheduleStore.find().sort_by("-created").all()
+        schedules = list(filter(lambda s: s.usercode == code, schedules))
 
-        if len(query) != 0:
-            return query[0]
+        if len(schedules) != 0:
+            return schedules[0]
 
         return None
