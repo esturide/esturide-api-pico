@@ -14,6 +14,7 @@ from app.domain.service.journeys.schedule import ScheduleTravelService
 from app.domain.service.user import UserService
 from app.shared.dependencies.depends import GoogleMapsClient
 from app.shared.models.store.schedule import ScheduleStore
+from app.shared.models.user import UserDocument
 from app.shared.scheme import StatusSuccess, StatusFailure
 from app.shared.scheme.filter import FilteringOptionsRequest
 from app.shared.scheme.schedule import ScheduleTravelResponse, ScheduleTravelUpdateRequest, \
@@ -84,8 +85,8 @@ class ScheduleTravelUseCase:
 
          return schedule is not None
 
-    async def current(self, usercode: int) -> ScheduleTravelResponse | None:
-        schedule = await self.schedule_service.get_from_user(usercode)
+    async def current(self, user: UserDocument) -> ScheduleTravelResponse | None:
+        schedule = await self.schedule_service.get_from_user(user.usercode)
 
         if schedule is None:
             return None

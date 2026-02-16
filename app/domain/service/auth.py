@@ -35,6 +35,9 @@ class AuthenticationCredentialsService(metaclass=Singleton):
         code = decode_data.get("code")
         role = decode_data.get("role")
 
+        if isinstance(code, str) and code.isdigit():
+            code = int(code)
+
         user = await self.user_repository.get_user_by_code(code)
 
         if user is None:
