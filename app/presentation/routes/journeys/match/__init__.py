@@ -1,9 +1,7 @@
-import asyncio
-
 from fastapi import APIRouter
 from fastapi_sse import sse_handler
 
-from app.shared.dependencies import AuthUserCodeAndRoleCredentials, MatchDependency, AsyncRedisDependency
+from app.shared.dependencies import AuthUserCodeAndRoleCredentials, MatchDependency
 from app.shared.scheme import StatusResponse, StatusMessage
 from app.shared.scheme.match import MatchTravelRequest
 
@@ -37,10 +35,10 @@ async def create_match(user_auth: AuthUserCodeAndRoleCredentials, travel: MatchT
 
 @match_router.get("/status", response_model=StatusResponse)
 @sse_handler()
-async def status_match(user_auth: AuthUserCodeAndRoleCredentials, match: MatchDependency, r: AsyncRedisDependency):
+async def status_match(user_auth: AuthUserCodeAndRoleCredentials, match: MatchDependency):
     usercode, role = user_auth
 
-    async for status in match.check(usercode, r):
+    async for status in match.check(usercode):
         yield status
 
 

@@ -47,3 +47,5 @@ async-googlemaps~=0.0.10
 polyline~=2.0.4
 numpy~=2.4.1
 pytz~=2025.2
+faststream[redis]~=0.6.6
+faststream[cli]~=0.6.6

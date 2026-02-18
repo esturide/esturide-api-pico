@@ -1,6 +1,5 @@
 from typing import Annotated
 
-import aioredis
 from fastapi import Depends, File
 from fastapi.security import OAuth2PasswordRequestForm
 from geopy.geocoders.base import Geocoder
@@ -46,5 +45,3 @@ AuthDependency = Annotated[AuthSessionUseCase, Depends(get_auth_session_case)]
 
 AsyncClientMongoDB = Annotated[AsyncMongoClient, Depends(get_async_client_mongodb)]
 ClientMongoDB = Annotated[MongoClient, Depends(get_client_mongodb)]
-
-AsyncRedisDependency = Annotated[aioredis.Redis, Depends(get_async_client_redis)]

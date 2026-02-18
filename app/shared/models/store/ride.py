@@ -17,9 +17,6 @@ class RideStore(JsonModel, index=True):
     gender: Gender = Field(..., const=True)
 
     class Meta:
-        global_key_prefix = "journeys"
-        model_key_prefix = "ride"
-
         database = get_async_client_redis()
 
     @property

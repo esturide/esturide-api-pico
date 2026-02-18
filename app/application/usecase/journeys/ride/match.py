@@ -5,8 +5,6 @@ from app.domain.service.journeys.match import MatchService
 from app.domain.service.journeys.ride import RideService
 from app.domain.service.journeys.schedule import ScheduleTravelService
 from app.domain.service.user import UserService
-from app.shared.dependencies import AsyncRedisDependency
-from app.shared.dependencies.depends.cache import get_async_client_redis
 from app.shared.models.store.ride import RideStore
 from app.shared.pattern.singleton import Singleton
 from app.shared.scheme import StatusSuccess, StatusFailure
@@ -63,20 +61,8 @@ class MatchUseCase(metaclass=Singleton):
 
         return schedules
 
-    async def check(self, usercode: int, r: AsyncRedisDependency):
-        key_prefix = RideStore.Meta.global_key_prefix
-        pubsub = r.pubsub()
-
-        await pubsub.psubscribe("__keyevent@0__:set")
-
-        async for message in pubsub.listen():
-            if message["type"] == "pmessage":
-                key = message["data"].decode()
-
-                if key.startswith(key_prefix):
-                    print(f"✅ Append element to Redis → {key}")
-
-            yield StatusSuccess()
+    async def check(self, usercode: int):
+        yield StatusSuccess()
 
     async def review(self, usercode: int, role: RoleUser):
         if role != RoleUser.driver:
