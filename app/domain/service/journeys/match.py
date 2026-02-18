@@ -13,8 +13,8 @@ class MatchService(metaclass=Singleton):
     async def create(self, passenger: UserDocument, ride: RideStore, schedule: ScheduleStore) -> None:
         match = MatchStore(
             usercode=passenger.code,
-            ride_id=ride.code,
-            travel_schedule_id=schedule.usercode
+            ride_code=ride.usercode,
+            travel_schedule_code=schedule.usercode
         )
 
         return await self.match_repository.save(match)

@@ -37,11 +37,6 @@ async def connect(
                 "It's working!"
             )
 
-            await emitter.send(
-                "current",
-                await schedule_case.current(user)
-            )
-
             await asyncio.sleep(5)
 
     return True

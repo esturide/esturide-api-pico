@@ -57,6 +57,8 @@ class ScheduleTravelService(metaclass=Singleton):
         return await ScheduleStore.find(ScheduleStore.destination == destination).all()
 
     async def filter(self, destination: str, gender: Gender) -> list[ScheduleStore]:
-        return await ScheduleStore.find(
-            (ScheduleStore.destination == destination) | (ScheduleStore.genders >> gender)
-        ).all()
+        schedules = await ScheduleStore.find(
+            (ScheduleStore.destination % destination) | ScheduleStore.genders >> gender
+        ).sort_by("-created").all()
+
+        return schedules

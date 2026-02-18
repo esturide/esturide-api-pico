@@ -36,8 +36,7 @@ class ScheduleTravelUseCase:
         self.user_service = UserService()
         self.auth_service = AuthenticationCredentialsService()
 
-    async def create(self, req: ScheduleTravelFromAddressRequest, code: int, role: RoleUser, gmaps: GoogleMapsClient,
-                     background_tasks: BackgroundTasks):
+    async def create(self, req: ScheduleTravelFromAddressRequest, code: int, role: RoleUser, gmaps: GoogleMapsClient):
         search_service = SearchService(gmaps)
         route_service = RouteService(gmaps)
 
@@ -85,8 +84,11 @@ class ScheduleTravelUseCase:
 
          return schedule is not None
 
-    async def current(self, user: UserDocument) -> ScheduleTravelResponse | None:
-        schedule = await self.schedule_service.get_from_user(user.usercode)
+    async def current(self, usercode: int, role: RoleUser) -> ScheduleTravelResponse | None:
+        if role != RoleUser.driver:
+            return None
+
+        schedule = await self.schedule_service.get_from_user(usercode)
 
         if schedule is None:
             return None

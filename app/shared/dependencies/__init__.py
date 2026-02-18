@@ -1,5 +1,6 @@
 from typing import Annotated
 
+import aioredis
 from fastapi import Depends, File
 from fastapi.security import OAuth2PasswordRequestForm
 from geopy.geocoders.base import Geocoder
@@ -18,6 +19,7 @@ from app.shared.credentials import get_user_code_from_credentials, is_user_authe
     get_user_code_and_role_code_from_credentials
 from app.shared.dependencies.depends import get_nominatim_locator_agent, get_google_locator_agent, \
     get_google_maps_service_agent, GoogleMapsClient
+from app.shared.dependencies.depends.cache import get_async_client_redis
 from app.shared.dependencies.depends.db import get_async_client_mongodb, get_client_mongodb
 from app.shared.types import Token
 from app.shared.types.enum import RoleUser
@@ -44,3 +46,5 @@ AuthDependency = Annotated[AuthSessionUseCase, Depends(get_auth_session_case)]
 
 AsyncClientMongoDB = Annotated[AsyncMongoClient, Depends(get_async_client_mongodb)]
 ClientMongoDB = Annotated[MongoClient, Depends(get_client_mongodb)]
+
+AsyncRedisDependency = Annotated[aioredis.Redis, Depends(get_async_client_redis)]
