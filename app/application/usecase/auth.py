@@ -1,7 +1,7 @@
 import functools
 
 from app.core.exception import UnauthorizedAccessException
-from app.domain.service.auth import get_auth_service
+from app.domain.service.auth import AuthenticationCredentialsService
 from app.shared.scheme.user import RoleUpdateRequest
 from app.shared.types import Token
 from app.shared.types.enum import RoleUser
@@ -9,9 +9,12 @@ from app.shared.types.enum import RoleUser
 
 class AuthSessionUseCase:
     def __init__(self):
-        self.auth_service = get_auth_service()
+        self.auth_service = AuthenticationCredentialsService()
 
-    async def login(self, code: int, password: str):
+    async def login(self, code: int | str, password: str):
+        if isinstance(code, str):
+            code = int(code)
+
         token = await self.auth_service.authenticate(
             code,
             password
@@ -46,6 +49,11 @@ class AuthSessionUseCase:
                 raise UnauthorizedAccessException("The user does not have staff permissions.")
 
         return await self.auth_service.refresh(user, role)
+
+    async def get_current_user(self, token: Token):
+        user, role = await self.auth_service.get_user_credentials_from_token(token)
+
+        return user, role
 
 
 @functools.lru_cache

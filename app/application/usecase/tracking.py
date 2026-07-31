@@ -1,33 +1,31 @@
 import functools
 
-from google.cloud.firestore import GeoPoint
-
 from app.core.exception import ResourceNotFoundException, InvalidRequestException
-from app.domain.service.ride import get_ride_service
-from app.domain.service.schedule import get_schedule_service
+from app.domain.service.journeys.ride import RideService
+from app.domain.service.journeys.schedule import ScheduleTravelService
 from app.domain.service.tracking import TrackingService
-from app.domain.service.user import get_user_service
-from app.shared.models.tracking import TrackingRecord
+from app.domain.service.user import UserService
+from app.shared.models.tracking import Tracking
 from app.shared.scheme import StatusSuccess, StatusFailure
-from app.shared.scheme.location import GeoLocationModel
+from app.shared.scheme.location import GeoPoint
 from app.shared.types.enum import RoleUser
 
 
 class TrackingUseCase:
     def __init__(self):
-        self.user_service = get_user_service()
-        self.ride_service = get_ride_service()
-        self.schedule_service = get_schedule_service()
+        self.user_service = UserService()
+        self.ride_service = RideService()
+        self.schedule_service = ScheduleTravelService()
         self.tracking_service = TrackingService()
 
-    async def register(self, code: int, role: RoleUser, location: GeoLocationModel):
+    async def register(self, code: int, role: RoleUser, location: GeoPoint):
         user = await self.user_service.get(code)
         status = False
 
-        tracking = TrackingRecord()
+        tracking = Tracking()
         tracking.location = GeoPoint(
-            location.latitude,
-            location.longitude,
+            longitude=location.latitude,
+            latitude=location.longitude,
         )
 
         if role == RoleUser.passenger:
@@ -41,7 +39,7 @@ class TrackingUseCase:
             schedule = await self.schedule_service.get_current(user)
 
             if schedule is None:
-                raise ResourceNotFoundException(detail="They don't have any active schedule.")
+                raise ResourceNotFoundException(detail="They don't have any active travel.")
 
             status = await self.tracking_service.register_schedule(schedule, tracking)
         else:

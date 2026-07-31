@@ -1,10 +1,11 @@
+import uuid
+
 from pydantic import BaseModel
 
-from app.shared.types import UUID
 
 
 class ChangesScheduleRequest(BaseModel):
-    uuid: UUID
+    uuid: uuid.UUID
 
     cancel: bool
     terminate: bool

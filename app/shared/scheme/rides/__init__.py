@@ -1,13 +1,18 @@
+import datetime
+
 from typing import Optional
+from uuid import UUID
 
 from pydantic import BaseModel, Field
 
-from app.shared.types import UUID
+from app.shared.types.enum.default_location import DefaultLocation
 
 
 class RideTravelRequest(BaseModel):
-    uuid: UUID
-    seat: str
+    origin: str | DefaultLocation = Field(..., title="Location where the travel begins", alias='origin')
+    destination: str | DefaultLocation = Field(..., title="Location where the travel ends", alias='destination')
+
+    exiting: datetime.datetime = Field(..., title="Date and time when the trip begins", alias='exiting')
 
 
 class RideTravelResponse(BaseModel):

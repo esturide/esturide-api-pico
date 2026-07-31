@@ -1,20 +1,22 @@
-import functools
+from jwt import ExpiredSignatureError
 
 from app.core import get_settings
 from app.core.exception import UnauthorizedAccessException
 from app.core.oauth2 import encode, decode
 from app.infrestructure.repository.user import UserRepository
-from app.shared.models.user import User
+from app.shared.models.user import UserDocument
+from app.shared.pattern.singleton import Singleton
 from app.shared.types import Token
 from app.shared.types.enum import RoleUser
 
 
-class AuthenticationCredentialsService:
+class AuthenticationCredentialsService(metaclass=Singleton):
     def __init__(self):
         self.settings = get_settings()
+        self.user_repository = UserRepository()
 
-    async def get_user_if_authorized(self, code: int, password: str) -> User:
-        user = await UserRepository.get_user_by_code(code)
+    async def get_user_if_authorized(self, code: int, password: str) -> UserDocument:
+        user = await self.user_repository.get_user_by_code(code)
 
         if user is None:
             raise UnauthorizedAccessException(
@@ -28,12 +30,15 @@ class AuthenticationCredentialsService:
 
         return user
 
-    async def get_user_credentials_from_token(self, token: str) -> tuple[User, RoleUser]:
+    async def get_user_credentials_from_token(self, token: str) -> tuple[UserDocument, RoleUser]:
         decode_data = decode(token, self.settings.secret_key, self.settings.algorithm)
         code = decode_data.get("code")
         role = decode_data.get("role")
 
-        user = await UserRepository.get_user_by_code(code)
+        if isinstance(code, str) and code.isdigit():
+            code = int(code)
+
+        user = await self.user_repository.get_user_by_code(code)
 
         if user is None:
             raise UnauthorizedAccessException(
@@ -58,14 +63,17 @@ class AuthenticationCredentialsService:
         )
 
     async def validate(self, token: Token):
-        user, role = await self.get_user_credentials_from_token(token)
+        try:
+            user, role = await self.get_user_credentials_from_token(token)
 
-        if user is None:
+            if user is None:
+                return False
+
+            return True
+        except ExpiredSignatureError:
             return False
 
-        return True
-
-    async def refresh(self, user: User, role: RoleUser) -> Token:
+    async def refresh(self, user: UserDocument, role: RoleUser) -> Token:
         data = {
             "code": user.code,
             "role": role.value,
@@ -77,8 +85,3 @@ class AuthenticationCredentialsService:
             self.settings.secret_key,
             self.settings.algorithm
         )
-
-
-@functools.lru_cache
-def get_auth_service() -> AuthenticationCredentialsService:
-    return AuthenticationCredentialsService()

@@ -1,35 +1,37 @@
-from fireo.fields import TextField, IDField, DateTime, NumberField
-from fireo.models import Model
+import datetime
+
+from beanie import Document, Indexed
+from pydantic import Field, EmailStr
+from pydantic_extra_types.phone_numbers import PhoneNumber
 
 from app.shared.encrypt import check_same_password
-from app.shared.fields import UserRoleField
+from app.shared.types import Gender
 from app.shared.types.enum import RoleUser
 
 
-class User(Model):
-    class Meta:
-        collection_name = "users"
+class UserDocument(Document):
+    class Settings:
+        collection = "Users"
 
-    id = IDField()
-    created = DateTime(auto=True)
+    created: datetime.datetime = Field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc))
 
-    hashed_password = TextField(required=True)
-    salt = TextField(required=True)
+    hashed_password: str
+    salt: str
 
-    code = NumberField(required=True)
+    code: int = Indexed(int, unique=True)
 
-    first_name = TextField(required=True)
-    paternal_surname = TextField()
-    maternal_surname = TextField()
-    birth_date = DateTime(required=True)
-    email = TextField(required=True)
-    curp = TextField(required=True)
-    phone_number = TextField()
-    address = TextField()
+    first_name: str
+    paternal_surname: str
+    maternal_surname: str
+    birth_date: datetime.datetime
+    gender: Gender = Field(..., title="Gender")
 
-    # role = TextField(default=str(RoleUser.not_verified), choices=list(map(lambda r: str(r), RoleUser)))
+    email: EmailStr = Field(..., title="Email")
+    curp: str = Field(...)
+    phone_number: PhoneNumber = Field(..., title="Phone number", )
+    address: str = Field(...)
 
-    role = UserRoleField(default=RoleUser.not_verified)
+    role: RoleUser = Field(default=RoleUser.not_verified)
 
     def same_password(self, password) -> bool:
         return check_same_password(
@@ -61,3 +63,7 @@ class User(Model):
     @property
     def is_valid_staff(self):
         return RoleUser(self.role) == RoleUser.staff
+
+    @property
+    def usercode(self):
+        return int(self.code)
